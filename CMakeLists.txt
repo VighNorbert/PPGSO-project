@@ -100,7 +100,7 @@ target_include_directories(ppgso PUBLIC
 #
 
 # gl5_projection
-add_executable(main src/main.cpp)
+add_executable(main src/main.cpp src/OriginWindow.hpp src/ObjectEntity.hpp src/ObjectType.hpp)
 target_link_libraries(main ppgso shaders)
 install(TARGETS main DESTINATION .)
 

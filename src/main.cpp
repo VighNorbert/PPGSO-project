@@ -9,31 +9,17 @@
 
 #include <shaders/color_vert_glsl.h>
 #include <shaders/color_frag_glsl.h>
+#include "ObjectType.hpp"
+#include "ObjectEntity.hpp"
+#include "OriginWindow.hpp"
 
-const unsigned int SIZE = 1024;
+const int SIZE_X = 1024;
+const int SIZE_Y = 1024;
 
-class OriginWindow : public ppgso::Window {
-private:
-
-    glm::vec3 viewRotation{0,0,0};
-public:
-    OriginWindow() : Window{"Demoscéna - Mesto", SIZE, SIZE} {
-
-
-    }
-
-    void onIdle() override {
-        // Set gray background
-        glClearColor(.1f,.1f,.1f,1.0f);
-        // Clear depth and color buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-     }
-};
 
 int main() {
     // Create our window
-    auto window = OriginWindow{};
+    auto window = OriginWindow{SIZE_X, SIZE_Y};
 
     // Main execution loop
     while (window.pollEvents()) {}
