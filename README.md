@@ -31,7 +31,7 @@ Scéna 2 sa odohráva v exteriéri, v meste. Pred bankou ho čaká jeho komplic 
 - Bankár krváca po zásahu guľkou
   - krv - časticový systém, vplyv gravitačnej sily
 
-###Grafické efekty pri naháňačke v meste
+### Grafické efekty pri naháňačke v meste
 - Budovy mesta
   - rozmiestnenie jednotlivých budov bude procedurálne generované
 - Svietia svetlá na autách
