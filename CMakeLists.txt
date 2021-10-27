@@ -65,6 +65,7 @@ endif ()
 set(PPGSO_SHADER_SRC
         shader/color_vert.glsl shader/color_frag.glsl
         shader/texture_vert.glsl shader/texture_frag.glsl
+        shader/diffuse_vert.glsl shader/diffuse_frag.glsl
         )
 add_resources(shaders ${PPGSO_SHADER_SRC})
 
@@ -99,8 +100,8 @@ target_include_directories(ppgso PUBLIC
 # TARGETS
 #
 
-# gl5_projection
-add_executable(main src/main.cpp src/OriginWindow.hpp src/ObjectEntity.hpp src/ObjectType.hpp)
+# main
+add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/scene.cpp src/SceneWindow.hpp src/objects/Footman.cpp src/objects/Footman.h src/object.cpp src/object.h)
 target_link_libraries(main ppgso shaders)
 install(TARGETS main DESTINATION .)
 
