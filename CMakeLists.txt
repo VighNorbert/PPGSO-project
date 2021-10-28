@@ -101,7 +101,12 @@ target_include_directories(ppgso PUBLIC
 #
 
 # main
-add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/scene.cpp src/SceneWindow.hpp src/objects/Footman.cpp src/objects/Footman.h src/object.cpp src/object.h)
+add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/scene.cpp src/SceneWindow.hpp
+        src/objects/Footman.cpp src/objects/Footman.h
+        src/object.cpp src/object.h
+        src/objects/road.cpp src/objects/road.h
+        src/objects/road_crossing.cpp src/objects/road_crossing.h
+)
 target_link_libraries(main ppgso shaders)
 install(TARGETS main DESTINATION .)
 

@@ -14,7 +14,7 @@
  * Keyboard and Mouse states are stored in a map and struct
  */
 class Scene {
-  public:
+public:
     /*!
      * Update all objects in the scene
      * @param time
@@ -33,7 +33,7 @@ class Scene {
     std::list< std::unique_ptr<Object> > objects;
 
     // Lights, in this case using only simple directional diffuse lighting
-    glm::vec3 lightDirection{-1.0f, -1.0f, -1.0f};
+    glm::vec3 lightDirection{1.0f, 1.0f, -1.0f};
 };
 
 #endif // _PPGSO_SCENE_H

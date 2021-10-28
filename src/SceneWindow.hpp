@@ -5,6 +5,8 @@
 #include <shaders/diffuse_frag_glsl.h>
 
 #include <utility>
+#include <src/objects/road.h>
+#include <src/objects/road_crossing.h>
 
 #include "camera.h"
 #include "scene.h"
@@ -35,7 +37,32 @@ private:
         // Add generator to scene
 //        auto generator = std::make_unique<Generator>();
 //        generator->position.y = 10.0f;
-//        scene.objects.push_back(move(generator));
+
+        auto roadc = std::make_unique<RoadCrossing>();
+        roadc->position.z = 0 * 5.0f;
+        roadc->position.x = -2.5f;
+        scene.objects.push_back(move(roadc));
+
+        for (int x = 1; x < 5; x++)
+        {
+            auto road = std::make_unique<Road>();
+            road->position.z = x * 5.0f;
+            road->position.x = -2.5f;
+            scene.objects.push_back(move(road));
+        }
+        roadc = std::make_unique<RoadCrossing>();
+        roadc->position.z = 0 * 5.0f;
+        roadc->position.x = 2.5f;
+        roadc->rotation.z = ppgso::PI;
+        scene.objects.push_back(move(roadc));
+        for (int x = 1; x < 5; x++)
+        {
+            auto road = std::make_unique<Road>();
+            road->position.z = x * 5.0f;
+            road->position.x = 2.5f;
+            road->rotation.z = ppgso::PI;
+            scene.objects.push_back(move(road));
+        }
 
         // Add player to the scene
 //        auto player = std::make_unique<Player>();

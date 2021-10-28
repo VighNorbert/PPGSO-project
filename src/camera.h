@@ -13,26 +13,27 @@
  */
 class Camera {
 public:
-  glm::vec3 up{0,1,0};
-  glm::vec3 position{0,0,0};
-  glm::vec3 back{0,0,-1};
+    glm::vec3 position{0,0,0};
+    bool flag = true;
+    float tilt = 0.f;
+    float rotation = 180.f;
 
-  glm::mat4 viewMatrix;
-  glm::mat4 projectionMatrix;
+    glm::mat4 viewMatrix;
+    glm::mat4 projectionMatrix;
 
-  /*!
-   * Create new Camera that will generate viewMatrix and projectionMatrix based on its position, up and back vectors
-   * @param fow - Field of view in degrees
-   * @param ratio - Viewport screen ratio (usually width/height of the render window)
-   * @param near - Distance to the near frustum plane
-   * @param far - Distance to the far frustum plane
-   */
-  Camera(float fow = 45.0f, float ratio = 1.0f, float near = 0.1f, float far = 10.f);
+    /*!
+     * Create new Camera that will generate viewMatrix and projectionMatrix based on its position, up and back vectors
+     * @param fow - Field of view in degrees
+     * @param ratio - Viewport screen ratio (usually width/height of the render window)
+     * @param near - Distance to the near frustum plane
+     * @param far - Distance to the far frustum plane
+     */
+    Camera(float fow = 45.0f, float ratio = 1.0f, float near = 0.1f, float far = 10.f);
 
-  /*!
-   * Update Camera viewMatrix based on up, position and back vectors
-   */
-  void update();
+    /*!
+     * Update Camera viewMatrix based on up, position and back vectors
+     */
+    void update();
 };
 
 
