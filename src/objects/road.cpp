@@ -62,7 +62,7 @@ void Road::render(Scene &scene) {
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
     shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
 
-    // render mesh_road
+    // render mesh
     shader->setUniform("ModelMatrix", modelMatrix);
 
     switch (roadType) {
