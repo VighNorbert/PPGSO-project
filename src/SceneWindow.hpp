@@ -6,11 +6,9 @@
 
 #include <utility>
 #include <src/objects/road.h>
-#include <src/objects/road_crossing.h>
 
 #include "camera.h"
 #include "scene.h"
-#include "src/objects/Footman.h"
 
 class SceneWindow : public ppgso::Window {
 private:
@@ -28,46 +26,16 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 100.0f);
-        camera->position = {.0f, 1.0f, -5.0f};
+        camera->position = {.0f, 5.0f, -25.0f};
+        camera->tilt = 20.f;
+        camera->rotation = 180.f;
         scene.camera = move(camera);
 
-        // Add space background
-        scene.objects.push_back(std::make_unique<Footman>());
-
-        // Add generator to scene
-//        auto generator = std::make_unique<Generator>();
-//        generator->position.y = 10.0f;
-
-        auto roadc = std::make_unique<RoadCrossing>();
-        roadc->position.z = 0 * 5.0f;
-        roadc->position.x = -2.5f;
-        scene.objects.push_back(move(roadc));
-
-        for (int x = 1; x < 5; x++)
-        {
-            auto road = std::make_unique<Road>();
-            road->position.z = x * 5.0f;
-            road->position.x = -2.5f;
-            scene.objects.push_back(move(road));
-        }
-        roadc = std::make_unique<RoadCrossing>();
-        roadc->position.z = 0 * 5.0f;
-        roadc->position.x = 2.5f;
-        roadc->rotation.z = ppgso::PI;
-        scene.objects.push_back(move(roadc));
-        for (int x = 1; x < 5; x++)
-        {
-            auto road = std::make_unique<Road>();
-            road->position.z = x * 5.0f;
-            road->position.x = 2.5f;
-            road->rotation.z = ppgso::PI;
-            scene.objects.push_back(move(road));
-        }
-
-        // Add player to the scene
-//        auto player = std::make_unique<Player>();
-//        player->position.y = -6;
-//        scene.objects.push_back(move(player));
+        Road::generateCrossroad(scene, {0.f, 0.f});
+        Road::generateRoad(scene, 0, 5, {10.f, 0.f});
+        Road::generateRoad(scene, 1, 5, {0.f, 10.f});
+        Road::generateRoad(scene, 2, 5, {-10.f, 0.f});
+        Road::generateRoad(scene, 3, 5, {0.f, -10.f});
     }
 
 public:

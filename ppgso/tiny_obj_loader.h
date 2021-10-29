@@ -41,7 +41,7 @@ typedef struct {
   std::vector<float> normals;
   std::vector<float> texcoords;
   std::vector<unsigned int> indices;
-  std::vector<int> material_ids; // per-mesh material ID
+  std::vector<int> material_ids; // per-mesh_road material ID
 } mesh_t;
 
 typedef struct {

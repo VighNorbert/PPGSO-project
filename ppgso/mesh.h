@@ -42,7 +42,7 @@ namespace ppgso {
     ~Mesh();
 
     /*!
-     * Render the geometry associated with the mesh using glDrawElements.
+     * Render the geometry associated with the mesh_road using glDrawElements.
      */
     void render();
   };

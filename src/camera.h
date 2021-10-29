@@ -16,7 +16,7 @@ public:
     glm::vec3 position{0,0,0};
     bool flag = true;
     float tilt = 0.f;
-    float rotation = 180.f;
+    float rotation = 0.f;
 
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
