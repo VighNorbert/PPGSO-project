@@ -4,8 +4,10 @@
 #include <shaders/diffuse_frag_glsl.h>
 
 // Static resources
-std::unique_ptr<ppgso::Mesh> Car::mesh;
-std::unique_ptr<ppgso::Mesh> Car::mesh_glass;
+std::unique_ptr<ppgso::Mesh> Car::mesh_muscle_car;
+std::unique_ptr<ppgso::Mesh> Car::mesh_muscle_car_glass;
+std::unique_ptr<ppgso::Mesh> Car::mesh_police_car;
+std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_glass;
 
 std::unique_ptr<ppgso::Shader> Car::shader;
 
@@ -17,6 +19,9 @@ Car::Car(CarType carType) {
     if (this->carType == CarType::MuscleCar) {
         auto glass = std::make_unique<Car>(CarType::MuscleCarGlass);
         childObjects.push_back(move(glass));
+    } else if (this->carType == CarType::PoliceCar) {
+        auto glass = std::make_unique<Car>(CarType::PoliceCarGlass);
+        childObjects.push_back(move(glass));
     }
     position = {0, 0, 0};
     rotation = {0, 0, 0};
@@ -25,8 +30,10 @@ Car::Car(CarType carType) {
     rotMomentum = {0, 0, 0};
 
 
-    if (!mesh) mesh = std::make_unique<ppgso::Mesh>("muscle_car.obj");
-    if (!mesh_glass) mesh_glass = std::make_unique<ppgso::Mesh>("muscle_car_glass.obj");
+    if (!mesh_muscle_car) mesh_muscle_car = std::make_unique<ppgso::Mesh>("muscle_car.obj");
+    if (!mesh_muscle_car_glass) mesh_muscle_car_glass = std::make_unique<ppgso::Mesh>("muscle_car_glass.obj");
+    if (!mesh_police_car) mesh_police_car = std::make_unique<ppgso::Mesh>("police_car.obj");
+    if (!mesh_police_car_glass) mesh_police_car_glass = std::make_unique<ppgso::Mesh>("police_car_glass.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
 
@@ -62,10 +69,16 @@ void Car::render(Scene &scene) {
 
     switch (this->carType) {
         case CarType::MuscleCar:
-            mesh->render();
+            mesh_muscle_car->render();
             break;
         case CarType::MuscleCarGlass:
-            mesh_glass->render();
+            mesh_muscle_car_glass->render();
+            break;
+        case CarType::PoliceCar:
+            mesh_police_car->render();
+            break;
+        case CarType::PoliceCarGlass:
+            mesh_police_car_glass->render();
             break;
     }
 }

@@ -44,7 +44,7 @@ private:
         car->rotation.z = ppgso::PI;
         scene.rootObjects.push_back(move(car));
 
-        car = std::make_unique<Car>(CarType::MuscleCar);
+        car = std::make_unique<Car>(CarType::PoliceCar);
         car->position = {-2.5f, 0, -10};
         car->speed = {0, 0, 5};
         scene.rootObjects.push_back(move(car));
