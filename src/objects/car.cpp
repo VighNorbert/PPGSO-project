@@ -66,19 +66,34 @@ void Car::render(Scene &scene) {
     shader->setUniform("ModelMatrix", modelMatrix);
 
     shader->setUniform("Texture", *texture);
+    shader->setUniform("Transparency", 1.f);
 
     switch (this->carType) {
         case CarType::MuscleCar:
             mesh_muscle_car->render();
             break;
         case CarType::MuscleCarGlass:
+            // Enable blending
+            glEnable(GL_BLEND);
+            // Additive blending
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
             mesh_muscle_car_glass->render();
+            // Disable blending
+            glDisable(GL_BLEND);
             break;
         case CarType::PoliceCar:
             mesh_police_car->render();
             break;
         case CarType::PoliceCarGlass:
+            // Enable blending
+            glEnable(GL_BLEND);
+            // Additive blending
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
             mesh_police_car_glass->render();
+            // Disable blending
+            glDisable(GL_BLEND);
             break;
     }
 }
