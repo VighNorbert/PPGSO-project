@@ -6,9 +6,38 @@
 
 #include "object.h"
 
-void Object::generateModelMatrix() {
-  modelMatrix =
-          glm::translate(glm::mat4(1.0f), position)
+/**
+ * @param scene
+ */
+bool Object::updateChildren(Scene &scene, float time, glm::mat4 parentModelMatrix) {
+    bool remove = this->update(scene, time, parentModelMatrix);
+
+    // Use iterator to update all objects so we can remove while iterating
+    auto i = std::begin(childObjects);
+
+    while (i != std::end(childObjects)) {
+        // Update and remove from list if needed
+        auto obj = i->get();
+        if (!obj->updateChildren(scene, time, modelMatrix))
+            i = childObjects.erase(i); // NOTE: no need to call destructors as we store shared pointers in the scene
+        else
+            ++i;
+    }
+    return remove;
+}
+
+/**
+ * @param scene
+ */
+void Object::renderChildren(Scene &scene) {
+    this->render(scene);
+    for ( auto& obj : childObjects )
+        obj->renderChildren(scene);
+}
+
+void Object::generateModelMatrix(glm::mat4 parentModelMatrix) {
+  modelMatrix = parentModelMatrix
+          * glm::translate(glm::mat4(1.0f), position)
           * glm::orientate4(rotation)
           * glm::scale(glm::mat4(1.0f), scale);
 }

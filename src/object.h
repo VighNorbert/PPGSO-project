@@ -23,6 +23,18 @@ public:
   Object(Object&&) = default;
   virtual ~Object() {};
 
+  std::list< std::unique_ptr<Object> > childObjects;
+  std::unique_ptr<Object> parentObject;
+
+  /*!
+   * Update Object parameters, usually used to update the modelMatrix based on position, scale and rotation of children
+   *
+   * @param scene - Reference to the Scene the object is rendered in
+   * @param dt - Time delta for animation purposes
+   * @return true to delete the object
+   */
+  bool updateChildren(Scene &scene, float dt, glm::mat4 parentModelMatrix);
+
   /*!
    * Update Object parameters, usually used to update the modelMatrix based on position, scale and rotation
    *
@@ -30,7 +42,13 @@ public:
    * @param dt - Time delta for animation purposes
    * @return true to delete the object
    */
-  virtual bool update(Scene &scene, float dt) = 0;
+  virtual bool update(Scene &scene, float time, glm::mat4 parentModelMatrix) = 0;
+
+  /*!
+   * Render the children objects in the scene
+   * @param scene
+   */
+  void renderChildren(Scene &scene);
 
   /*!
    * Render the object in the scene
@@ -48,7 +66,7 @@ protected:
   /*!
    * Generate modelMatrix from position, rotation and scale
    */
-  void generateModelMatrix();
+  void generateModelMatrix(glm::mat4 parentModelMatrix);
 };
 
 

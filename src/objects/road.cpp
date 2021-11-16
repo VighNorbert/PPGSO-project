@@ -41,13 +41,13 @@ Road::Road() {
 }
 
 
-bool Road::update(Scene &scene, float dt) {
+bool Road::update(Scene &scene, float dt, glm::mat4 parentModelMatrix) {
     position += speed * dt;
 
     // Rotate the object
     rotation += rotMomentum * dt;
 
-    generateModelMatrix();
+    generateModelMatrix(parentModelMatrix);
 
     return true;
 }

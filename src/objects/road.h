@@ -55,7 +55,7 @@ public:
      * @param dt Time delta for animation purposes
      * @return
      */
-    bool update(Scene &scene, float dt) override;
+    bool update(Scene &scene, float dt, glm::mat4 parentModelMatrix) override;
 
     /*!
      * Render asteroid
@@ -87,7 +87,7 @@ public:
                 road->position.x = x0 - 5.f;
             }
             road->rotation.z = roadRotation;
-            scene.objects.push_back(move(road));
+            scene.rootObjects.push_back(move(road));
 
             // corresponding sidewalk
             road = std::make_unique<Road>();
@@ -100,7 +100,7 @@ public:
                 road->position.x = x0 - 10.f;
             }
             road->rotation.z = roadRotation + ppgso::PI * 0.5f;
-            scene.objects.push_back(move(road));
+            scene.rootObjects.push_back(move(road));
 
             // second side of the road
             road = std::make_unique<Road>();
@@ -112,7 +112,7 @@ public:
                 road->position.x = x0;
             }
             road->rotation.z = roadRotation + ppgso::PI;
-            scene.objects.push_back(move(road));
+            scene.rootObjects.push_back(move(road));
 
 
             // corresponding sidewalk
@@ -126,7 +126,7 @@ public:
                 road->position.x = x0 + 5.f;
             }
             road->rotation.z = roadRotation + ppgso::PI * 1.5f;
-            scene.objects.push_back(move(road));
+            scene.rootObjects.push_back(move(road));
         }
     }
 
@@ -142,28 +142,28 @@ public:
                 road->roadType = Crossroad;
                 road->position.x = coords[0] + float(x) * 2.5f;
                 road->position.z = coords[1] + float(z) * 2.5f;
-                scene.objects.push_back(move(road));
+                scene.rootObjects.push_back(move(road));
 
                 road = std::make_unique<Road>();
                 road->roadType = RoadCrossing;
                 road->position.x = coords[0] + float(x) * 7.5f;
                 road->position.z = coords[1] + float(z) * 2.5f;
                 road->rotation.z = float(z) * ppgso::PI * 0.5f;
-                scene.objects.push_back(move(road));
+                scene.rootObjects.push_back(move(road));
 
                 road = std::make_unique<Road>();
                 road->roadType = RoadCrossing;
                 road->position.x = coords[0] + float(x) * 2.5f;
                 road->rotation.z = float(x == 1) * ppgso::PI;
                 road->position.z = coords[1] + float(z) * 7.5f;
-                scene.objects.push_back(move(road));
+                scene.rootObjects.push_back(move(road));
 
                 road = std::make_unique<Road>();
                 road->roadType = Sidewalk_Corner;
                 road->position.x = coords[0] + float(x) * 7.5f;
                 road->position.z = coords[1] + float(z) * 7.5f;
                 road->rotation.z = (1.25f - float(z) * (x == 1 ? .25f : .75f)) * ppgso::PI;
-                scene.objects.push_back(move(road));
+                scene.rootObjects.push_back(move(road));
             }
         }
     }
