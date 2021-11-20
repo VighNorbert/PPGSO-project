@@ -103,8 +103,11 @@ target_include_directories(ppgso PUBLIC
 # main
 add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/scene.cpp src/SceneWindow.hpp
         src/object.cpp src/object.h
+        src/texture.h src/texture.cpp
         src/objects/road.cpp src/objects/road.h
         src/objects/car.cpp src/objects/car.h
+        src/objects/bank.cpp src/objects/bank.h
+        src/objects/apartment.cpp src/objects/apartment.h
         )
 target_link_libraries(main ppgso shaders)
 install(TARGETS main DESTINATION .)

@@ -7,6 +7,8 @@
 #include <utility>
 #include <src/objects/road.h>
 #include <src/objects/car.h>
+#include <src/objects/bank.h>
+#include <src/objects/apartment.h>
 
 #include "camera.h"
 #include "scene.h"
@@ -29,29 +31,37 @@ private:
         scene.rootObjects.clear();
 
         // Create a camera
-        auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 100.0f);
-        camera->position = {.0f, 5.0f, -10.0f};
+        auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
+        camera->position = {.0f, 10.0f, -10.0f};
         camera->tilt = 20.f;
         camera->rotation = 180.f;
         scene.camera = move(camera);
 
-        Road::generateCrossroad(scene, {0.f, 0.f});
-        Road::generateRoad(scene, 0, 5, {10.f, 0.f});
-        Road::generateRoad(scene, 1, 25, {0.f, 10.f});
-        Road::generateRoad(scene, 2, 5, {-10.f, 0.f});
-        Road::generateRoad(scene, 3, 5, {0.f, -10.f});
+        Road::generateCrossroad(scene, {200.f, 0.f});
+        Road::generateRoad(scene, 0, 44, {-30.f, 0.f});
 
-        auto car = std::make_unique<Car>(CarType::MuscleCar);
-        car->position = {2.5f, 0, 25};
-        car->speed = {0, 0, -5};
-        car->rotation.z = ppgso::PI;
-        scene.rootObjects.push_back(move(car));
+//        auto car = std::make_unique<Car>(CarType::MuscleCar);
+//        car->position = {2.5f, 0, 25};
+//        car->speed = {0, 0, -5};
+//        car->rotation.z = ppgso::PI;
+//        scene.rootObjects.push_back(move(car));
+//
+//        car = std::make_unique<Car>(CarType::PoliceCar);
+//        car->position = {-2.5f, 0, -10};
+//        car->speed = {0, 0, 5};
+//        scene.rootObjects.push_back(move(car));
 
-        car = std::make_unique<Car>(CarType::PoliceCar);
-        car->position = {-2.5f, 0, -10};
-        car->speed = {0, 0, 5};
-        scene.rootObjects.push_back(move(car));
+        for (int i = 30; i<=100; i+= 5) {
+            auto apt = std::make_unique<Apartment>();
+            apt->position = {i, 0, 10};
+            apt->rotation.z = ppgso::PI;
+            scene.rootObjects.push_back(move(apt));
+        }
 
+        auto bank = std::make_unique<Bank>();
+        bank->position = {0, 0, 10};
+        bank->rotation.z = ppgso::PI;
+        scene.rootObjects.push_back(move(bank));
     }
 
 public:
