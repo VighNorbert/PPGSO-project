@@ -34,6 +34,12 @@ public:
      * Update Camera viewMatrix based on up, position and back vectors
      */
     void update();
+
+    void moveX(int dir);
+    void moveY(int dir);
+    void moveZ(int dir);
+
+    void rotate(int dir);
 };
 
 

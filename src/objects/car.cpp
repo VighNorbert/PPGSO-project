@@ -30,14 +30,14 @@ Car::Car(CarType carType) {
     rotMomentum = {0, 0, 0};
 
 
-    if (!mesh_muscle_car) mesh_muscle_car = std::make_unique<ppgso::Mesh>("muscle_car.obj");
-    if (!mesh_muscle_car_glass) mesh_muscle_car_glass = std::make_unique<ppgso::Mesh>("muscle_car_glass.obj");
-    if (!mesh_police_car) mesh_police_car = std::make_unique<ppgso::Mesh>("police_car.obj");
-    if (!mesh_police_car_glass) mesh_police_car_glass = std::make_unique<ppgso::Mesh>("police_car_glass.obj");
+    if (!mesh_muscle_car) mesh_muscle_car = std::make_unique<ppgso::Mesh>("objects/cars/muscle_car.obj");
+    if (!mesh_muscle_car_glass) mesh_muscle_car_glass = std::make_unique<ppgso::Mesh>("objects/cars/muscle_car_glass.obj");
+    if (!mesh_police_car) mesh_police_car = std::make_unique<ppgso::Mesh>("objects/cars/police_car.obj");
+    if (!mesh_police_car_glass) mesh_police_car_glass = std::make_unique<ppgso::Mesh>("objects/cars/police_car_glass.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
 
-    if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("PolygonCity_Texture_02_A.bmp"));
+    if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_02_A.bmp"));
 }
 
 

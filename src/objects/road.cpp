@@ -25,19 +25,19 @@ Road::Road() {
     speed = {0, 0, 0};
     rotMomentum = {0, 0, 0};
 
-    if (!mesh_road) mesh_road = std::make_unique<ppgso::Mesh>("road.obj");
-    if (!mesh_crossing) mesh_crossing = std::make_unique<ppgso::Mesh>("road_crossing.obj");
-    if (!mesh_crossroad) mesh_crossroad = std::make_unique<ppgso::Mesh>("road_crossroad.obj");
-    if (!mesh_sidewalk) mesh_sidewalk = std::make_unique<ppgso::Mesh>("sidewalk.obj");
-    if (!mesh_sidewalk_straight) mesh_sidewalk_straight = std::make_unique<ppgso::Mesh>("sidewalk_straight.obj");
-    if (!mesh_sidewalk_corner) mesh_sidewalk_corner = std::make_unique<ppgso::Mesh>("sidewalk_corner.obj");
-    if (!mesh_sidewalk_gutter) mesh_sidewalk_gutter = std::make_unique<ppgso::Mesh>("sidewalk_gutter.obj");
+    if (!mesh_road) mesh_road = std::make_unique<ppgso::Mesh>("objects/roads/road.obj");
+    if (!mesh_crossing) mesh_crossing = std::make_unique<ppgso::Mesh>("objects/roads/road_crossing.obj");
+    if (!mesh_crossroad) mesh_crossroad = std::make_unique<ppgso::Mesh>("objects/roads/road_crossroad.obj");
+    if (!mesh_sidewalk) mesh_sidewalk = std::make_unique<ppgso::Mesh>("objects/roads/sidewalk.obj");
+    if (!mesh_sidewalk_straight) mesh_sidewalk_straight = std::make_unique<ppgso::Mesh>("objects/roads/sidewalk_straight.obj");
+    if (!mesh_sidewalk_corner) mesh_sidewalk_corner = std::make_unique<ppgso::Mesh>("objects/roads/sidewalk_corner.obj");
+    if (!mesh_sidewalk_gutter) mesh_sidewalk_gutter = std::make_unique<ppgso::Mesh>("objects/roads/sidewalk_gutter.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
 
-    if (!texture_side) texture_side = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("PolygonCity_Road_Side.bmp"));
-    if (!texture_center) texture_center = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("PolygonCity_Road_Main.bmp"));
-    if (!texture_main) texture_main = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("PolygonCity_Texture.bmp"));
+    if (!texture_side) texture_side = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Road_Side.bmp"));
+    if (!texture_center) texture_center = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Road_Main.bmp"));
+    if (!texture_main) texture_main = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture.bmp"));
 }
 
 

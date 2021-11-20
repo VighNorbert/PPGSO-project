@@ -18,6 +18,9 @@ private:
     float fow = 60.0f;
     float ratio = 1.0f;
 
+    // Store keyboard state
+    std::map<int, int> keys;
+
     /*!
      * Reset and initialize the game scene
      * Creating unique smart pointers to objects that are stored in the scene object list
@@ -93,6 +96,35 @@ public:
         // Update and render all objects
         scene.update(dt);
         scene.render();
+    }
+
+    void onKey(int key, int scanCode, int action, int mods) override {
+        // Collect key state in a map
+        keys[key] = action;
+        if (keys[GLFW_KEY_A]) {
+            scene.camera->moveX(1);
+        }
+        if (keys[GLFW_KEY_D]) {
+            scene.camera->moveX(-1);
+        }
+        if (keys[GLFW_KEY_W]) {
+            scene.camera->moveZ(1);
+        }
+        if (keys[GLFW_KEY_S]) {
+            scene.camera->moveZ(-1);
+        }
+        if (keys[GLFW_KEY_UP]) {
+            scene.camera->moveY(1);
+        }
+        if (keys[GLFW_KEY_DOWN]) {
+            scene.camera->moveY(-1);
+        }
+        if (keys[GLFW_KEY_Q]) {
+            scene.camera->rotate(-1);
+        }
+        if (keys[GLFW_KEY_E]) {
+            scene.camera->rotate(1);
+        }
     }
 };
 
