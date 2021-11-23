@@ -1,7 +1,7 @@
 #include "road.h"
 
-#include <shaders/diffuse_vert_glsl.h>
-#include <shaders/diffuse_frag_glsl.h>
+#include <shaders/phong_vert_glsl.h>
+#include <shaders/phong_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Road::mesh_road;
@@ -33,7 +33,7 @@ Road::Road() {
     if (!mesh_sidewalk_corner) mesh_sidewalk_corner = std::make_unique<ppgso::Mesh>("objects/roads/sidewalk_corner.obj");
     if (!mesh_sidewalk_gutter) mesh_sidewalk_gutter = std::make_unique<ppgso::Mesh>("objects/roads/sidewalk_gutter.obj");
 
-    if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
+    if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
     if (!texture_side) texture_side = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Road_Side.bmp"));
     if (!texture_center) texture_center = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Road_Main.bmp"));
@@ -56,11 +56,16 @@ void Road::render(Scene &scene) {
     shader->use();
 
     // Set up light
-    shader->setUniform("LightDirection", scene.lightDirection);
+    shader->setUniform("LightPosition", scene.lightPosition);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
     shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
+    shader->setUniform("ViewPosition", scene.camera->position);
+
+    shader->setUniform("DiffuseStrength", 1.f);
+    shader->setUniform("AmbientStrength", .2f);
+    shader->setUniform("SpecularStrength", .1f);
 
     // render mesh
     shader->setUniform("ModelMatrix", modelMatrix);

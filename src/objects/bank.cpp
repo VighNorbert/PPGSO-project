@@ -1,7 +1,7 @@
 #include "bank.h"
 
-#include <shaders/diffuse_vert_glsl.h>
-#include <shaders/diffuse_frag_glsl.h>
+#include <shaders/phong_vert_glsl.h>
+#include <shaders/phong_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Bank::mesh;
@@ -17,7 +17,7 @@ Bank::Bank() {
 
     if (!mesh) mesh = std::make_unique<ppgso::Mesh>("objects/buildings/bank.obj");
 
-    if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
+    if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_02_A.bmp"));
 }
@@ -33,11 +33,16 @@ void Bank::render(Scene &scene) {
     shader->use();
 
     // Set up light
-    shader->setUniform("LightDirection", scene.lightDirection);
+    shader->setUniform("LightPosition", scene.lightPosition);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
     shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
+    shader->setUniform("ViewPosition", scene.camera->position);
+
+    shader->setUniform("DiffuseStrength", 1.f);
+    shader->setUniform("AmbientStrength", .2f);
+    shader->setUniform("SpecularStrength", .2f);
 
     // render mesh
     shader->setUniform("ModelMatrix", modelMatrix);

@@ -40,16 +40,17 @@ private:
         Road::generateCrossroad(scene, {200.f, 0.f});
         Road::generateRoad(scene, 0, 44, {-30.f, 0.f});
 
-//        auto car = std::make_unique<Car>(CarType::MuscleCar);
-//        car->position = {2.5f, 0, 25};
-//        car->speed = {0, 0, -5};
-//        car->rotation.z = ppgso::PI;
-//        scene.rootObjects.push_back(move(car));
+        auto car = std::make_unique<Car>(CarType::MuscleCar);
+        car->position = {25, 0, -2.5f};
+//        car->speed = {-5, 0, 0};
+        car->rotation.z = - ppgso::PI / 2;
+        scene.rootObjects.push_back(move(car));
 //
-//        car = std::make_unique<Car>(CarType::PoliceCar);
-//        car->position = {-2.5f, 0, -10};
-//        car->speed = {0, 0, 5};
-//        scene.rootObjects.push_back(move(car));
+        car = std::make_unique<Car>(CarType::PoliceCar);
+        car->position = {-25, 0, 2.5};
+        car->speed = {5, 0, 0};
+        car->rotation.z = ppgso::PI / 2;
+        scene.rootObjects.push_back(move(car));
 
         for (int i = 30; i<=100; i+= 5) {
             auto apt = std::make_unique<Apartment>();
