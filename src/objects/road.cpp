@@ -18,7 +18,9 @@ std::unique_ptr<ppgso::Texture> Road::texture_side;
 std::unique_ptr<ppgso::Texture> Road::texture_center;
 std::unique_ptr<ppgso::Texture> Road::texture_main;
 
-Road::Road() {
+Road::Road(Object* parent) {
+    parentObject = parent;
+
     position = {0, 0, 0};
     rotation = {0, 0, 0};
     scale = {1, 1, 1};

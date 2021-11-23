@@ -21,7 +21,7 @@ enum CarType
 class Car : public Object {
 private:
 
-// Static resources (Shared between instances)
+    // Static resources (Shared between instances)
     static std::unique_ptr<ppgso::Mesh> mesh_muscle_car;
     static std::unique_ptr<ppgso::Mesh> mesh_muscle_car_glass;
     static std::unique_ptr<ppgso::Mesh> mesh_muscle_car_wheel;
@@ -39,7 +39,7 @@ public:
     /*!
      * Create new object
      */
-    explicit Car(CarType carType);
+    Car(Object* parent, CarType carType);
 
     /*!
      * Update asteroid
@@ -55,9 +55,10 @@ public:
      */
     void render(Scene &scene) override;
 
-    // Speed and rotational momentum
-    glm::vec3 speed;
-    glm::vec3 rotMomentum;
+    bool isWheel();
+
+    float getWheelDiameter();
+
 };
 
 

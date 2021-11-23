@@ -23,7 +23,7 @@ public:
     /*!
      * Create new object
      */
-    Bank();
+    Bank(Object* parent);
 
     /*!
      * Update asteroid

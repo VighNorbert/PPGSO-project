@@ -16,49 +16,51 @@ std::unique_ptr<ppgso::Shader> Car::shader;
 
 std::unique_ptr<ppgso::Texture> Car::texture;
 
-Car::Car(CarType carType) {
+Car::Car(Object* parent, CarType carType) {
+    parentObject = parent;
     this->carType = carType;
 
     if (this->carType == CarType::MuscleCar) {
-        auto glass = std::make_unique<Car>(CarType::MuscleCarGlass);
+        auto glass = std::make_unique<Car>(this, CarType::MuscleCarGlass);
         childObjects.push_back(move(glass));
 
-        auto wheel_rf = std::make_unique<Car>(CarType::MuscleCarWheel);
+        auto wheel_rf = std::make_unique<Car>(this, CarType::MuscleCarWheel);
         wheel_rf->position = {-0.88974, 0.41045, 1.935};
         childObjects.push_back(move(wheel_rf));
 
-        auto wheel_rb = std::make_unique<Car>(CarType::MuscleCarWheel);
+        auto wheel_rb = std::make_unique<Car>(this, CarType::MuscleCarWheel);
         wheel_rb->position = {-0.88974, 0.41045, -1.365};
         childObjects.push_back(move(wheel_rb));
 
-        auto wheel_lf = std::make_unique<Car>(CarType::MuscleCarWheel);
+        auto wheel_lf = std::make_unique<Car>(this, CarType::MuscleCarWheel);
         wheel_lf->position = {0.88974, 0.41045, 1.935};
         wheel_lf->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lf));
 
-        auto wheel_lb = std::make_unique<Car>(CarType::MuscleCarWheel);
+        auto wheel_lb = std::make_unique<Car>(this, CarType::MuscleCarWheel);
         wheel_lb->position = {0.88974, 0.41045, -1.365};
         wheel_lb->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lb));
 
     } else if (this->carType == CarType::PoliceCar) {
-        auto glass = std::make_unique<Car>(CarType::PoliceCarGlass);
+        auto glass = std::make_unique<Car>(this, CarType::PoliceCarGlass);
         childObjects.push_back(move(glass));
 
-        auto wheel_rf = std::make_unique<Car>(CarType::PoliceCarWheel);
+        auto wheel_rf = std::make_unique<Car>(this, CarType::PoliceCarWheel);
         wheel_rf->position = {-0.83132, 0.37224, 1.6563};
+
         childObjects.push_back(move(wheel_rf));
 
-        auto wheel_rb = std::make_unique<Car>(CarType::PoliceCarWheel);
+        auto wheel_rb = std::make_unique<Car>(this, CarType::PoliceCarWheel);
         wheel_rb->position = {-0.83132, 0.37224, -1.2337};
         childObjects.push_back(move(wheel_rb));
 
-        auto wheel_lf = std::make_unique<Car>(CarType::PoliceCarWheel);
+        auto wheel_lf = std::make_unique<Car>(this, CarType::PoliceCarWheel);
         wheel_lf->position = {0.83132, 0.37224, 1.6563};
         wheel_lf->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lf));
 
-        auto wheel_lb = std::make_unique<Car>(CarType::PoliceCarWheel);
+        auto wheel_lb = std::make_unique<Car>(this, CarType::PoliceCarWheel);
         wheel_lb->position = {0.83132, 0.37224, -1.2337};
         wheel_lb->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lb));
@@ -86,8 +88,11 @@ Car::Car(CarType carType) {
 bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix) {
     position += speed * dt;
 
-    // Rotate the object
-    rotation += rotMomentum * dt;
+    if (isWheel() && parentObject != nullptr) {
+        rotation.x += dt * glm::length(parentObject->speed) / getWheelDiameter();
+        if (rotation.x > 2 * ppgso::PI)
+            rotation.x -= float(int(rotation.x / (2 * ppgso::PI)) * 2 * ppgso::PI);
+    }
 
     generateModelMatrix(parentModelMatrix);
 
@@ -148,5 +153,20 @@ void Car::render(Scene &scene) {
         case CarType::PoliceCarWheel:
             mesh_police_car_wheel->render();
             break;
+    }
+}
+
+bool Car::isWheel() {
+    return carType == CarType::MuscleCarWheel || carType == CarType::PoliceCarWheel;
+}
+
+float Car::getWheelDiameter() {
+    switch(carType) {
+        case CarType::MuscleCarWheel:
+            return 0.41045;
+        case CarType::PoliceCarWheel:
+            return 0.37224;
+        default:
+            return 0;
     }
 }

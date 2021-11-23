@@ -24,7 +24,7 @@ public:
   virtual ~Object() {};
 
   std::list< std::unique_ptr<Object> > childObjects;
-  std::unique_ptr<Object> parentObject;
+  Object* parentObject = nullptr;
 
   /*!
    * Update Object parameters, usually used to update the modelMatrix based on position, scale and rotation of children
@@ -61,6 +61,10 @@ public:
   glm::vec3 rotation{0,0,0};
   glm::vec3 scale{1,1,1};
   glm::mat4 modelMatrix{1};
+
+  // Speed and rotational momentum
+  glm::vec3 speed{0, 0, 0};
+  glm::vec3 rotMomentum{0, 0, 0};
 
 protected:
   /*!

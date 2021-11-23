@@ -36,18 +36,13 @@ private:
     static std::unique_ptr<ppgso::Texture> texture_center;
     static std::unique_ptr<ppgso::Texture> texture_main;
 
-    // Speed and rotational momentum
-    glm::vec3 speed;
-    glm::vec3 rotMomentum;
-
-
 public:
     RoadType roadType = RoadType::StraightRoad;
 
     /*!
      * Create new object
      */
-    Road();
+    explicit Road(Object* parent);
 
     /*!
      * Update asteroid
@@ -78,7 +73,7 @@ public:
         for (int l = 0; l < length; l++)
         {
             // one side of the road
-            auto road = std::make_unique<Road>();
+            auto road = std::make_unique<Road>(nullptr);
             if (direction % 2 == 0) { //x direction
                 road->position.x = x0 + float(l * 5);
                 road->position.z = z0 - 5.f;
@@ -90,7 +85,7 @@ public:
             scene.rootObjects.push_back(move(road));
 
             // corresponding sidewalk
-            road = std::make_unique<Road>();
+            road = std::make_unique<Road>(nullptr);
             road->roadType = (l % 4 == 2) ? Sidewalk_Gutter : Sidewalk_Straight;
             if (direction % 2 == 0) { //x direction
                 road->position.x = x0 + float(l * 5);
@@ -103,7 +98,7 @@ public:
             scene.rootObjects.push_back(move(road));
 
             // second side of the road
-            road = std::make_unique<Road>();
+            road = std::make_unique<Road>(nullptr);
             if (direction % 2 == 0) { //x direction
                 road->position.x = x0 + float(l * 5);
                 road->position.z = z0;
@@ -116,7 +111,7 @@ public:
 
 
             // corresponding sidewalk
-            road = std::make_unique<Road>();
+            road = std::make_unique<Road>(nullptr);
             road->roadType = (l % 4 == 0) ? Sidewalk_Gutter : Sidewalk_Straight;
             if (direction % 2 == 0) { //x direction
                 road->position.x = x0 + float(l * 5);
@@ -138,27 +133,27 @@ public:
     static void generateCrossroad(Scene &scene, glm::float2 coords) {
         for (int x = -1; x < 2; x+=2) {
             for (int z = -1; z < 2; z+=2) {
-                auto road = std::make_unique<Road>();
+                auto road = std::make_unique<Road>(nullptr);
                 road->roadType = Crossroad;
                 road->position.x = coords[0] + float(x) * 2.5f;
                 road->position.z = coords[1] + float(z) * 2.5f;
                 scene.rootObjects.push_back(move(road));
 
-                road = std::make_unique<Road>();
+                road = std::make_unique<Road>(nullptr);
                 road->roadType = RoadCrossing;
                 road->position.x = coords[0] + float(x) * 7.5f;
                 road->position.z = coords[1] + float(z) * 2.5f;
                 road->rotation.z = float(z) * ppgso::PI * 0.5f;
                 scene.rootObjects.push_back(move(road));
 
-                road = std::make_unique<Road>();
+                road = std::make_unique<Road>(nullptr);
                 road->roadType = RoadCrossing;
                 road->position.x = coords[0] + float(x) * 2.5f;
                 road->rotation.z = float(x == 1) * ppgso::PI;
                 road->position.z = coords[1] + float(z) * 7.5f;
                 scene.rootObjects.push_back(move(road));
 
-                road = std::make_unique<Road>();
+                road = std::make_unique<Road>(nullptr);
                 road->roadType = Sidewalk_Corner;
                 road->position.x = coords[0] + float(x) * 7.5f;
                 road->position.z = coords[1] + float(z) * 7.5f;

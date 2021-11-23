@@ -42,9 +42,9 @@ public:
     /*!
      * Create new object
      */
-    Apartment();
+    explicit Apartment(Object* parent);
 
-    explicit Apartment(ApartmentBlockType abt, const ppgso::Texture& texture);
+    explicit Apartment(Object* parent, ApartmentBlockType abt, const ppgso::Texture& texture);
 
     /*!
      * Update asteroid

@@ -10,7 +10,9 @@ std::unique_ptr<ppgso::Shader> Bank::shader;
 
 std::unique_ptr<ppgso::Texture> Bank::texture;
 
-Bank::Bank() {
+Bank::Bank(Object* parent) {
+    parentObject = parent;
+
     position = {0, 0, 0};
     rotation = {0, 0, 0};
     scale = {1, 1, 1};
