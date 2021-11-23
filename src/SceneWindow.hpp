@@ -41,7 +41,7 @@ private:
         Road::generateRoad(scene, 0, 44, {-30.f, 0.f});
 
         auto car = std::make_unique<Car>(CarType::MuscleCar);
-        car->position = {25, 0, -2.5f};
+        car->position = {0, 0, -2.5f};
 //        car->speed = {-5, 0, 0};
         car->rotation.z = - ppgso::PI / 2;
         scene.rootObjects.push_back(move(car));

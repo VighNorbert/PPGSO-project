@@ -12,8 +12,10 @@ enum CarType
 {
     MuscleCar = 0,
     MuscleCarGlass = 1,
-    PoliceCar = 2,
-    PoliceCarGlass = 3
+    MuscleCarWheel = 2,
+    PoliceCar = 3,
+    PoliceCarGlass = 4,
+    PoliceCarWheel = 5
 };
 
 class Car : public Object {
@@ -22,8 +24,10 @@ private:
 // Static resources (Shared between instances)
     static std::unique_ptr<ppgso::Mesh> mesh_muscle_car;
     static std::unique_ptr<ppgso::Mesh> mesh_muscle_car_glass;
+    static std::unique_ptr<ppgso::Mesh> mesh_muscle_car_wheel;
     static std::unique_ptr<ppgso::Mesh> mesh_police_car;
     static std::unique_ptr<ppgso::Mesh> mesh_police_car_glass;
+    static std::unique_ptr<ppgso::Mesh> mesh_police_car_wheel;
 
     static std::unique_ptr<ppgso::Shader> shader;
 
