@@ -1,8 +1,8 @@
 #include "apartment.h"
 #include "../texture.h"
 
-#include <shaders/diffuse_vert_glsl.h>
-#include <shaders/diffuse_frag_glsl.h>
+#include <shaders/phong_vert_glsl.h>
+#include <shaders/phong_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Apartment::mesh_door_1;
@@ -26,7 +26,8 @@ Apartment::Apartment() : texture(TextureGenerator::random()) {
     if (!mesh_roof_1) mesh_roof_1 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment/apartment_roof_1.obj");
     if (!mesh_roof_2) mesh_roof_2 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment/apartment_roof_2.obj");
     if (!mesh_roof_3) mesh_roof_3 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment/apartment_roof_3.obj");
-    if (!shader) shader = std::make_unique<ppgso::Shader>(diffuse_vert_glsl, diffuse_frag_glsl);
+
+    if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
     position = {0, 0, 0};
     rotation = {0, 0, 0};
@@ -66,11 +67,16 @@ void Apartment::render(Scene &scene) {
     shader->use();
 
     // Set up light
-    shader->setUniform("LightDirection", scene.lightDirection);
+    shader->setUniform("LightPosition", scene.lightPosition);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
     shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
+    shader->setUniform("ViewPosition", scene.camera->position);
+
+    shader->setUniform("DiffuseStrength", 1.f);
+    shader->setUniform("AmbientStrength", .2f);
+    shader->setUniform("SpecularStrength", .2f);
 
     // render mesh
     shader->setUniform("ModelMatrix", modelMatrix);
