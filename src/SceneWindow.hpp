@@ -6,6 +6,7 @@
 
 #include <utility>
 #include <src/objects/road.h>
+#include <src/objects/character.h>
 #include <src/objects/car.h>
 #include <src/objects/bank.h>
 #include <src/objects/apartment.h>
@@ -40,9 +41,21 @@ private:
         Road::generateCrossroad(scene, {200.f, 0.f});
         Road::generateRoad(scene, 0, 44, {-30.f, 0.f});
 
-        auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar);
+        auto car = std::make_unique<Car>(nullptr, CarType::Van);
         car->position = {0, 0, -2.5f};
-        car->speed = {-5, 0, 0};
+        car->speed = {0, 0, 0};
+        car->rotation.z = - ppgso::PI / 2;
+        scene.rootObjects.push_back(move(car));
+
+        car = std::make_unique<Car>(nullptr, CarType::PoliceCar);
+        car->position = {10, 0, -2.5f};
+        car->speed = {0, 0, 0};
+        car->rotation.z = - ppgso::PI / 2;
+        scene.rootObjects.push_back(move(car));
+
+        car = std::make_unique<Car>(nullptr, CarType::MuscleCar);
+        car->position = {20, 0, -2.5f};
+        car->speed = {0, 0, 0};
         car->rotation.z = - ppgso::PI / 2;
         scene.rootObjects.push_back(move(car));
 //

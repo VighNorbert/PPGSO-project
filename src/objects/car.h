@@ -15,7 +15,10 @@ enum CarType
     MuscleCarWheel = 2,
     PoliceCar = 3,
     PoliceCarGlass = 4,
-    PoliceCarWheel = 5
+    PoliceCarWheel = 5,
+    Van = 6,
+    VanGlass = 7,
+    VanWheel = 8
 };
 
 class Car : public Object {
@@ -28,10 +31,14 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_police_car;
     static std::unique_ptr<ppgso::Mesh> mesh_police_car_glass;
     static std::unique_ptr<ppgso::Mesh> mesh_police_car_wheel;
+    static std::unique_ptr<ppgso::Mesh> mesh_van;
+    static std::unique_ptr<ppgso::Mesh> mesh_van_glass;
+    static std::unique_ptr<ppgso::Mesh> mesh_van_wheel;
 
     static std::unique_ptr<ppgso::Shader> shader;
 
     static std::unique_ptr<ppgso::Texture> texture;
+    static std::unique_ptr<ppgso::Texture> texture_van;
 
     CarType carType;
 
