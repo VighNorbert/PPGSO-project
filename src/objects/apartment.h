@@ -17,7 +17,21 @@ enum ApartmentBlockType
     Block3 = 4,
     Roof1 = 5,
     Roof2 = 6,
-    Roof3 = 7
+    Roof3 = 7,
+    DoorCorner1 = 8,
+    DoorCorner2 = 9,
+    BlockCorner1 = 10,
+    BlockCorner2 = 11,
+    BlockCorner3 = 12,
+    RoofCorner1 = 13,
+    RoofCorner2 = 14,
+    RoofCorner3 = 15
+};
+
+enum ApartmentType
+{
+    normal = 0,
+    corner = 1
 };
 
 class Apartment : public Object {
@@ -33,8 +47,18 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_roof_2;
     static std::unique_ptr<ppgso::Mesh> mesh_roof_3;
 
+    static std::unique_ptr<ppgso::Mesh> mesh_door_corner_1;
+    static std::unique_ptr<ppgso::Mesh> mesh_door_corner_2;
+    static std::unique_ptr<ppgso::Mesh> mesh_corner_1;
+    static std::unique_ptr<ppgso::Mesh> mesh_corner_2;
+    static std::unique_ptr<ppgso::Mesh> mesh_corner_3;
+    static std::unique_ptr<ppgso::Mesh> mesh_roof_corner_1;
+    static std::unique_ptr<ppgso::Mesh> mesh_roof_corner_2;
+    static std::unique_ptr<ppgso::Mesh> mesh_roof_corner_3;
+
     static std::unique_ptr<ppgso::Shader> shader;
 
+    ApartmentType apartmentType;
 
 public:
     ppgso::Texture texture;
@@ -42,7 +66,7 @@ public:
     /*!
      * Create new object
      */
-    explicit Apartment(Object* parent);
+    explicit Apartment(Object* parent, ApartmentType apartmentType);
 
     explicit Apartment(Object* parent, ApartmentBlockType abt, const ppgso::Texture& texture);
 

@@ -14,11 +14,21 @@ std::unique_ptr<ppgso::Mesh> Apartment::mesh_roof_1;
 std::unique_ptr<ppgso::Mesh> Apartment::mesh_roof_2;
 std::unique_ptr<ppgso::Mesh> Apartment::mesh_roof_3;
 
+std::unique_ptr<ppgso::Mesh> Apartment::mesh_door_corner_1;
+std::unique_ptr<ppgso::Mesh> Apartment::mesh_door_corner_2;
+std::unique_ptr<ppgso::Mesh> Apartment::mesh_corner_1;
+std::unique_ptr<ppgso::Mesh> Apartment::mesh_corner_2;
+std::unique_ptr<ppgso::Mesh> Apartment::mesh_corner_3;
+std::unique_ptr<ppgso::Mesh> Apartment::mesh_roof_corner_1;
+std::unique_ptr<ppgso::Mesh> Apartment::mesh_roof_corner_2;
+std::unique_ptr<ppgso::Mesh> Apartment::mesh_roof_corner_3;
+
 std::unique_ptr<ppgso::Shader> Apartment::shader;
 
 
-Apartment::Apartment(Object* parent) : texture(TextureGenerator::random()) {
+Apartment::Apartment(Object* parent, ApartmentType apartmentType) : texture(TextureGenerator::random()) {
     parentObject = parent;
+    this->apartmentType = apartmentType;
 
     if (!mesh_door_1) mesh_door_1 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment/apartment_door_1.obj");
     if (!mesh_door_2) mesh_door_2 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment/apartment_door_2.obj");
@@ -29,26 +39,53 @@ Apartment::Apartment(Object* parent) : texture(TextureGenerator::random()) {
     if (!mesh_roof_2) mesh_roof_2 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment/apartment_roof_2.obj");
     if (!mesh_roof_3) mesh_roof_3 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment/apartment_roof_3.obj");
 
+    if (!mesh_door_corner_1) mesh_door_corner_1 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_door_corner_1.obj");
+    if (!mesh_door_corner_2) mesh_door_corner_2 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_door_corner_2.obj");
+    if (!mesh_corner_1) mesh_corner_1 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_corner_1.obj");
+    if (!mesh_corner_2) mesh_corner_2 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_corner_2.obj");
+    if (!mesh_corner_3) mesh_corner_3 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_corner_3.obj");
+    if (!mesh_roof_corner_1) mesh_roof_corner_1 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_roof_corner_1.obj");
+    if (!mesh_roof_corner_2) mesh_roof_corner_2 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_roof_corner_2.obj");
+    if (!mesh_roof_corner_3) mesh_roof_corner_3 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_roof_corner_3.obj");
+
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
     position = {0, 0, 0};
     rotation = {0, 0, 0};
     scale = {1, 1, 1};
 
-    abType = static_cast<ApartmentBlockType>(rand() % 2);
+    if(this->apartmentType == ApartmentType::normal){
+        abType = static_cast<ApartmentBlockType>(rand() % 2);
 
-    int height = rand() % 3 + 3;
-    auto blockType = static_cast<ApartmentBlockType>(rand() % 3 + 2);
-    auto roofType = static_cast<ApartmentBlockType>(rand() % 3 + 5);
-    for (int i = 1; i < height; i++) {
-        auto aptblock = std::make_unique<Apartment>(this, blockType, texture);
-        aptblock->position = {0, i*3, 0};
+        int height = rand() % 3 + 3;
+        auto blockType = static_cast<ApartmentBlockType>(rand() % 3 + 2);
+        auto roofType = static_cast<ApartmentBlockType>(rand() % 3 + 5);
+        for (int i = 1; i < height; i++) {
+            auto aptblock = std::make_unique<Apartment>(this, blockType, texture);
+            aptblock->position = {0, i*3, 0};
+            childObjects.push_back(move(aptblock));
+        }
+        auto aptblock = std::make_unique<Apartment>(this, roofType, texture);
+        aptblock->position = {0, height*3, 0};
         childObjects.push_back(move(aptblock));
     }
-    auto aptblock = std::make_unique<Apartment>(this, roofType, texture);
-    aptblock->position = {0, height*3, 0};
-    childObjects.push_back(move(aptblock));
 
+    if(this->apartmentType == ApartmentType::corner){
+        abType = static_cast<ApartmentBlockType>(rand() % 2 + 8);
+
+        int height = rand() % 3 + 3;
+        auto blockType = static_cast<ApartmentBlockType>(rand() % 3 + 10);
+
+        auto roofType = static_cast<ApartmentBlockType>(rand() % 3 + 13);
+        for (int i = 1; i < height; i++) {
+            auto aptblock = std::make_unique<Apartment>(this, blockType, texture);
+            aptblock->position = {0, i*3, 0};
+            childObjects.push_back(move(aptblock));
+        }
+        auto aptblock = std::make_unique<Apartment>(this, roofType, texture);
+        aptblock->position = {0, height*3, 0};
+        childObjects.push_back(move(aptblock));
+    }
 }
 
 Apartment::Apartment(Object* parent, ApartmentBlockType abt, const ppgso::Texture& texture) : texture(texture) {
@@ -110,6 +147,30 @@ void Apartment::render(Scene &scene) {
             break;
         case Roof3:
             mesh_roof_3->render();
+            break;
+        case DoorCorner1:
+            mesh_door_corner_1->render();
+            break;
+        case DoorCorner2:
+            mesh_door_corner_2->render();
+            break;
+        case BlockCorner1:
+            mesh_corner_1->render();
+            break;
+        case BlockCorner2:
+            mesh_corner_2->render();
+            break;
+        case BlockCorner3:
+            mesh_corner_3->render();
+            break;
+        case RoofCorner1:
+            mesh_roof_corner_1->render();
+            break;
+        case RoofCorner2:
+            mesh_roof_corner_2->render();
+            break;
+        case RoofCorner3:
+            mesh_roof_corner_3->render();
             break;
     }
 }
