@@ -37,6 +37,12 @@ private:
         camera->position = {.0f, 10.0f, -10.0f};
         camera->tilt = 20.f;
         camera->rotation = 180.f;
+        camera->keyframes = {
+                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
+                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
+                {Camera::getViewMatrix(20.f, 225.f, {.0f, 10.0f, -9.0f}), 0.f}
+        };
+
         scene.camera = move(camera);
 
         Road::generateCrossroad(scene, {-40.f, 0.f});
@@ -44,6 +50,15 @@ private:
         Road::generateRoad(scene, 2, 40, {-50.f, 0.f});
         Road::generateRoad(scene, 1, 15, {-40.f, 10.f});
         Road::generateRoad(scene, 3, 5, {-40.f, -10.f});
+
+        for (int i = -1; i>=-11; i-= 2) {
+            for (int j = 0; j<= 1; j++) {
+                auto road = std::make_unique<Road>(nullptr);
+                road->roadType = RoadType::Sidewalk;
+                road->position = {i * 2.5f, 0, 12.5f + j * 5.0f};
+                scene.rootObjects.push_back(move(road));
+            }
+        }
 
         Road::generateCrossroad(scene, {200.f, 0.f});
         Road::generateRoad(scene, 0, 5, {210.f, 0.f});

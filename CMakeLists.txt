@@ -103,6 +103,7 @@ target_include_directories(ppgso PUBLIC
 
 # main
 add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/scene.cpp src/SceneWindow.hpp
+        src/keyframe.cpp src/keyframe.h
         src/object.cpp src/object.h
         src/texture.h src/texture.cpp
         src/objects/road.cpp src/objects/road.h
