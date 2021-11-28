@@ -67,7 +67,7 @@ public:
      * @param dt Time delta for animation purposes
      * @return
      */
-    bool update(Scene &scene, float dt, glm::mat4 parentModelMatrix) override;
+    bool update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentPosition) override;
 
     /*!
      * Render asteroid

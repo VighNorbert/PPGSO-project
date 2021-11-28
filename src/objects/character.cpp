@@ -35,7 +35,7 @@ Character::Character(Object *parent, CharacterType characterType) {
 }
 
 
-bool Character::update(Scene &scene, float dt, glm::mat4 parentModelMatrix) {
+bool Character::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentPosition) {
     generateModelMatrix(parentModelMatrix);
 
     return true;
@@ -45,7 +45,7 @@ void Character::render(Scene &scene) {
     shader->use();
 
     // Set up light
-    shader->setUniform("LightPosition", scene.lightPosition);
+    scene.renderLight(shader);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);

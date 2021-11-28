@@ -7,6 +7,7 @@
 
 #include "object.h"
 #include "camera.h"
+#include "light.h"
 
 /*
  * Scene is an object that will aggregate all scene related data
@@ -26,13 +27,19 @@ public:
      */
     void render();
 
+    /*!
+     * @param scene
+     * @param shader
+     */
+    void renderLight(std::unique_ptr<ppgso::Shader> &shader);
+
     // Camera object
     std::unique_ptr<Camera> camera;
 
     // All objects to be rendered in scene
     std::list< std::unique_ptr<Object> > rootObjects;
 
-    glm::vec3 lightPosition{1000.0f, 1000.0f, -1000.0f};
+    std::list<Light *> lights = {};
 };
 
 #endif // _PPGSO_SCENE_H

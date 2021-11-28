@@ -13,12 +13,18 @@ enum CarType
     MuscleCar = 0,
     MuscleCarGlass = 1,
     MuscleCarWheel = 2,
-    PoliceCar = 3,
-    PoliceCarGlass = 4,
-    PoliceCarWheel = 5,
-    Van = 6,
-    VanGlass = 7,
-    VanWheel = 8
+    MuscleCarFrontLight = 3,
+    MuscleCarBackLight = 4,
+    PoliceCar = 5,
+    PoliceCarGlass = 6,
+    PoliceCarWheel = 7,
+    PoliceCarFrontLight = 8,
+    PoliceCarBackLight = 9,
+    Van = 10,
+    VanGlass = 11,
+    VanWheel = 12,
+    VanFrontLight = 13,
+    VanBackLight = 14
 };
 
 class Car : public Object {
@@ -28,14 +34,21 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_muscle_car;
     static std::unique_ptr<ppgso::Mesh> mesh_muscle_car_glass;
     static std::unique_ptr<ppgso::Mesh> mesh_muscle_car_wheel;
+    static std::unique_ptr<ppgso::Mesh> mesh_muscle_car_front_light;
+    static std::unique_ptr<ppgso::Mesh> mesh_muscle_car_back_light;
     static std::unique_ptr<ppgso::Mesh> mesh_police_car;
     static std::unique_ptr<ppgso::Mesh> mesh_police_car_glass;
     static std::unique_ptr<ppgso::Mesh> mesh_police_car_wheel;
+    static std::unique_ptr<ppgso::Mesh> mesh_police_car_front_light;
+    static std::unique_ptr<ppgso::Mesh> mesh_police_car_back_light;
     static std::unique_ptr<ppgso::Mesh> mesh_van;
     static std::unique_ptr<ppgso::Mesh> mesh_van_glass;
     static std::unique_ptr<ppgso::Mesh> mesh_van_wheel;
+    static std::unique_ptr<ppgso::Mesh> mesh_van_front_light;
+    static std::unique_ptr<ppgso::Mesh> mesh_van_back_light;
 
     static std::unique_ptr<ppgso::Shader> shader;
+    static std::unique_ptr<ppgso::Shader> color_shader;
 
     static std::unique_ptr<ppgso::Texture> texture;
     static std::unique_ptr<ppgso::Texture> texture_van;
@@ -46,18 +59,16 @@ public:
     /*!
      * Create new object
      */
-    Car(Object* parent, CarType carType);
+    Car(Object* parent, CarType carType, Scene& scene);
 
     /*!
-     * Update asteroid
      * @param scene Scene to interact with
      * @param dt Time delta for animation purposes
      * @return
      */
-    bool update(Scene &scene, float dt, glm::mat4 parentModelMatrix) override;
+    bool update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) override;
 
     /*!
-     * Render asteroid
      * @param scene Scene to render in
      */
     void render(Scene &scene) override;

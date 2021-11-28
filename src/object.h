@@ -6,6 +6,7 @@
 #include <map>
 
 #include <glm/glm.hpp>
+#include <shader.h>
 
 // Forward declare a scene
 class Scene;
@@ -33,7 +34,7 @@ public:
    * @param dt - Time delta for animation purposes
    * @return true to delete the object
    */
-  bool updateChildren(Scene &scene, float dt, glm::mat4 parentModelMatrix);
+  bool updateChildren(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentPosition);
 
   /*!
    * Update Object parameters, usually used to update the modelMatrix based on position, scale and rotation
@@ -42,7 +43,7 @@ public:
    * @param dt - Time delta for animation purposes
    * @return true to delete the object
    */
-  virtual bool update(Scene &scene, float time, glm::mat4 parentModelMatrix) = 0;
+  virtual bool update(Scene &scene, float time, glm::mat4 parentModelMatrix, glm::vec3 parentPosition) = 0;
 
   /*!
    * Render the children objects in the scene
@@ -57,6 +58,7 @@ public:
   virtual void render(Scene &scene) = 0;
 
   // Object properties
+  glm::vec3 globalRotation{0,0,0};
   glm::vec3 position{0,0,0};
   glm::vec3 rotation{0,0,0};
   glm::vec3 scale{1,1,1};

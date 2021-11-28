@@ -14,6 +14,7 @@
 
 #include "camera.h"
 #include "scene.h"
+#include "src/objects/lightWrapper.h"
 
 class SceneWindow : public ppgso::Window {
 private:
@@ -37,13 +38,18 @@ private:
         camera->position = {.0f, 10.0f, -10.0f};
         camera->tilt = 20.f;
         camera->rotation = 180.f;
-        camera->keyframes = {
-                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
-                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
-                {Camera::getViewMatrix(20.f, 225.f, {.0f, 10.0f, -9.0f}), 0.f}
-        };
+//        camera->keyframes = {
+//                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
+//                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
+//                {Camera::getViewMatrix(20.f, 225.f, {.0f, 10.0f, -9.0f}), 0.f}
+//        };
 
         scene.camera = move(camera);
+
+        auto sun = new Light();
+        auto sunWrapper = std::make_unique<LightWrapper>(nullptr, glm::vec3 {1000.f, 1000.f, -1000.f}, sun);
+        scene.lights.push_back(sun);
+        scene.rootObjects.push_back(move(sunWrapper));
 
         Road::generateCrossroad(scene, {-40.f, 0.f});
         Road::generateRoad(scene, 0, 44, {-30.f, 0.f});
@@ -65,25 +71,25 @@ private:
         Road::generateRoad(scene, 1, 22, {200.f, 10.f});
         Road::generateRoad(scene, 3, 40, {200.f, -10.f});
 
-        auto car = std::make_unique<Car>(nullptr, CarType::Van);
+        auto car = std::make_unique<Car>(nullptr, CarType::Van, scene);
         car->position = {0, 0, -2.5f};
         car->speed = {0, 0, 0};
         car->rotation.z = - ppgso::PI / 2;
         scene.rootObjects.push_back(move(car));
 
-        car = std::make_unique<Car>(nullptr, CarType::PoliceCar);
+        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
         car->position = {10, 0, -2.5f};
         car->speed = {0, 0, 0};
         car->rotation.z = - ppgso::PI / 2;
         scene.rootObjects.push_back(move(car));
 
-        car = std::make_unique<Car>(nullptr, CarType::MuscleCar);
+        car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
         car->position = {20, 0, -2.5f};
-        car->speed = {0, 0, 0};
+        car->speed = {-1, 0, 0};
         car->rotation.z = - ppgso::PI / 2;
         scene.rootObjects.push_back(move(car));
-//
-        car = std::make_unique<Car>(nullptr, CarType::PoliceCar);
+
+        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
         car->position = {-25, 0, 2.5};
         car->speed = {1, 0, 0};
         car->rotation.z = ppgso::PI / 2;
@@ -190,7 +196,7 @@ public:
         time = (float) glfwGetTime();
 
         // Set gray background
-        glClearColor(.5f, .5f, .5f, 0);
+        glClearColor(.5f, .5f, .5f, 1.0f);
         // Clear depth and color buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

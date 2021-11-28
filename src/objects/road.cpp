@@ -43,7 +43,7 @@ Road::Road(Object* parent) {
 }
 
 
-bool Road::update(Scene &scene, float dt, glm::mat4 parentModelMatrix) {
+bool Road::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
     position += speed * dt;
 
     // Rotate the object
@@ -58,7 +58,8 @@ void Road::render(Scene &scene) {
     shader->use();
 
     // Set up light
-    shader->setUniform("LightPosition", scene.lightPosition);
+//    shader->setUniform("LightPosition", scene.lightPosition);
+    scene.renderLight(shader);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);

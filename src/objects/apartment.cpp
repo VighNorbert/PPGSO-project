@@ -97,7 +97,7 @@ Apartment::Apartment(Object* parent, ApartmentBlockType abt, const ppgso::Textur
 }
 
 
-bool Apartment::update(Scene &scene, float dt, glm::mat4 parentModelMatrix) {
+bool Apartment::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
     generateModelMatrix(parentModelMatrix);
 
     return true;
@@ -107,7 +107,7 @@ void Apartment::render(Scene &scene) {
     shader->use();
 
     // Set up light
-    shader->setUniform("LightPosition", scene.lightPosition);
+    scene.renderLight(shader);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);

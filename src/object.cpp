@@ -3,14 +3,17 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/transform.hpp>
+#include <shader.h>
 
 #include "object.h"
+#include "light.h"
 
 /**
  * @param scene
  */
-bool Object::updateChildren(Scene &scene, float time, glm::mat4 parentModelMatrix) {
-    bool remove = this->update(scene, time, parentModelMatrix);
+bool Object::updateChildren(Scene &scene, float time, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
+    bool remove = this->update(scene, time, parentModelMatrix, parentRotation);
+    globalRotation = parentRotation + rotation;
 
     // Use iterator to update all objects so we can remove while iterating
     auto i = std::begin(childObjects);
@@ -18,7 +21,7 @@ bool Object::updateChildren(Scene &scene, float time, glm::mat4 parentModelMatri
     while (i != std::end(childObjects)) {
         // Update and remove from list if needed
         auto obj = i->get();
-        if (!obj->updateChildren(scene, time, modelMatrix))
+        if (!obj->updateChildren(scene, time, modelMatrix, globalRotation))
             i = childObjects.erase(i); // NOTE: no need to call destructors as we store shared pointers in the scene
         else
             ++i;
