@@ -1,4 +1,6 @@
 #include "character.h"
+#include "gun.h"
+
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
 
@@ -11,6 +13,13 @@ std::unique_ptr<ppgso::Mesh> Character::mesh_male_police_sitting_police_car;
 
 std::unique_ptr<ppgso::Mesh> Character::mesh_female_business_suit_driving_van;
 
+std::unique_ptr<ppgso::Mesh> Character::mesh_female_business_suit_standing;
+std::unique_ptr<ppgso::Mesh> Character::mesh_male_business_shirt_standing;
+std::unique_ptr<ppgso::Mesh> Character::mesh_male_business_suit_standing;
+std::unique_ptr<ppgso::Mesh> Character::mesh_male_hoodie_shooting;
+std::unique_ptr<ppgso::Mesh> Character::mesh_male_hoodie_standing;
+std::unique_ptr<ppgso::Mesh> Character::mesh_male_police_standing;
+
 std::unique_ptr<ppgso::Shader> Character::shader;
 
 std::unique_ptr<ppgso::Texture> Character::texture;
@@ -18,6 +27,11 @@ std::unique_ptr<ppgso::Texture> Character::texture;
 Character::Character(Object *parent, CharacterType characterType) {
     parentObject = parent;
     this->characterType = characterType;
+
+    if (this->characterType == CharacterType::MaleHoodieShooting) {
+        auto pistol = std::make_unique<Gun>(this, GunType::Pistol);
+        childObjects.push_back(move(pistol));
+    }
 
     position = {0, 0, 0};
     rotation = {0, 0, 0};
@@ -28,6 +42,12 @@ Character::Character(Object *parent, CharacterType characterType) {
     if (!mesh_male_police_driving_police_car) mesh_male_police_driving_police_car = std::make_unique<ppgso::Mesh>("objects/characters/male_police_driving_police_car.obj");
     if (!mesh_male_police_sitting_police_car) mesh_male_police_sitting_police_car = std::make_unique<ppgso::Mesh>("objects/characters/male_police_sitting_police_car.obj");
     if (!mesh_female_business_suit_driving_van) mesh_female_business_suit_driving_van = std::make_unique<ppgso::Mesh>("objects/characters/female_business_suit_driving_van.obj");
+    if (!mesh_female_business_suit_standing) mesh_female_business_suit_standing = std::make_unique<ppgso::Mesh>("objects/characters/female_business_suit_standing.obj");
+    if (!mesh_male_business_shirt_standing) mesh_male_business_shirt_standing = std::make_unique<ppgso::Mesh>("objects/characters/male_business_shirt_standing.obj");
+    if (!mesh_male_business_suit_standing) mesh_male_business_suit_standing = std::make_unique<ppgso::Mesh>("objects/characters/male_business_suit_standing.obj");
+    if (!mesh_male_hoodie_shooting) mesh_male_hoodie_shooting = std::make_unique<ppgso::Mesh>("objects/characters/male_hoodie_shooting.obj");
+    if (!mesh_male_hoodie_standing) mesh_male_hoodie_standing = std::make_unique<ppgso::Mesh>("objects/characters/male_hoodie_standing.obj");
+    if (!mesh_male_police_standing) mesh_male_police_standing = std::make_unique<ppgso::Mesh>("objects/characters/male_police_standing.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
@@ -74,20 +94,25 @@ void Character::render(Scene &scene) {
         case CharacterType::MaleJacketDrivingMuscleCar:
             mesh_male_jacket_driving_muscle_car->render();
             break;
-        case FemaleBusinessSuitDrivingVan:
+        case CharacterType::FemaleBusinessSuitDrivingVan:
             mesh_female_business_suit_driving_van->render();
             break;
-        case FemaleBusinessSuitStanding:
+        case CharacterType::FemaleBusinessSuitStanding:
+            mesh_female_business_suit_standing->render();
             break;
-        case MaleBusinessShirtStanding:
+        case CharacterType::MaleBusinessShirtStanding:
+            mesh_male_business_shirt_standing->render();
             break;
-        case MaleBusinessSuitStanding:
+        case CharacterType::MaleBusinessSuitStanding:
+            mesh_male_business_suit_standing->render();
             break;
-        case MaleHoodieShooting:
+        case CharacterType::MaleHoodieShooting:
+            mesh_male_hoodie_shooting->render();
             break;
         case MaleHoodieSitting:
             break;
-        case MaleHoodieStanding:
+        case CharacterType::MaleHoodieStanding:
+            mesh_male_hoodie_standing->render();
             break;
         case MaleJacketDriving:
             break;
@@ -97,7 +122,8 @@ void Character::render(Scene &scene) {
             break;
         case MalePoliceSitting:
             break;
-        case MalePoliceStanding:
+        case CharacterType::MalePoliceStanding:
+            mesh_male_police_standing->render();
             break;
     }
 }
