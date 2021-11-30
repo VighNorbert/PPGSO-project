@@ -203,7 +203,7 @@ private:
         chair->position = {0,0,5};
         scene.rootObjects.push_back(move(chair));
 
-        auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitStanding);
+        auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitPushingButton);
         character->rotation.z = ppgso::PI;
         character->position = {0, 0, 0.5};
         scene.rootObjects.push_back(move(character));

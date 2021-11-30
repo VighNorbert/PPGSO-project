@@ -17,6 +17,7 @@ std::unique_ptr<ppgso::Mesh> Character::mesh_female_business_suit_driving_van;
 std::unique_ptr<ppgso::Mesh> Character::mesh_female_business_suit_standing;
 std::unique_ptr<ppgso::Mesh> Character::mesh_male_business_shirt_standing;
 std::unique_ptr<ppgso::Mesh> Character::mesh_male_business_suit_standing;
+std::unique_ptr<ppgso::Mesh> Character::mesh_male_business_suit_pushing_button;
 std::unique_ptr<ppgso::Mesh> Character::mesh_male_hoodie_shooting;
 std::unique_ptr<ppgso::Mesh> Character::mesh_male_hoodie_standing;
 std::unique_ptr<ppgso::Mesh> Character::mesh_male_police_standing;
@@ -49,6 +50,7 @@ Character::Character(Object *parent, CharacterType characterType) {
     if (!mesh_female_business_suit_standing) mesh_female_business_suit_standing = std::make_unique<ppgso::Mesh>("objects/characters/female_business_suit_standing.obj");
     if (!mesh_male_business_shirt_standing) mesh_male_business_shirt_standing = std::make_unique<ppgso::Mesh>("objects/characters/male_business_shirt_standing.obj");
     if (!mesh_male_business_suit_standing) mesh_male_business_suit_standing = std::make_unique<ppgso::Mesh>("objects/characters/male_business_suit_standing.obj");
+    if (!mesh_male_business_suit_pushing_button) mesh_male_business_suit_pushing_button = std::make_unique<ppgso::Mesh>("objects/characters/male_business_suit_pushing_button.obj");
     if (!mesh_male_hoodie_shooting) mesh_male_hoodie_shooting = std::make_unique<ppgso::Mesh>("objects/characters/male_hoodie_shooting.obj");
     if (!mesh_male_hoodie_standing) mesh_male_hoodie_standing = std::make_unique<ppgso::Mesh>("objects/characters/male_hoodie_standing.obj");
     if (!mesh_male_police_standing) mesh_male_police_standing = std::make_unique<ppgso::Mesh>("objects/characters/male_police_standing.obj");
@@ -128,6 +130,9 @@ void Character::render(Scene &scene) {
             break;
         case CharacterType::MalePoliceStanding:
             mesh_male_police_standing->render();
+            break;
+        case CharacterType::MaleBusinessSuitPushingButton:
+            mesh_male_business_suit_pushing_button->render();
             break;
     }
 }

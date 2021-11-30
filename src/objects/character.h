@@ -25,7 +25,8 @@ enum CharacterType
     MalePoliceDrivingPoliceCar = 12,
     MalePoliceSitting = 13,
     MalePoliceSittingPoliceCar = 14,
-    MalePoliceStanding = 15
+    MalePoliceStanding = 15,
+    MaleBusinessSuitPushingButton = 16
 };
 
 class Character : public Object {
@@ -36,6 +37,7 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_female_business_suit_standing;
     static std::unique_ptr<ppgso::Mesh> mesh_male_business_shirt_standing;
     static std::unique_ptr<ppgso::Mesh> mesh_male_business_suit_standing;
+    static std::unique_ptr<ppgso::Mesh> mesh_male_business_suit_pushing_button;
     static std::unique_ptr<ppgso::Mesh> mesh_male_hoodie_shooting;
     static std::unique_ptr<ppgso::Mesh> mesh_male_hoodie_sitting;
     static std::unique_ptr<ppgso::Mesh> mesh_male_hoodie_sitting_muscle_car;
