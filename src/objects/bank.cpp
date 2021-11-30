@@ -1,4 +1,5 @@
 #include "bank.h"
+#include "lightWrapper.h"
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
@@ -12,7 +13,7 @@ std::unique_ptr<ppgso::Shader> Bank::shader;
 
 std::unique_ptr<ppgso::Texture> Bank::texture;
 
-Bank::Bank(Object* parent, BankType bankType) {
+Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
     parentObject = parent;
     this->bankType = bankType;
 
@@ -27,6 +28,21 @@ Bank::Bank(Object* parent, BankType bankType) {
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_01_A.bmp"));
+
+    if (bankType == BankType::BankInside) {
+
+        auto sun = new Light({1, 1, 1}, 1.0f, 0.09f, 0.032f, 50.f);
+        auto sunWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 5.f, 0.f}, sun);
+        scene.lights.push_back(sun);
+        scene.rootObjects.push_back(move(sunWrapper));
+
+        auto alarm = new Light({1, 0, 0}, 1.0f, .75f, .5f, 50.f);
+        auto alarmWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 2.f, 3.f}, alarm);
+        scene.lights.push_back(alarm);
+        scene.rootObjects.push_back(move(alarmWrapper));
+
+
+    }
 }
 
 

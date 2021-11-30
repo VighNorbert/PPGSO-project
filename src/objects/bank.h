@@ -34,7 +34,7 @@ public:
     /*!
      * Create new object
      */
-    Bank(Object* parent, BankType bankType);
+    Bank(Object* parent, BankType bankType, Scene& scene);
 
     /*!
      * Update asteroid

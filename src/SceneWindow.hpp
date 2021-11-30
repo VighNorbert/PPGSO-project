@@ -140,7 +140,7 @@ private:
         apt_corner_bank->rotation.z = ppgso::PI;
         scene.rootObjects.push_back(move(apt_corner_bank));
 
-        auto bank = std::make_unique<Bank>(nullptr, BankType::BankOutside);
+        auto bank = std::make_unique<Bank>(nullptr, BankType::BankOutside, scene);
         bank->position = {-15, 0, 10};
         bank->rotation.z = ppgso::PI;
         scene.rootObjects.push_back(move(bank));
@@ -183,12 +183,10 @@ private:
         scene.lights.push_back(sun);
         scene.rootObjects.push_back(move(sunWrapper));
 
-        auto bank = std::make_unique<Bank>(nullptr, BankType::BankInside);
-        bank->rotation.z = ppgso::PI/2;
+        auto bank = std::make_unique<Bank>(nullptr, BankType::BankInside, scene);
         scene.rootObjects.push_back(move(bank));
 
-        bank = std::make_unique<Bank>(nullptr, BankType::BankInsideGlass);
-        bank->rotation.z = ppgso::PI/2;
+        bank = std::make_unique<Bank>(nullptr, BankType::BankInsideGlass, scene);
         scene.rootObjects.push_back(move(bank));
 
         auto character = std::make_unique<Character>(nullptr, CharacterType::MalePoliceStanding);
