@@ -183,16 +183,12 @@ private:
         scene.lights.push_back(sun);
         scene.rootObjects.push_back(move(sunWrapper));
 
-        auto bank = std::make_unique<Bank>(nullptr, BankType::BankInsideFloor);
+        auto bank = std::make_unique<Bank>(nullptr, BankType::BankInside);
+        bank->rotation.z = ppgso::PI/2;
         scene.rootObjects.push_back(move(bank));
 
-        bank = std::make_unique<Bank>(nullptr, BankType::BankInsideWalls);
-        scene.rootObjects.push_back(move(bank));
-
-        bank = std::make_unique<Bank>(nullptr, BankType::BankInsideDoors);
-        scene.rootObjects.push_back(move(bank));
-
-        bank = std::make_unique<Bank>(nullptr, BankType::BankInsideWindows);
+        bank = std::make_unique<Bank>(nullptr, BankType::BankInsideGlass);
+        bank->rotation.z = ppgso::PI/2;
         scene.rootObjects.push_back(move(bank));
 
         auto character = std::make_unique<Character>(nullptr, CharacterType::MalePoliceStanding);

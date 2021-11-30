@@ -11,10 +11,8 @@
 enum BankType
 {
     BankOutside = 0,
-    BankInsideWalls = 1,
-    BankInsideFloor = 2,
-    BankInsideDoors = 3,
-    BankInsideWindows = 4
+    BankInside = 1,
+    BankInsideGlass = 2
 };
 
 
@@ -23,13 +21,10 @@ private:
 
 // Static resources (Shared between instances)
     static std::unique_ptr<ppgso::Mesh> mesh_bank;
-    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_walls;
-    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_floor;
-    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_doors;
-    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_windows;
+    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside;
+    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_glass;
 
     static std::unique_ptr<ppgso::Shader> shader;
-    static std::unique_ptr<ppgso::Shader> color_shader;
 
     static std::unique_ptr<ppgso::Texture> texture;
 
