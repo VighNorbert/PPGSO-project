@@ -115,7 +115,7 @@ add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/sce
         src/objects/character.cpp src/objects/character.h
         src/objects/office_old.cpp src/objects/office_old.h
         src/objects/gun.cpp src/objects/gun.h
-        src/objects/furniture.cpp src/objects/furniture.h)
+        src/objects/furniture.cpp src/objects/furniture.h src/objects/money_bag.cpp src/objects/money_bag.h)
 target_link_libraries(main ppgso shaders)
 install(TARGETS main DESTINATION .)
 

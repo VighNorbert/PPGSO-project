@@ -1,5 +1,6 @@
 #include "character.h"
 #include "gun.h"
+#include "money_bag.h"
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
@@ -31,6 +32,9 @@ Character::Character(Object *parent, CharacterType characterType) {
     if (this->characterType == CharacterType::MaleHoodieShooting) {
         auto pistol = std::make_unique<Gun>(this, GunType::Pistol);
         childObjects.push_back(move(pistol));
+
+        auto money = std::make_unique<MoneyBag>(this);
+        childObjects.push_back(move(money));
     }
 
     position = {0, 0, 0};
