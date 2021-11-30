@@ -2,15 +2,17 @@
 
 #include "light.h"
 
-Light::Light(glm::vec3 color, float constant, float linear, float quadratic) {
+Light::Light(glm::vec3 color, float constant, float linear, float quadratic, float maxDist) {
     this->constant = constant;
     this->linear = linear;
     this->quadratic = quadratic;
 
+    this->maxDist = maxDist;
+
     this->color = color;
 }
 
-Light::Light(glm::vec3 color, glm::vec3 direction, float cutOffDeg, float outerCutOffDeg, float constant, float linear, float quadratic) {
+Light::Light(glm::vec3 color, glm::vec3 direction, float cutOffDeg, float outerCutOffDeg, float constant, float linear, float quadratic, float maxDist) {
     this->isSpotlight = true;
     this->localDirection = direction;
     this->cutOff = glm::cos(glm::radians(cutOffDeg));
@@ -19,6 +21,8 @@ Light::Light(glm::vec3 color, glm::vec3 direction, float cutOffDeg, float outerC
     this->constant = constant;
     this->linear = linear;
     this->quadratic = quadratic;
+
+    this->maxDist = maxDist;
 
     this->color = color;
 }

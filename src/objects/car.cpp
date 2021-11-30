@@ -65,12 +65,12 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarGlass, scene));
 
-        auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f);
+        auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.80443, 0.66418, 2.5}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
 
-        light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f);
+        light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {-0.80443, 0.66418, 2.5}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
@@ -101,12 +101,12 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         wheel_lb->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lb));
 
-        auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f);
+        auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.56, 0.84, 2.23}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
 
-        light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f);
+        light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {-0.56, 0.84, 2.23}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
@@ -139,12 +139,12 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         wheel_lb->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lb));
 
-        auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f);
+        auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.84, 0.83, 2.15}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
 
-        light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f);
+        light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {-0.84, 0.83, 2.15}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));

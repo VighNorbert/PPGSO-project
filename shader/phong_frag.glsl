@@ -14,6 +14,8 @@ struct Light {
   float linear;
   float quadratic;
 
+  float maxDist;
+
   vec3 color;
 };
 
@@ -55,6 +57,11 @@ vec3 CalcLight(Light light, vec3 viewDir, vec3 objectColor)
 
   // attenuation
   float distance = length(light.position - fragmetPosition);
+
+  if (light.maxDist != -1.f && light.maxDist < distance) {
+    return vec3(0);
+  }
+
   float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
   // light direction
   vec3 lightDir = normalize(light.position - fragmetPosition);

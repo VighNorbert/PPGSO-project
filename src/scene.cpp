@@ -2,6 +2,7 @@
 
 void Scene::update(float time) {
   camera->update(time);
+  std::cout << 1 / time << std::endl;
 
   // Use iterator to update all objects so we can remove while iterating
   auto i = std::begin(rootObjects);
@@ -34,6 +35,7 @@ void Scene::renderLight(std::unique_ptr<ppgso::Shader> &shader) {
         shader->setUniform(base + "linear", light->linear);
         shader->setUniform(base + "quadratic", light->quadratic);
         shader->setUniform(base + "color", light->color);
+        shader->setUniform(base + "maxDist", light->maxDist);
         shader->setUniform(base + "isSpotlight", light->isSpotlight);
         shader->setUniform(base + "direction", light->direction);
         shader->setUniform(base + "cutOff", light->cutOff);
