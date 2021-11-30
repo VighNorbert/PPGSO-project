@@ -186,16 +186,6 @@ private:
         auto bank = std::make_unique<Bank>(nullptr, BankType::BankInside, scene);
         scene.rootObjects.push_back(move(bank));
 
-        bank = std::make_unique<Bank>(nullptr, BankType::BankInsideGlass, scene);
-        scene.rootObjects.push_back(move(bank));
-
-        auto character = std::make_unique<Character>(nullptr, CharacterType::MalePoliceStanding);
-        character->rotation.y = ppgso::PI/2;
-        character->rotation.x = ppgso::PI/2;
-        character->rotation.z = ppgso::PI/2;
-        character->position = {2, 0.13, -6};
-        scene.rootObjects.push_back(move(character));
-
         auto table = std::make_unique<Furniture>(nullptr, FurnitureType::Table);
         table->position = {0,0,4};
         scene.rootObjects.push_back(move(table));
@@ -213,10 +203,9 @@ private:
         chair->position = {0,0,5};
         scene.rootObjects.push_back(move(chair));
 
-        character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitStanding);
-        character->rotation.y = ppgso::PI/2;
-        character->rotation.x = ppgso::PI/2;
-        character->position = {2, 0.13, 2};
+        auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitStanding);
+        character->rotation.z = ppgso::PI;
+        character->position = {0, 0, 0.5};
         scene.rootObjects.push_back(move(character));
 
         table = std::make_unique<Furniture>(nullptr, FurnitureType::Table);

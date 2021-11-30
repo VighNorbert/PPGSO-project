@@ -12,7 +12,8 @@ enum BankType
 {
     BankOutside = 0,
     BankInside = 1,
-    BankInsideGlass = 2
+    BankInsideGlass = 2,
+    BankInsideAlarm = 3
 };
 
 
@@ -23,6 +24,7 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_bank;
     static std::unique_ptr<ppgso::Mesh> mesh_bank_inside;
     static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_glass;
+    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_alarm;
 
     static std::unique_ptr<ppgso::Shader> shader;
 

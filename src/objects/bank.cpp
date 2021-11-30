@@ -8,6 +8,7 @@
 std::unique_ptr<ppgso::Mesh> Bank::mesh_bank;
 std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside;
 std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside_glass;
+std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside_alarm;
 
 std::unique_ptr<ppgso::Shader> Bank::shader;
 
@@ -24,6 +25,7 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
     if (!mesh_bank) mesh_bank = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank.obj");
     if (!mesh_bank_inside) mesh_bank_inside = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside.obj");
     if (!mesh_bank_inside_glass) mesh_bank_inside_glass = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside_glass.obj");
+    if (!mesh_bank_inside_alarm) mesh_bank_inside_alarm = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside_alarm.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
@@ -36,8 +38,14 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
         scene.lights.push_back(sun);
         scene.rootObjects.push_back(move(sunWrapper));
 
+        auto glass = std::make_unique<Bank>(this, BankType::BankInsideGlass, scene);
+        scene.rootObjects.push_back(move(glass));
+
+        auto alarm_base = std::make_unique<Bank>(this, BankType::BankInsideAlarm, scene);
+        scene.rootObjects.push_back(move(alarm_base));
+
         auto alarm = new Light({1, 0, 0}, 1.0f, .75f, .5f, 50.f);
-        auto alarmWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 2.f, 3.f}, alarm);
+        auto alarmWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 1.f, 0.f}, alarm);
         scene.lights.push_back(alarm);
         scene.rootObjects.push_back(move(alarmWrapper));
 
@@ -82,6 +90,9 @@ void Bank::render(Scene &scene) {
             break;
         case BankType::BankInsideGlass:
             mesh_bank_inside_glass->render();
+            break;
+        case BankType::BankInsideAlarm:
+            mesh_bank_inside_alarm->render();
             break;
     }
 }
