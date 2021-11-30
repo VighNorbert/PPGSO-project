@@ -167,9 +167,9 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-        camera->position = {.0f, 10.0f, -10.0f};
+        camera->position = {8.5f, 3.5f, 3.5f};
         camera->tilt = 20.f;
-        camera->rotation = 180.f;
+        camera->rotation = -60.f;
 //        camera->keyframes = {
 //                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
 //                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
@@ -179,7 +179,7 @@ private:
         scene.camera = move(camera);
 
         auto sun = new Light();
-        auto sunWrapper = std::make_unique<LightWrapper>(nullptr, glm::vec3{1000.f, 1000.f, -1000.f}, sun);
+        auto sunWrapper = std::make_unique<LightWrapper>(nullptr, glm::vec3{1000.f, 1000.f, 1000.f}, sun);
         scene.lights.push_back(sun);
         scene.rootObjects.push_back(move(sunWrapper));
 

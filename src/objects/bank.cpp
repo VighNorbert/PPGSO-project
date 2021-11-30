@@ -45,14 +45,10 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
 }
 
 void Bank::render(Scene &scene) {
-    if (bankType == BankType::BankInsideWalls || bankType == BankType::BankInsideFloor) {
+    if (bankType == BankType::BankInsideWalls) {
         color_shader->use();
 
-        if (bankType == BankType::BankInsideWalls){
-            color_shader->setUniform("OverallColor", {1.0f, 0.975f, 0.853f});
-        } else {
-            color_shader->setUniform("OverallColor", {0.5f, 0.975f, 0.853f});
-        }
+        color_shader->setUniform("OverallColor", {1.0f, 0.975f, 0.853f});
 
         // use camera
         color_shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
