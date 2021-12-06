@@ -72,29 +72,29 @@ private:
         Road::generateRoad(scene, 1, 22, {200.f, 10.f});
         Road::generateRoad(scene, 3, 40, {200.f, -10.f});
 
-        auto car = std::make_unique<Car>(nullptr, CarType::Van, scene);
-        car->position = {0, 0, -2.5f};
-        car->speed = {0, 0, 0};
-        car->rotation.z = - ppgso::PI / 2;
-        scene.rootObjects.push_back(move(car));
+//        auto car = std::make_unique<Car>(nullptr, CarType::Van, scene);
+//        car->position = {0, 0, -2.5f};
+//        car->speed = {0, 0, 0};
+//        car->rotation.z = - ppgso::PI / 2;
+//        scene.rootObjects.push_back(move(car));
+//
+//        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
+//        car->position = {10, 0, -2.5f};
+//        car->speed = {0, 0, 0};
+//        car->rotation.z = - ppgso::PI / 2;
+//        scene.rootObjects.push_back(move(car));
 
-        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
-        car->position = {10, 0, -2.5f};
-        car->speed = {0, 0, 0};
-        car->rotation.z = - ppgso::PI / 2;
-        scene.rootObjects.push_back(move(car));
-
-        car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
+        auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
         car->position = {20, 0, -2.5f};
-        car->speed = {-1, 0, 0};
+//        car->speed = {-1, 0, 0};
         car->rotation.z = - ppgso::PI / 2;
         scene.rootObjects.push_back(move(car));
 
-        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
-        car->position = {-25, 0, 2.5};
-        car->speed = {1, 0, 0};
-        car->rotation.z = ppgso::PI / 2;
-        scene.rootObjects.push_back(move(car));
+//        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
+//        car->position = {-25, 0, 2.5};
+//        car->speed = {1, 0, 0};
+//        car->rotation.z = ppgso::PI / 2;
+//        scene.rootObjects.push_back(move(car));
 
         for (int i = 5; i<=185; i+= 5) {
             auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
@@ -281,12 +281,17 @@ private:
 
     }
 
+    GLuint fbo = 0;
+    GLuint rbo = 0;
+    int size_x, size_y;
 public:
     /*!
      * Construct custom game window
      */
     SceneWindow(std::string WINDOW_NAME, int SIZE_X, int SIZE_Y) : Window{std::move(WINDOW_NAME), SIZE_X, SIZE_Y} {
         ratio = float(SIZE_X) / float(SIZE_Y);
+        size_x = SIZE_X;
+        size_y = SIZE_Y;
         //hideCursor();
         glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 
@@ -300,8 +305,20 @@ public:
         glFrontFace(GL_CCW);
         glCullFace(GL_BACK);
 
-//        initScene();
-        initSceneBank();
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+        initScene();
+//        initSceneBank();
+    }
+
+    ~SceneWindow() override {
+        glDeleteRenderbuffers(1, &rbo);
+        glDeleteFramebuffers(1, &fbo);
     }
 
     /*!
@@ -310,6 +327,9 @@ public:
     void onIdle() override {
         // Track time
         static auto time = (float) glfwGetTime();
+
+        glViewport(0, 0, size_x, size_y);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
         // Compute time delta
         float dt = animate ? (float) glfwGetTime() - time : 0;
