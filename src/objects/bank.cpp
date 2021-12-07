@@ -8,7 +8,8 @@
 std::unique_ptr<ppgso::Mesh> Bank::mesh_bank;
 std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside;
 std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside_glass;
-std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside_alarm;
+std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside_alarm_bottom;
+std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside_alarm_top;
 
 std::unique_ptr<ppgso::Shader> Bank::shader;
 
@@ -25,7 +26,8 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
     if (!mesh_bank) mesh_bank = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank.obj");
     if (!mesh_bank_inside) mesh_bank_inside = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside.obj");
     if (!mesh_bank_inside_glass) mesh_bank_inside_glass = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside_glass.obj");
-    if (!mesh_bank_inside_alarm) mesh_bank_inside_alarm = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside_alarm.obj");
+    if (!mesh_bank_inside_alarm_bottom) mesh_bank_inside_alarm_bottom = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside_alarm_bottom.obj");
+    if (!mesh_bank_inside_alarm_top) mesh_bank_inside_alarm_top = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside_alarm_top.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
@@ -41,8 +43,11 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
         auto glass = std::make_unique<Bank>(this, BankType::BankInsideGlass, scene);
         scene.rootObjects.push_back(move(glass));
 
-        auto alarm_base = std::make_unique<Bank>(this, BankType::BankInsideAlarm, scene);
+        auto alarm_base = std::make_unique<Bank>(this, BankType::BankInsideAlarmBottom, scene);
         scene.rootObjects.push_back(move(alarm_base));
+
+        auto alarm_top = std::make_unique<Bank>(this, BankType::BankInsideAlarmTop, scene);
+        scene.rootObjects.push_back(move(alarm_top));
 
         auto alarm = new Light({1, 0, 0}, 1.0f, .75f, .5f, 50.f);
         auto alarmWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 1.f, 0.f}, alarm);
@@ -91,8 +96,11 @@ void Bank::render(Scene &scene) {
         case BankType::BankInsideGlass:
             mesh_bank_inside_glass->render();
             break;
-        case BankType::BankInsideAlarm:
-            mesh_bank_inside_alarm->render();
+        case BankType::BankInsideAlarmTop:
+            mesh_bank_inside_alarm_top->render();
+            break;
+        case BankType::BankInsideAlarmBottom:
+            mesh_bank_inside_alarm_bottom->render();
             break;
     }
 }
