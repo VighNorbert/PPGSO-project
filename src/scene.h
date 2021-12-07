@@ -25,7 +25,12 @@ public:
     /*!
      * Render all objects in the scene
      */
-    void render();
+    void render(GLuint depthMap);
+
+    /*!
+     * Render all objects in the scene
+     */
+    void renderForShadow();
 
     /*!
      * @param scene

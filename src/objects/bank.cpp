@@ -3,6 +3,8 @@
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
+#include <shaders/shadow_vert_glsl.h>
+#include <shaders/shadow_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Bank::mesh_bank;
@@ -11,6 +13,7 @@ std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside_glass;
 std::unique_ptr<ppgso::Mesh> Bank::mesh_bank_inside_alarm;
 
 std::unique_ptr<ppgso::Shader> Bank::shader;
+std::unique_ptr<ppgso::Shader> Bank::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Bank::texture;
 
@@ -28,6 +31,7 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
     if (!mesh_bank_inside_alarm) mesh_bank_inside_alarm = std::make_unique<ppgso::Mesh>("objects/buildings/bank/bank_inside_alarm.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
+    if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_01_A.bmp"));
 
@@ -60,7 +64,7 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
     return true;
 }
 
-void Bank::render(Scene &scene) {
+void Bank::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -80,6 +84,43 @@ void Bank::render(Scene &scene) {
 
     shader->setUniform("Texture", *texture);
 
+    auto light = scene.lights.front();
+
+    shader->setUniform("LightProjectionMatrix", light->lightProjection);
+    shader->setUniform("LightViewMatrix", light->getLightView());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture->getTexture());
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+//    shader->setUniform("ShadowMap", 1);
+
+
+
+    switch (this->bankType) {
+        case BankType::BankOutside:
+            mesh_bank->render();
+            break;
+        case BankType::BankInside:
+            mesh_bank_inside->render();
+            break;
+        case BankType::BankInsideGlass:
+            mesh_bank_inside_glass->render();
+            break;
+        case BankType::BankInsideAlarm:
+            mesh_bank_inside_alarm->render();
+            break;
+    }
+}
+
+void Bank::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    auto light = scene.lights.front();
+
+    shader_shadow->setUniform("LightProjectionMatrix", light->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", light->getLightView());
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     switch (this->bankType) {
         case BankType::BankOutside:

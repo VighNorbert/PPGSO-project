@@ -17,10 +17,10 @@ void Scene::update(float time) {
   }
 }
 
-void Scene::render() {
+void Scene::render(GLuint depthMap) {
   // Simply render all rootObjects
   for ( auto& obj : rootObjects )
-    obj->renderChildren(*this);
+    obj->renderChildren(*this, depthMap);
 }
 
 void Scene::renderLight(std::unique_ptr<ppgso::Shader> &shader) {
@@ -44,4 +44,10 @@ void Scene::renderLight(std::unique_ptr<ppgso::Shader> &shader) {
         i++;
     }
 
+}
+
+void Scene::renderForShadow() {
+    // Simply render all rootObjects
+    for ( auto& obj : rootObjects )
+        obj->renderForShadowChildren(*this);
 }

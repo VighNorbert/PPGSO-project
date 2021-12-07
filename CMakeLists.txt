@@ -67,6 +67,7 @@ set(PPGSO_SHADER_SRC
         shader/texture_vert.glsl shader/texture_frag.glsl
         shader/diffuse_vert.glsl shader/diffuse_frag.glsl
         shader/phong_vert.glsl shader/phong_frag.glsl
+        shader/shadow_vert.glsl shader/shadow_frag.glsl
         )
 add_resources(shaders ${PPGSO_SHADER_SRC})
 
@@ -108,14 +109,15 @@ add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/sce
         src/texture.h src/texture.cpp
         src/light.cpp src/light.h
         src/objects/lightWrapper.cpp src/objects/lightWrapper.h
-        src/objects/road.cpp src/objects/road.h
-        src/objects/car.cpp src/objects/car.h
+#        src/objects/road.cpp src/objects/road.h
+#        src/objects/car.cpp src/objects/car.h
         src/objects/bank.cpp src/objects/bank.h
-        src/objects/apartment.cpp src/objects/apartment.h
-        src/objects/character.cpp src/objects/character.h
-        src/objects/office_old.cpp src/objects/office_old.h
-        src/objects/gun.cpp src/objects/gun.h
-        src/objects/furniture.cpp src/objects/furniture.h src/objects/money_bag.cpp src/objects/money_bag.h)
+#        src/objects/apartment.cpp src/objects/apartment.h
+#        src/objects/character.cpp src/objects/character.h
+#        src/objects/office_old.cpp src/objects/office_old.h
+#        src/objects/gun.cpp src/objects/gun.h
+#        src/objects/furniture.cpp src/objects/furniture.h src/objects/money_bag.cpp src/objects/money_bag.h
+        )
 target_link_libraries(main ppgso shaders)
 install(TARGETS main DESTINATION .)
 

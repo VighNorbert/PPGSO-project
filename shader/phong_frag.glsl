@@ -1,6 +1,7 @@
 #version 330
 // A texture is expected as program attribute
 uniform sampler2D Texture;
+uniform sampler2D ShadowMap;
 
 struct Light {
   vec3 position;
@@ -49,8 +50,26 @@ in vec4 normal;
 
 in vec3 fragmetPosition;
 
+in vec4 fragmentPositionLightSpace;
+
 // The final color
 out vec4 FragmentColor;
+
+float ShadowCalculation()
+{
+  // perform perspective divide
+  vec3 projCoords = fragmentPositionLightSpace.xyz / fragmentPositionLightSpace.w;
+  // transform to [0,1] range
+  projCoords = projCoords * 0.5 + 0.5;
+  // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+  float closestDepth = texture(ShadowMap, projCoords.xy).r;
+  // get depth of current fragment from light's perspective
+  float currentDepth = projCoords.z;
+  // check whether current frag pos is in shadow
+  float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+  return shadow;
+}
 
 vec3 CalcLight(Light light, vec3 viewDir, vec3 objectColor)
 {
@@ -86,7 +105,9 @@ vec3 CalcLight(Light light, vec3 viewDir, vec3 objectColor)
   vec3 reflectDir = reflect(-lightDir, vec3(normal));
   vec3 specular = SpecularStrength * pow(max(dot(viewDir, reflectDir), 0.0), 32) * color;
 
-  return (ambient + diffuse + specular) * intensity;
+  float shadow = ShadowCalculation();
+
+  return (ambient + (1.0 - shadow) * (diffuse + specular)) * intensity;
 }
 
 void main() {

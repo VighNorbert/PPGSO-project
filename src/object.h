@@ -49,13 +49,25 @@ public:
    * Render the children objects in the scene
    * @param scene
    */
-  void renderChildren(Scene &scene);
+  void renderChildren(Scene &scene, GLuint depthMap);
 
   /*!
    * Render the object in the scene
    * @param scene
    */
-  virtual void render(Scene &scene) = 0;
+  virtual void render(Scene &scene, GLuint depthMap) = 0;
+
+  /*!
+   * Render the object in the scene
+   * @param scene
+   */
+  void renderForShadowChildren(Scene &scene);
+
+  /*!
+   * Render the object in the scene
+   * @param scene
+   */
+  virtual void renderForShadow(Scene &scene) = 0;
 
   // Object properties
   glm::vec3 globalRotation{0,0,0};
