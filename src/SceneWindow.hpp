@@ -84,11 +84,15 @@ private:
 //        car->speed = {0, 0, 0};
 //        car->rotation.z = - ppgso::PI / 2;
 //        scene.rootObjects.push_back(move(car));
-
+//
         auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
-        car->position = {0, 0, -2.5f};
-//        car->position = {20, 0, -2.5f};
+        car->position = {20, 0, -2.5f};
 //        car->speed = {-1, 0, 0};
+        car->rotation.z = - ppgso::PI / 2;
+        scene.rootObjects.push_back(move(car));
+
+        car = std::make_unique<Car>(nullptr, CarType::Firetruck, scene);
+        car->position = {0, 0, -2.5f};
         car->rotation.z = - ppgso::PI / 2;
         scene.rootObjects.push_back(move(car));
 

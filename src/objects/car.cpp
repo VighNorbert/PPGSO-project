@@ -27,11 +27,15 @@ std::unique_ptr<ppgso::Mesh> Car::mesh_van_wheel;
 std::unique_ptr<ppgso::Mesh> Car::mesh_van_front_light;
 std::unique_ptr<ppgso::Mesh> Car::mesh_van_back_light;
 
+std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck;
+std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck_wheel;
+
 std::unique_ptr<ppgso::Shader> Car::shader;
 std::unique_ptr<ppgso::Shader> Car::color_shader;
 
 std::unique_ptr<ppgso::Texture> Car::texture;
 std::unique_ptr<ppgso::Texture> Car::texture_van;
+std::unique_ptr<ppgso::Texture> Car::texture_firetruck;
 
 Car::Car(Object* parent, CarType carType, Scene& scene) {
     parentObject = parent;
@@ -75,6 +79,8 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {-0.80443, 0.66418, 2.5}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
+
+        isOnFire = true;
 
     } else if (this->carType == CarType::PoliceCar) {
         auto char_driving = std::make_unique<Character>(this, CharacterType::MalePoliceDrivingPoliceCar);
@@ -122,7 +128,6 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
 
         auto wheel_rf = std::make_unique<Car>(this, CarType::VanWheel, scene);
         wheel_rf->position = {-0.95778, 0.39926, 1.8444};
-
         childObjects.push_back(move(wheel_rf));
 
         auto wheel_rb = std::make_unique<Car>(this, CarType::VanWheel, scene);
@@ -135,7 +140,6 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(move(wheel_lf));
 
         auto wheel_lb = std::make_unique<Car>(this, CarType::VanWheel, scene);
-
         wheel_lb->position = {0.95778, 0.39926, -1.4616};
         wheel_lb->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lb));
@@ -153,6 +157,26 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanFrontLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanGlass, scene));
+    } else if (this->carType == CarType::Firetruck) {
+        auto wheel_rf = std::make_unique<Car>(this, CarType::FiretruckWheel, scene);
+        wheel_rf->position = {-0.90771, 0.400, 1.8499};
+        childObjects.push_back(move(wheel_rf));
+
+        auto wheel_rb = std::make_unique<Car>(this, CarType::FiretruckWheel, scene);
+        wheel_rb->position = {-0.90771, 0.400, -1.4637};
+        childObjects.push_back(move(wheel_rb));
+
+        auto wheel_lf = std::make_unique<Car>(this, CarType::FiretruckWheel, scene);
+        wheel_lf->position = {0.90771, 0.400, 1.8499};
+        wheel_lf->rotation.y = ppgso::PI;
+        childObjects.push_back(move(wheel_lf));
+
+        auto wheel_lb = std::make_unique<Car>(this, CarType::FiretruckWheel, scene);
+        wheel_lb->position = {0.90771, 0.400, -1.4637};
+        wheel_lb->rotation.y = ppgso::PI;
+        childObjects.push_back(move(wheel_lb));
+
+        isExtinguishing = true;
     }
 
     position = {0, 0, 0};
@@ -177,12 +201,15 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
     if (!mesh_van_wheel) mesh_van_wheel = std::make_unique<ppgso::Mesh>("objects/cars/van_wheel.obj");
     if (!mesh_van_front_light) mesh_van_front_light = std::make_unique<ppgso::Mesh>("objects/cars/van_frontlight.obj");
     if (!mesh_van_back_light) mesh_van_back_light = std::make_unique<ppgso::Mesh>("objects/cars/van_backlight.obj");
+    if (!mesh_firetruck) mesh_firetruck = std::make_unique<ppgso::Mesh>("objects/cars/firetruck.obj");
+    if (!mesh_firetruck_wheel) mesh_firetruck_wheel = std::make_unique<ppgso::Mesh>("objects/cars/firetruck_wheel.obj");
 
     if (!color_shader) color_shader = std::make_unique<ppgso::Shader>(color_vert_glsl, color_frag_glsl);
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_02_A.bmp"));
     if (!texture_van) texture_van = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_01_A.bmp"));
+    if (!texture_firetruck) texture_firetruck = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/hasici.bmp"));
 }
 
 
@@ -195,10 +222,16 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
             rotation.x -= float(int(rotation.x / (2 * ppgso::PI)) * 2 * ppgso::PI);
     }
 
-    if (carType == MuscleCar) {
+    if (carType == MuscleCar && isOnFire) {
+        int maxcount_per_sec = 100;
+        for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
+            auto particle = std::make_unique<Particle>(this, ParticleType::Fire, glm::vec3{0.f, .5f, 2.f});
+            childObjects.push_back(move(particle));
+        }
+    } else if (carType == Firetruck && isExtinguishing) {
         int maxcount_per_sec = 200;
         for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
-            auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, .5f, 2.f});
+            auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, 2.f, 0.f});
             childObjects.push_back(move(particle));
         }
     }
@@ -246,6 +279,8 @@ void Car::render(Scene &scene) {
 
         if(carType == CarType::Van){
             shader->setUniform("Texture", *texture_van);
+        } else if(carType == CarType::Firetruck) {
+            shader->setUniform("Texture", *texture_firetruck);
         } else{
             shader->setUniform("Texture", *texture);
         }
@@ -319,13 +354,20 @@ void Car::render(Scene &scene) {
         case CarType::VanBackLight:
             mesh_van_back_light->render();
             break;
+        case CarType::Firetruck:
+            mesh_firetruck->render();
+            break;
+        case CarType::FiretruckWheel:
+            mesh_firetruck_wheel->render();
+            break;
     }
 }
 
 bool Car::isWheel() {
     return carType == CarType::MuscleCarWheel
         || carType == CarType::PoliceCarWheel
-        || carType == CarType::VanWheel;
+        || carType == CarType::VanWheel
+        || carType == CarType::FiretruckWheel;
 }
 
 float Car::getWheelDiameter() {
@@ -336,6 +378,8 @@ float Car::getWheelDiameter() {
             return 0.37224;
         case CarType::VanWheel:
             return 0.39926;
+        case CarType::FiretruckWheel:
+            return 0.400;
         default:
             return 0;
     }

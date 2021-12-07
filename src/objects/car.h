@@ -24,7 +24,9 @@ enum CarType
     VanGlass = 11,
     VanWheel = 12,
     VanFrontLight = 13,
-    VanBackLight = 14
+    VanBackLight = 14,
+    Firetruck = 15,
+    FiretruckWheel = 16
 };
 
 class Car : public Object {
@@ -46,15 +48,20 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_van_wheel;
     static std::unique_ptr<ppgso::Mesh> mesh_van_front_light;
     static std::unique_ptr<ppgso::Mesh> mesh_van_back_light;
+    static std::unique_ptr<ppgso::Mesh> mesh_firetruck;
+    static std::unique_ptr<ppgso::Mesh> mesh_firetruck_wheel;
 
     static std::unique_ptr<ppgso::Shader> shader;
     static std::unique_ptr<ppgso::Shader> color_shader;
 
     static std::unique_ptr<ppgso::Texture> texture;
     static std::unique_ptr<ppgso::Texture> texture_van;
+    static std::unique_ptr<ppgso::Texture> texture_firetruck;
 
     CarType carType;
 
+    bool isOnFire = false;
+    bool isExtinguishing = false;
 public:
     /*!
      * Create new object
