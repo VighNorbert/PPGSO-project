@@ -8,6 +8,7 @@ std::unique_ptr<ppgso::Mesh> Furniture::mesh_table;
 std::unique_ptr<ppgso::Mesh> Furniture::mesh_chair;
 
 std::unique_ptr<ppgso::Shader> Furniture::shader;
+std::unique_ptr<ppgso::Shader> Furniture::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Furniture::texture;
 
@@ -34,7 +35,7 @@ bool Furniture::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm:
     return true;
 }
 
-void Furniture::render(Scene &scene) {
+void Furniture::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -54,6 +55,25 @@ void Furniture::render(Scene &scene) {
 
     shader->setUniform("Texture", *texture);
 
+
+    switch (this->furnitureType) {
+        case FurnitureType::Chair:
+            mesh_chair->render();
+            break;
+        case FurnitureType::Table:
+            mesh_table->render();
+            break;
+
+    }
+}
+
+void Furniture::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     switch (this->furnitureType) {
         case FurnitureType::Chair:

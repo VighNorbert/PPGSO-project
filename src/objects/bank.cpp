@@ -105,10 +105,24 @@ void Bank::render(Scene &scene, GLuint depthMap) {
             mesh_bank_inside->render();
             break;
         case BankType::BankInsideGlass:
+            // Enable blending
+            glEnable(GL_BLEND);
+            // Additive blending
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
             mesh_bank_inside_glass->render();
+            // Disable blending
+            glDisable(GL_BLEND);
             break;
         case BankType::BankInsideAlarmTop:
+            // Enable blending
+            glEnable(GL_BLEND);
+            // Additive blending
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
             mesh_bank_inside_alarm_top->render();
+            // Disable blending
+            glDisable(GL_BLEND);
             break;
         case BankType::BankInsideAlarmBottom:
             mesh_bank_inside_alarm_bottom->render();
@@ -130,12 +144,6 @@ void Bank::renderForShadow(Scene &scene) {
             break;
         case BankType::BankInside:
             mesh_bank_inside->render();
-            break;
-        case BankType::BankInsideGlass:
-            mesh_bank_inside_glass->render();
-            break;
-        case BankType::BankInsideAlarmTop:
-            mesh_bank_inside_alarm_top->render();
             break;
         case BankType::BankInsideAlarmBottom:
             mesh_bank_inside_alarm_bottom->render();

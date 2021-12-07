@@ -53,6 +53,7 @@ private:
 
     static std::unique_ptr<ppgso::Shader> shader;
     static std::unique_ptr<ppgso::Shader> color_shader;
+    static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     static std::unique_ptr<ppgso::Texture> texture;
     static std::unique_ptr<ppgso::Texture> texture_van;
@@ -78,11 +79,17 @@ public:
     /*!
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
 
     bool isWheel();
 
     float getWheelDiameter();
+
+    /*!
+  * Render asteroid
+  * @param scene Scene to render in
+  */
+    void renderForShadow(Scene &scene) override;
 
 };
 

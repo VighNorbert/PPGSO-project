@@ -7,6 +7,7 @@
 std::unique_ptr<ppgso::Mesh> OfficeOld::mesh;
 
 std::unique_ptr<ppgso::Shader> OfficeOld::shader;
+std::unique_ptr<ppgso::Shader> OfficeOld::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> OfficeOld::texture;
 
@@ -31,7 +32,7 @@ bool OfficeOld::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm:
     return true;
 }
 
-void OfficeOld::render(Scene &scene) {
+void OfficeOld::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -50,6 +51,17 @@ void OfficeOld::render(Scene &scene) {
     shader->setUniform("ModelMatrix", modelMatrix);
 
     shader->setUniform("Texture", *texture);
+
+    mesh->render();
+}
+
+void OfficeOld::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     mesh->render();
 }

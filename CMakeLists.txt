@@ -110,16 +110,16 @@ add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/sce
         src/light.cpp src/light.h
         src/mainlight.cpp src/mainlight.h
         src/objects/lightWrapper.cpp src/objects/lightWrapper.h
-#        src/objects/road.cpp src/objects/road.h
-#        src/objects/car.cpp src/objects/car.h
+        src/objects/road.cpp src/objects/road.h
+        src/objects/car.cpp src/objects/car.h
         src/objects/bank.cpp src/objects/bank.h
-#        src/objects/apartment.cpp src/objects/apartment.h
-#        src/objects/character.cpp src/objects/character.h
-#        src/objects/office_old.cpp src/objects/office_old.h
-#        src/objects/gun.cpp src/objects/gun.h
-#        src/objects/furniture.cpp src/objects/furniture.h
-#        src/objects/money_bag.cpp src/objects/money_bag.h
-#        src/objects/particle.cpp src/objects/particle.h
+        src/objects/apartment.cpp src/objects/apartment.h
+        src/objects/character.cpp src/objects/character.h
+        src/objects/office_old.cpp src/objects/office_old.h
+        src/objects/gun.cpp src/objects/gun.h
+        src/objects/furniture.cpp src/objects/furniture.h
+        src/objects/money_bag.cpp src/objects/money_bag.h
+        src/objects/particle.cpp src/objects/particle.h
 )
 target_link_libraries(main ppgso shaders)
 install(TARGETS main DESTINATION .)

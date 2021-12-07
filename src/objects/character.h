@@ -52,6 +52,7 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_male_police_standing;
 
     static std::unique_ptr<ppgso::Shader> shader;
+    static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     static std::unique_ptr<ppgso::Texture> texture;
 
@@ -75,7 +76,9 @@ public:
      * Render asteroid
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
+
+    void renderForShadow(Scene &scene) override;
 
 };
 

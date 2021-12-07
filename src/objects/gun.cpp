@@ -8,6 +8,7 @@ std::unique_ptr<ppgso::Mesh> Gun::mesh_pistol;
 std::unique_ptr<ppgso::Mesh> Gun::mesh_bullet;
 
 std::unique_ptr<ppgso::Shader> Gun::shader;
+std::unique_ptr<ppgso::Shader> Gun::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Gun::texture;
 
@@ -34,7 +35,7 @@ bool Gun::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
     return true;
 }
 
-void Gun::render(Scene &scene) {
+void Gun::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -54,6 +55,25 @@ void Gun::render(Scene &scene) {
 
     shader->setUniform("Texture", *texture);
 
+
+    switch (this->gunType) {
+        case GunType::Bullet:
+            mesh_bullet->render();
+            break;
+        case GunType::Pistol:
+            mesh_pistol->render();
+            break;
+
+    }
+}
+
+void Gun::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     switch (this->gunType) {
         case GunType::Bullet:

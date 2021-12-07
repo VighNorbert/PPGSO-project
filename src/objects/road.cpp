@@ -13,6 +13,7 @@ std::unique_ptr<ppgso::Mesh> Road::mesh_sidewalk_corner;
 std::unique_ptr<ppgso::Mesh> Road::mesh_sidewalk_gutter;
 
 std::unique_ptr<ppgso::Shader> Road::shader;
+std::unique_ptr<ppgso::Shader> Road::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Road::texture_side;
 std::unique_ptr<ppgso::Texture> Road::texture_center;
@@ -54,7 +55,7 @@ bool Road::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
     return true;
 }
 
-void Road::render(Scene &scene) {
+void Road::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -72,6 +73,46 @@ void Road::render(Scene &scene) {
 
     // render mesh
     shader->setUniform("ModelMatrix", modelMatrix);
+
+    switch (roadType) {
+        case StraightRoad:
+            shader->setUniform("Texture", *texture_side);
+            mesh_road->render();
+            break;
+        case RoadCrossing:
+            shader->setUniform("Texture", *texture_side);
+            mesh_crossing->render();
+            break;
+        case Crossroad:
+            shader->setUniform("Texture", *texture_center);
+            mesh_crossroad->render();
+            break;
+        case Sidewalk:
+            shader->setUniform("Texture", *texture_main);
+            mesh_sidewalk->render();
+            break;
+        case Sidewalk_Straight:
+            shader->setUniform("Texture", *texture_main);
+            mesh_sidewalk_straight->render();
+            break;
+        case Sidewalk_Corner:
+            shader->setUniform("Texture", *texture_main);
+            mesh_sidewalk_corner->render();
+            break;
+        case Sidewalk_Gutter:
+            shader->setUniform("Texture", *texture_main);
+            mesh_sidewalk_gutter->render();
+            break;
+    }
+}
+
+void Road::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     switch (roadType) {
         case StraightRoad:

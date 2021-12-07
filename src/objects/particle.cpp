@@ -7,6 +7,7 @@
 std::unique_ptr<ppgso::Mesh> Particle::mesh;
 
 std::unique_ptr<ppgso::Shader> Particle::shader;
+std::unique_ptr<ppgso::Shader> Particle::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Particle::fire_texture;
 std::unique_ptr<ppgso::Texture> Particle::water_texture;
@@ -73,7 +74,7 @@ bool Particle::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::
     return true;
 }
 
-void Particle::render(Scene &scene) {
+void Particle::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -111,4 +112,14 @@ void Particle::render(Scene &scene) {
 //    if (particleType == ParticleType::Fire) {
         glDisable(GL_BLEND);
 //    }
+}
+
+void Particle::renderForShadow(Scene &scene) {
+//    shader_shadow->use();
+//
+//    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+//    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+//
+//    shader_shadow->setUniform("ModelMatrix", modelMatrix);
+
 }

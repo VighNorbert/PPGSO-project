@@ -32,6 +32,7 @@ std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck_wheel;
 
 std::unique_ptr<ppgso::Shader> Car::shader;
 std::unique_ptr<ppgso::Shader> Car::color_shader;
+std::unique_ptr<ppgso::Shader> Car::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Car::texture;
 std::unique_ptr<ppgso::Texture> Car::texture_van;
@@ -241,7 +242,7 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
     return true;
 }
 
-void Car::render(Scene &scene) {
+void Car::render(Scene &scene, GLuint depthMap) {
     if (carType == CarType::MuscleCarFrontLight || carType == CarType::MuscleCarBackLight
         || carType == CarType::PoliceCarFrontLight || carType == CarType::PoliceCarBackLight
         || carType == CarType::VanFrontLight || carType == CarType::VanBackLight) {
@@ -382,5 +383,59 @@ float Car::getWheelDiameter() {
             return 0.400;
         default:
             return 0;
+    }
+}
+
+void Car::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
+
+    switch (this->carType) {
+        case CarType::MuscleCar:
+            mesh_muscle_car->render();
+            break;
+        case CarType::MuscleCarWheel:
+            mesh_muscle_car_wheel->render();
+            break;
+        case CarType::MuscleCarFrontLight:
+            mesh_muscle_car_front_light->render();
+            break;
+        case CarType::MuscleCarBackLight:
+            mesh_muscle_car_back_light->render();
+            break;
+        case CarType::PoliceCar:
+            mesh_police_car->render();
+            break;
+        case CarType::PoliceCarWheel:
+            mesh_police_car_wheel->render();
+            break;
+        case CarType::PoliceCarFrontLight:
+            mesh_police_car_front_light->render();
+            break;
+        case CarType::PoliceCarBackLight:
+            mesh_police_car_back_light->render();
+            break;
+        case CarType::Van:
+            mesh_van->render();
+            break;
+        case CarType::VanWheel:
+            mesh_van_wheel->render();
+            break;
+        case CarType::VanFrontLight:
+            mesh_van_front_light->render();
+            break;
+        case CarType::VanBackLight:
+            mesh_van_back_light->render();
+            break;
+        case CarType::Firetruck:
+            mesh_firetruck->render();
+            break;
+        case CarType::FiretruckWheel:
+            mesh_firetruck_wheel->render();
+            break;
     }
 }

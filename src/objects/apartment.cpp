@@ -24,7 +24,7 @@ std::unique_ptr<ppgso::Mesh> Apartment::mesh_roof_corner_2;
 std::unique_ptr<ppgso::Mesh> Apartment::mesh_roof_corner_3;
 
 std::unique_ptr<ppgso::Shader> Apartment::shader;
-
+std::unique_ptr<ppgso::Shader> Apartment::shader_shadow;
 
 Apartment::Apartment(Object* parent, ApartmentType apartmentType) : texture(TextureGenerator::random()) {
     parentObject = parent;
@@ -103,7 +103,7 @@ bool Apartment::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm:
     return true;
 }
 
-void Apartment::render(Scene &scene) {
+void Apartment::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -122,6 +122,66 @@ void Apartment::render(Scene &scene) {
     shader->setUniform("ModelMatrix", modelMatrix);
 
     shader->setUniform("Texture", texture);
+
+    switch (abType) {
+        case Door1:
+            mesh_door_1->render();
+            break;
+        case Door2:
+            mesh_door_2->render();
+            break;
+        case Block1:
+            mesh_1->render();
+            break;
+        case Block2:
+            mesh_2->render();
+            break;
+        case Block3:
+            mesh_3->render();
+            break;
+        case Roof1:
+            mesh_roof_1->render();
+            break;
+        case Roof2:
+            mesh_roof_2->render();
+            break;
+        case Roof3:
+            mesh_roof_3->render();
+            break;
+        case DoorCorner1:
+            mesh_door_corner_1->render();
+            break;
+        case DoorCorner2:
+            mesh_door_corner_2->render();
+            break;
+        case BlockCorner1:
+            mesh_corner_1->render();
+            break;
+        case BlockCorner2:
+            mesh_corner_2->render();
+            break;
+        case BlockCorner3:
+            mesh_corner_3->render();
+            break;
+        case RoofCorner1:
+            mesh_roof_corner_1->render();
+            break;
+        case RoofCorner2:
+            mesh_roof_corner_2->render();
+            break;
+        case RoofCorner3:
+            mesh_roof_corner_3->render();
+            break;
+    }
+}
+
+void Apartment::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     switch (abType) {
         case Door1:

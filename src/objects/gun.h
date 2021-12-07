@@ -23,6 +23,7 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_bullet;
 
     static std::unique_ptr<ppgso::Shader> shader;
+    static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     static std::unique_ptr<ppgso::Texture> texture;
 
@@ -46,7 +47,13 @@ public:
      * Render asteroid
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
+
+    /*!
+     * Render asteroid
+     * @param scene Scene to render in
+     */
+    void renderForShadow(Scene &scene) override;
 };
 
 #endif //PPGSO_GUN_H

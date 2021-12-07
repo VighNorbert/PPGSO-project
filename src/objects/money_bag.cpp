@@ -8,6 +8,7 @@ std::unique_ptr<ppgso::Mesh> MoneyBag::mesh;
 
 
 std::unique_ptr<ppgso::Shader> MoneyBag::shader;
+std::unique_ptr<ppgso::Shader> MoneyBag::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> MoneyBag::texture;
 
@@ -32,7 +33,7 @@ bool MoneyBag::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::
     return true;
 }
 
-void MoneyBag::render(Scene &scene) {
+void MoneyBag::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -52,6 +53,17 @@ void MoneyBag::render(Scene &scene) {
 
     shader->setUniform("Texture", *texture);
 
+
+    mesh->render();
+}
+
+void MoneyBag::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     mesh->render();
 }

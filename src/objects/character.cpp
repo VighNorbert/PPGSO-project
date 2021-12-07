@@ -23,6 +23,7 @@ std::unique_ptr<ppgso::Mesh> Character::mesh_male_hoodie_standing;
 std::unique_ptr<ppgso::Mesh> Character::mesh_male_police_standing;
 
 std::unique_ptr<ppgso::Shader> Character::shader;
+std::unique_ptr<ppgso::Shader> Character::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Character::texture;
 
@@ -67,7 +68,7 @@ bool Character::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm:
     return true;
 }
 
-void Character::render(Scene &scene) {
+void Character::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
@@ -86,6 +87,64 @@ void Character::render(Scene &scene) {
     shader->setUniform("ModelMatrix", modelMatrix);
 
     shader->setUniform("Texture", *texture);
+
+    switch (this->characterType) {
+        case CharacterType::MalePoliceSittingPoliceCar:
+            mesh_male_police_sitting_police_car->render();
+            break;
+        case CharacterType::MalePoliceDrivingPoliceCar:
+            mesh_male_police_driving_police_car->render();
+            break;
+        case CharacterType::MaleHoodieSittingMuscleCar:
+            mesh_male_hoodie_sitting_muscle_car->render();
+            break;
+        case CharacterType::MaleJacketDrivingMuscleCar:
+            mesh_male_jacket_driving_muscle_car->render();
+            break;
+        case CharacterType::FemaleBusinessSuitDrivingVan:
+            mesh_female_business_suit_driving_van->render();
+            break;
+        case CharacterType::FemaleBusinessSuitStanding:
+            mesh_female_business_suit_standing->render();
+            break;
+        case CharacterType::MaleBusinessShirtStanding:
+            mesh_male_business_shirt_standing->render();
+            break;
+        case CharacterType::MaleBusinessSuitStanding:
+            mesh_male_business_suit_standing->render();
+            break;
+        case CharacterType::MaleHoodieShooting:
+            mesh_male_hoodie_shooting->render();
+            break;
+        case MaleHoodieSitting:
+            break;
+        case CharacterType::MaleHoodieStanding:
+            mesh_male_hoodie_standing->render();
+            break;
+        case MaleJacketDriving:
+            break;
+        case MaleJacketStanding:
+            break;
+        case MalePoliceDriving:
+            break;
+        case MalePoliceSitting:
+            break;
+        case CharacterType::MalePoliceStanding:
+            mesh_male_police_standing->render();
+            break;
+        case CharacterType::MaleBusinessSuitPushingButton:
+            mesh_male_business_suit_pushing_button->render();
+            break;
+    }
+}
+
+void Character::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     switch (this->characterType) {
         case CharacterType::MalePoliceSittingPoliceCar:

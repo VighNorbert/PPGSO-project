@@ -5,13 +5,13 @@
 #include <shaders/diffuse_frag_glsl.h>
 
 #include <utility>
-//#include <src/objects/road.h>
-//#include <src/objects/character.h>
-//#include <src/objects/car.h>
+#include <src/objects/road.h>
+#include <src/objects/character.h>
+#include <src/objects/car.h>
 #include <src/objects/bank.h>
-//#include <src/objects/apartment.h>
-//#include <src/objects/office_old.h>
-//#include <src/objects/furniture.h>
+#include <src/objects/apartment.h>
+#include <src/objects/office_old.h>
+#include <src/objects/furniture.h>
 #include <src/objects/lightWrapper.h>
 
 #include "camera.h"
