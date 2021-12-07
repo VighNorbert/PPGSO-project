@@ -55,18 +55,30 @@ in vec4 fragmentPositionLightSpace;
 // The final color
 out vec4 FragmentColor;
 
-float ShadowCalculation()
+float ShadowCalculation(vec3 lightDir)
 {
   // perform perspective divide
   vec3 projCoords = fragmentPositionLightSpace.xyz / fragmentPositionLightSpace.w;
   // transform to [0,1] range
   projCoords = projCoords * 0.5 + 0.5;
+  if(projCoords.z > 1.0)
+    return 0.0;
   // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
   float closestDepth = texture(ShadowMap, projCoords.xy).r;
   // get depth of current fragment from light's perspective
   float currentDepth = projCoords.z;
-  // check whether current frag pos is in shadow
-  float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(ShadowMap, 0);
+  for(int x = -2; x <= 2; ++x)
+  {
+    for(int y = -2; y <= 2; ++y)
+    {
+      float pcfDepth = texture(ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+      shadow += currentDepth > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+  shadow /= 25.0;
 
   return shadow;
 }
@@ -105,7 +117,7 @@ vec3 CalcLight(Light light, vec3 viewDir, vec3 objectColor)
   vec3 reflectDir = reflect(-lightDir, vec3(normal));
   vec3 specular = SpecularStrength * pow(max(dot(viewDir, reflectDir), 0.0), 32) * color;
 
-  float shadow = ShadowCalculation();
+  float shadow = ShadowCalculation(lightDir);
 
   return (ambient + (1.0 - shadow) * (diffuse + specular)) * intensity;
 }
