@@ -83,8 +83,8 @@ namespace ppgso {
     void setUniform(const std::string &name, glm::vec4 vector) const;
 
     /*!
-     * Set texture as an input for the shader program variable "name"
-     * OpenGL texture id needs to be set when dealing with multiple textures.
+     * Set fire_texture as an input for the shader program variable "name"
+     * OpenGL fire_texture id needs to be set when dealing with multiple textures.
      *
      * @param name - Name of the shader program uniform input variable.
      * @param texture - Texture to set input to.task6_bezier_surface

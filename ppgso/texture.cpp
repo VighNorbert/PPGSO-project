@@ -17,11 +17,11 @@ ppgso::Texture::~Texture() {
 }
 
 void ppgso::Texture::initGL() {
-  // Create new texture object
+  // Create new fire_texture object
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
 
-  // Reserve texture storage
+  // Reserve fire_texture storage
   glTexStorage2D(GL_TEXTURE_2D, 3, GL_RGB8, image.width, image.height);
 
   // Set up mipmapping
@@ -30,13 +30,13 @@ void ppgso::Texture::initGL() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-  // Update texture with data from image framebuffer
+  // Update fire_texture with data from image framebuffer
   update();
 }
 
 void ppgso::Texture::update() {
   bind();
-  // Upload texture to GPU
+  // Upload fire_texture to GPU
   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image.width, image.height, GL_RGB, GL_UNSIGNED_BYTE, image.getFramebuffer().data());
 
   // Re-generate mipmaps

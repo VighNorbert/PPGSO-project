@@ -36,7 +36,8 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-        camera->position = {.0f, 10.0f, -10.0f};
+//        camera->position = {.0f, 10.0f, -10.0f};
+        camera->position = {-5.0f, 5.0f, -10.0f};
         camera->tilt = 20.f;
         camera->rotation = 180.f;
 //        camera->keyframes = {
@@ -72,29 +73,30 @@ private:
         Road::generateRoad(scene, 1, 22, {200.f, 10.f});
         Road::generateRoad(scene, 3, 40, {200.f, -10.f});
 
-        auto car = std::make_unique<Car>(nullptr, CarType::Van, scene);
+//        auto car = std::make_unique<Car>(nullptr, CarType::Van, scene);
+//        car->position = {0, 0, -2.5f};
+//        car->speed = {0, 0, 0};
+//        car->rotation.z = - ppgso::PI / 2;
+//        scene.rootObjects.push_back(move(car));
+//
+//        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
+//        car->position = {10, 0, -2.5f};
+//        car->speed = {0, 0, 0};
+//        car->rotation.z = - ppgso::PI / 2;
+//        scene.rootObjects.push_back(move(car));
+
+        auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
         car->position = {0, 0, -2.5f};
-        car->speed = {0, 0, 0};
+//        car->position = {20, 0, -2.5f};
+//        car->speed = {-1, 0, 0};
         car->rotation.z = - ppgso::PI / 2;
         scene.rootObjects.push_back(move(car));
 
-        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
-        car->position = {10, 0, -2.5f};
-        car->speed = {0, 0, 0};
-        car->rotation.z = - ppgso::PI / 2;
-        scene.rootObjects.push_back(move(car));
-
-        car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
-        car->position = {20, 0, -2.5f};
-        car->speed = {-1, 0, 0};
-        car->rotation.z = - ppgso::PI / 2;
-        scene.rootObjects.push_back(move(car));
-
-        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
-        car->position = {-25, 0, 2.5};
-        car->speed = {1, 0, 0};
-        car->rotation.z = ppgso::PI / 2;
-        scene.rootObjects.push_back(move(car));
+//        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
+//        car->position = {-25, 0, 2.5};
+//        car->speed = {1, 0, 0};
+//        car->rotation.z = ppgso::PI / 2;
+//        scene.rootObjects.push_back(move(car));
 
         for (int i = 5; i<=185; i+= 5) {
             auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
@@ -300,8 +302,8 @@ public:
         glFrontFace(GL_CCW);
         glCullFace(GL_BACK);
 
-//        initScene();
-        initSceneBank();
+        initScene();
+//        initSceneBank();
     }
 
     /*!

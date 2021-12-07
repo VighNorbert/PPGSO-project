@@ -1,5 +1,6 @@
 #include "car.h"
 #include "character.h"
+#include "particle.h"
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
@@ -192,6 +193,14 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
         rotation.x += dt * glm::length(parentObject->speed) / getWheelDiameter();
         if (rotation.x > 2 * ppgso::PI)
             rotation.x -= float(int(rotation.x / (2 * ppgso::PI)) * 2 * ppgso::PI);
+    }
+
+    if (carType == MuscleCar) {
+        int maxcount_per_sec = 200;
+        for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
+            auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, .5f, 2.f});
+            childObjects.push_back(move(particle));
+        }
     }
 
     generateModelMatrix(parentModelMatrix);
