@@ -5,17 +5,19 @@
 #include <shaders/diffuse_frag_glsl.h>
 
 #include <utility>
-#include <src/objects/road.h>
-#include <src/objects/character.h>
-#include <src/objects/car.h>
+//#include <src/objects/road.h>
+//#include <src/objects/character.h>
+//#include <src/objects/car.h>
 #include <src/objects/bank.h>
-#include <src/objects/apartment.h>
-#include <src/objects/office_old.h>
-#include <src/objects/furniture.h>
+//#include <src/objects/apartment.h>
+//#include <src/objects/office_old.h>
+//#include <src/objects/furniture.h>
+#include <src/objects/lightWrapper.h>
 
 #include "camera.h"
 #include "scene.h"
-#include "src/objects/lightWrapper.h"
+
+const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 class SceneWindow : public ppgso::Window {
 private:
@@ -36,8 +38,7 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-//        camera->position = {.0f, 10.0f, -10.0f};
-        camera->position = {-5.0f, 5.0f, -10.0f};
+        camera->position = {.0f, 10.0f, -10.0f};
         camera->tilt = 20.f;
         camera->rotation = 180.f;
 //        camera->keyframes = {
@@ -48,31 +49,29 @@ private:
 
         scene.camera = move(camera);
 
-        auto sun = new Light();
-        auto sunWrapper = std::make_unique<LightWrapper>(nullptr, glm::vec3 {1000.f, 1000.f, -1000.f}, sun);
-        scene.lights.push_back(sun);
-        scene.rootObjects.push_back(move(sunWrapper));
+        scene.mainlight = std::make_unique<MainLight>();
+        scene.mainlight->position = glm::vec3 {1000.f, 1000.f, -1000.f};
 
-        Road::generateCrossroad(scene, {-40.f, 0.f});
-        Road::generateRoad(scene, 0, 44, {-30.f, 0.f});
-        Road::generateRoad(scene, 2, 40, {-50.f, 0.f});
-        Road::generateRoad(scene, 1, 15, {-40.f, 10.f});
-        Road::generateRoad(scene, 3, 5, {-40.f, -10.f});
-
-        for (int i = -1; i>=-11; i-= 2) {
-            for (int j = 0; j<= 1; j++) {
-                auto road = std::make_unique<Road>(nullptr);
-                road->roadType = RoadType::Sidewalk;
-                road->position = {i * 2.5f, 0, 12.5f + j * 5.0f};
-                scene.rootObjects.push_back(move(road));
-            }
-        }
-
-        Road::generateCrossroad(scene, {200.f, 0.f});
-        Road::generateRoad(scene, 0, 5, {210.f, 0.f});
-        Road::generateRoad(scene, 1, 22, {200.f, 10.f});
-        Road::generateRoad(scene, 3, 40, {200.f, -10.f});
-
+//        Road::generateCrossroad(scene, {-40.f, 0.f});
+//        Road::generateRoad(scene, 0, 44, {-30.f, 0.f});
+//        Road::generateRoad(scene, 2, 40, {-50.f, 0.f});
+//        Road::generateRoad(scene, 1, 15, {-40.f, 10.f});
+//        Road::generateRoad(scene, 3, 5, {-40.f, -10.f});
+//
+//        for (int i = -1; i>=-11; i-= 2) {
+//            for (int j = 0; j<= 1; j++) {
+//                auto road = std::make_unique<Road>(nullptr);
+//                road->roadType = RoadType::Sidewalk;
+//                road->position = {i * 2.5f, 0, 12.5f + j * 5.0f};
+//                scene.rootObjects.push_back(move(road));
+//            }
+//        }
+//
+//        Road::generateCrossroad(scene, {200.f, 0.f});
+//        Road::generateRoad(scene, 0, 5, {210.f, 0.f});
+//        Road::generateRoad(scene, 1, 22, {200.f, 10.f});
+//        Road::generateRoad(scene, 3, 40, {200.f, -10.f});
+//
 //        auto car = std::make_unique<Car>(nullptr, CarType::Van, scene);
 //        car->position = {0, 0, -2.5f};
 //        car->speed = {0, 0, 0};
@@ -85,89 +84,90 @@ private:
 //        car->rotation.z = - ppgso::PI / 2;
 //        scene.rootObjects.push_back(move(car));
 //
-        auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
-        car->position = {20, 0, -2.5f};
+//        auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
+//        car->position = {20, 0, -2.5f};
 //        car->speed = {-1, 0, 0};
-        car->rotation.z = - ppgso::PI / 2;
-        scene.rootObjects.push_back(move(car));
-
-        car = std::make_unique<Car>(nullptr, CarType::Firetruck, scene);
-        car->position = {0, 0, -2.5f};
-        car->rotation.z = - ppgso::PI / 2;
-        scene.rootObjects.push_back(move(car));
-
+//        car->rotation.z = - ppgso::PI / 2;
+//        scene.rootObjects.push_back(move(car));
+//
+//        car = std::make_unique<Car>(nullptr, CarType::Firetruck, scene);
+//        car->position = {0, 0, -2.5f};
+//        car->rotation.z = - ppgso::PI / 2;
+//        scene.rootObjects.push_back(move(car));
+//
 //        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
 //        car->position = {-25, 0, 2.5};
 //        car->speed = {1, 0, 0};
 //        car->rotation.z = ppgso::PI / 2;
 //        scene.rootObjects.push_back(move(car));
-
-        for (int i = 5; i<=185; i+= 5) {
-            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-            apt->position = {i -2.5, 0, 10};
-            apt->rotation.z = ppgso::PI;
-            scene.rootObjects.push_back(move(apt));
-        }
-
-        auto apt_corner = std::make_unique<Apartment>(nullptr, ApartmentType::corner);
-        apt_corner->position = {187.5, 0, 10};
-        apt_corner->rotation.z = ppgso::PI;
-        scene.rootObjects.push_back(move(apt_corner));
-
-        for (int i = 15; i<=115; i+= 5) {
-            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-            apt->position = {190, 0, i+2.5};
-            apt->rotation.z = ppgso::PI/2;
-            scene.rootObjects.push_back(move(apt));
-        }
-
-        for (int i = -30; i<=170; i+= 5) {
-            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-            apt->position = {i + 2.5, 0, -10};
-            scene.rootObjects.push_back(move(apt));
-        }
-
-        for (int i = 15; i<=80; i+= 5) {
-            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-            apt->position = {-50, 0, i+2.5};
-            apt->rotation.z = ppgso::PI/2;
-            scene.rootObjects.push_back(move(apt));
-        }
-
-        for (int i = -60; i>=-250; i-= 5) {
-            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-            apt->position = {i+2.5, 0, 10};
-            apt->rotation.z = ppgso::PI;
-            scene.rootObjects.push_back(move(apt));
-        }
-
-        auto apt_corner_bank = std::make_unique<Apartment>(nullptr, ApartmentType::corner);
-        apt_corner_bank->position = {-52.5, 0, 10};
-        apt_corner_bank->rotation.z = ppgso::PI;
-        scene.rootObjects.push_back(move(apt_corner_bank));
+//
+//        for (int i = 5; i<=185; i+= 5) {
+//            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
+//            apt->position = {i -2.5, 0, 10};
+//            apt->rotation.z = ppgso::PI;
+//            scene.rootObjects.push_back(move(apt));
+//        }
+//
+//        auto apt_corner = std::make_unique<Apartment>(nullptr, ApartmentType::corner);
+//        apt_corner->position = {187.5, 0, 10};
+//        apt_corner->rotation.z = ppgso::PI;
+//        scene.rootObjects.push_back(move(apt_corner));
+//
+//        for (int i = 15; i<=115; i+= 5) {
+//            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
+//            apt->position = {190, 0, i+2.5};
+//            apt->rotation.z = ppgso::PI/2;
+//            scene.rootObjects.push_back(move(apt));
+//        }
+//
+//        for (int i = -30; i<=170; i+= 5) {
+//            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
+//            apt->position = {i + 2.5, 0, -10};
+//            scene.rootObjects.push_back(move(apt));
+//        }
+//
+//        for (int i = 15; i<=80; i+= 5) {
+//            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
+//            apt->position = {-50, 0, i+2.5};
+//            apt->rotation.z = ppgso::PI/2;
+//            scene.rootObjects.push_back(move(apt));
+//        }
+//
+//        for (int i = -60; i>=-250; i-= 5) {
+//            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
+//            apt->position = {i+2.5, 0, 10};
+//            apt->rotation.z = ppgso::PI;
+//            scene.rootObjects.push_back(move(apt));
+//        }
+//
+//        auto apt_corner_bank = std::make_unique<Apartment>(nullptr, ApartmentType::corner);
+//        apt_corner_bank->position = {-52.5, 0, 10};
+//        apt_corner_bank->rotation.z = ppgso::PI;
+//        scene.rootObjects.push_back(move(apt_corner_bank));
 
         auto bank = std::make_unique<Bank>(nullptr, BankType::BankOutside, scene);
         bank->position = {-15, 0, 10};
         bank->rotation.z = ppgso::PI;
         scene.rootObjects.push_back(move(bank));
 
-        auto office_old_1 = std::make_unique<OfficeOld>(nullptr);
-        office_old_1->position = {183, 0, -10};
-        scene.rootObjects.push_back(move(office_old_1));
-
-        for (int i =-30; i>=-210; i-=5) {
-            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-            apt->position = {190, 0, i+2.5};
-            apt->rotation.z = ppgso::PI/2;
-            scene.rootObjects.push_back(move(apt));
-        }
-
-        auto office_old_2 = std::make_unique<OfficeOld>(nullptr);
-        office_old_2->position = {217, 0, 10};
-        office_old_2->rotation.z = ppgso::PI;
-        scene.rootObjects.push_back(move(office_old_2));
+//        auto office_old_1 = std::make_unique<OfficeOld>(nullptr);
+//        office_old_1->position = {183, 0, -10};
+//        scene.rootObjects.push_back(move(office_old_1));
+//
+//        for (int i =-30; i>=-210; i-=5) {
+//            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
+//            apt->position = {190, 0, i+2.5};
+//            apt->rotation.z = ppgso::PI/2;
+//            scene.rootObjects.push_back(move(apt));
+//        }
+//
+//        auto office_old_2 = std::make_unique<OfficeOld>(nullptr);
+//        office_old_2->position = {217, 0, 10};
+//        office_old_2->rotation.z = ppgso::PI;
+//        scene.rootObjects.push_back(move(office_old_2));
     }
 
+    /*
     void initSceneBank() {
         scene.rootObjects.clear();
 
@@ -286,13 +286,18 @@ private:
         scene.rootObjects.push_back(move(character));
 
     }
-
+*/
+    GLuint depthMapFBO;
+    GLuint depthMap;
+    int size_x, size_y;
 public:
     /*!
      * Construct custom game window
      */
     SceneWindow(std::string WINDOW_NAME, int SIZE_X, int SIZE_Y) : Window{std::move(WINDOW_NAME), SIZE_X, SIZE_Y} {
         ratio = float(SIZE_X) / float(SIZE_Y);
+        size_x = SIZE_X;
+        size_y = SIZE_Y;
         //hideCursor();
         glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 
@@ -305,6 +310,23 @@ public:
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
         glCullFace(GL_BACK);
+
+        glGenFramebuffers(1, &depthMapFBO);
+        glGenTextures(1, &depthMap);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         initScene();
 //        initSceneBank();
@@ -322,14 +344,22 @@ public:
 
         time = (float) glfwGetTime();
 
-        // Set gray background
-        glClearColor(.5f, .5f, .5f, 1.0f);
-        // Clear depth and color buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         // Update and render all objects
         scene.update(dt);
-        scene.render();
+
+        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        scene.renderForShadow();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, size_x, size_y);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Set gray background
+        glClearColor(.5f, .5f, .5f, 1.0f);
+
+        scene.render(depthMap);
     }
 
     void onKey(int key, int scanCode, int action, int mods) override {

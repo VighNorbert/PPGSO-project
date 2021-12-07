@@ -17,16 +17,30 @@ void Scene::update(float time) {
   }
 }
 
-void Scene::render() {
+void Scene::render(GLuint depthMap) {
   // Simply render all rootObjects
   for ( auto& obj : rootObjects )
-    obj->renderChildren(*this);
+    obj->renderChildren(*this, depthMap);
 }
 
-void Scene::renderLight(std::unique_ptr<ppgso::Shader> &shader) {
-    shader->setUniform("LightsCount", lights.size());
+void Scene::renderLight(std::unique_ptr<ppgso::Shader> &shader, bool onlyMain) {
+    shader->setUniform("LightsCount", float(int(onlyMain ? 0 : lights.size()) + (mainlight != nullptr)));
 
     int i = 0;
+    if (mainlight != nullptr) {
+        std::string base = "lights[" + std::to_string(i) + "].";
+        shader->setUniform(base + "position", mainlight->position);
+        shader->setUniform(base + "constant", mainlight->constant);
+        shader->setUniform(base + "linear", mainlight->linear);
+        shader->setUniform(base + "quadratic", mainlight->quadratic);
+        shader->setUniform(base + "color", mainlight->color);
+        shader->setUniform(base + "maxDist", mainlight->maxDist);
+        shader->setUniform(base + "isSpotlight", mainlight->isSpotlight);
+        shader->setUniform(base + "direction", mainlight->direction);
+        shader->setUniform(base + "cutOff", mainlight->cutOff);
+        shader->setUniform(base + "outerCutOff", mainlight->outerCutOff);
+        i++;
+    }
     for (auto& light: lights) {
         std::string base = "lights[" + std::to_string(i) + "].";
 
@@ -40,8 +54,13 @@ void Scene::renderLight(std::unique_ptr<ppgso::Shader> &shader) {
         shader->setUniform(base + "direction", light->direction);
         shader->setUniform(base + "cutOff", light->cutOff);
         shader->setUniform(base + "outerCutOff", light->outerCutOff);
-
         i++;
     }
 
+}
+
+void Scene::renderForShadow() {
+    // Simply render all rootObjects
+    for ( auto& obj : rootObjects )
+        obj->renderForShadowChildren(*this);
 }

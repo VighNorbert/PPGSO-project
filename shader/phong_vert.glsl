@@ -9,6 +9,9 @@ uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
 
+uniform mat4 LightProjectionMatrix;
+uniform mat4 LightViewMatrix;
+
 // This will be passed to the fragment shader
 out vec2 texCoord;
 
@@ -16,6 +19,9 @@ out vec2 texCoord;
 out vec4 normal;
 
 out vec3 fragmetPosition;
+
+out vec4 fragmentPositionLightSpace;
+
 
 void main() {
   // Copy the input to the fragment shader
@@ -25,6 +31,8 @@ void main() {
   normal = normalize(ModelMatrix * vec4(Normal, 0.0f));
 
   fragmetPosition = vec3(ModelMatrix * vec4(Position, 1.0));
+
+  fragmentPositionLightSpace = LightProjectionMatrix * LightViewMatrix * vec4(fragmetPosition, 1.0);
 
   // Calculate the final position on screen
   gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(Position, 1.0);
