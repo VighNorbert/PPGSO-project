@@ -49,10 +49,8 @@ private:
 
         scene.camera = move(camera);
 
-        auto sun = new Light();
-        auto sunWrapper = std::make_unique<LightWrapper>(nullptr, glm::vec3 {1000.f, 1000.f, -1000.f}, sun);
-        scene.lights.push_back(sun);
-        scene.rootObjects.push_back(move(sunWrapper));
+        scene.mainlight = std::make_unique<MainLight>();
+        scene.mainlight->position = glm::vec3 {1000.f, 1000.f, -1000.f};
 
 //        Road::generateCrossroad(scene, {-40.f, 0.f});
 //        Road::generateRoad(scene, 0, 44, {-30.f, 0.f});

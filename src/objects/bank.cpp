@@ -84,14 +84,12 @@ void Bank::render(Scene &scene, GLuint depthMap) {
 
     shader->setUniform("Texture", *texture);
 
-    auto light = scene.lights.front();
-
-    shader->setUniform("LightProjectionMatrix", light->lightProjection);
-    shader->setUniform("LightViewMatrix", light->getLightView());
+    shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
-    shader->setUniformInt("ShadowMap", depthMap);
+    shader->setUniformInt("ShadowMap", (int)depthMap);
 
 
     switch (this->bankType) {
@@ -113,10 +111,8 @@ void Bank::render(Scene &scene, GLuint depthMap) {
 void Bank::renderForShadow(Scene &scene) {
     shader_shadow->use();
 
-    auto light = scene.lights.front();
-
-    shader_shadow->setUniform("LightProjectionMatrix", light->lightProjection);
-    shader_shadow->setUniform("LightViewMatrix", light->getLightView());
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
 
     shader_shadow->setUniform("ModelMatrix", modelMatrix);
 

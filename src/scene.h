@@ -8,6 +8,7 @@
 #include "object.h"
 #include "camera.h"
 #include "light.h"
+#include "mainlight.h"
 
 /*
  * Scene is an object that will aggregate all scene related data
@@ -36,7 +37,7 @@ public:
      * @param scene
      * @param shader
      */
-    void renderLight(std::unique_ptr<ppgso::Shader> &shader);
+    void renderLight(std::unique_ptr<ppgso::Shader> &shader, bool onlyMain = true);
 
     // Camera object
     std::unique_ptr<Camera> camera;
@@ -45,6 +46,8 @@ public:
     std::list< std::unique_ptr<Object> > rootObjects;
 
     std::list<Light *> lights = {};
+
+    std::unique_ptr<MainLight> mainlight = nullptr;
 };
 
 #endif // _PPGSO_SCENE_H
