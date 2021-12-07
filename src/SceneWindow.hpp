@@ -352,13 +352,11 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, size_x, size_y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glViewport(0, 0, size_x, size_y);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Set gray background
         glClearColor(.5f, .5f, .5f, 1.0f);
 
-        scene.render(depthMapFBO);
+        scene.render(depthMap);
     }
 
     void onKey(int key, int scanCode, int action, int mods) override {

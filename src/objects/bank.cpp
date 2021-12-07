@@ -88,12 +88,10 @@ void Bank::render(Scene &scene, GLuint depthMap) {
 
     shader->setUniform("LightProjectionMatrix", light->lightProjection);
     shader->setUniform("LightViewMatrix", light->getLightView());
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture->getTexture());
+
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
-//    shader->setUniform("ShadowMap", 1);
-
+    shader->setUniformInt("ShadowMap", depthMap);
 
 
     switch (this->bankType) {
