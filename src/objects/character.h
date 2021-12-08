@@ -79,7 +79,6 @@ public:
     void render(Scene &scene, GLuint depthMap) override;
 
     void renderForShadow(Scene &scene) override;
-
 };
 
 

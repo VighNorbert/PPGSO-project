@@ -2,6 +2,8 @@
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
+#include <shaders/shadow_vert_glsl.h>
+#include <shaders/shadow_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Furniture::mesh_table;
@@ -24,6 +26,7 @@ Furniture::Furniture(Object* parent, FurnitureType furnitureType) {
     if (!mesh_chair) mesh_chair = std::make_unique<ppgso::Mesh>("objects/chair.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
+    if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_02_A.bmp"));
 }
@@ -55,6 +58,12 @@ void Furniture::render(Scene &scene, GLuint depthMap) {
 
     shader->setUniform("Texture", *texture);
 
+    shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    shader->setUniformInt("ShadowMap", (int)depthMap);
 
     switch (this->furnitureType) {
         case FurnitureType::Chair:

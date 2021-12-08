@@ -24,8 +24,6 @@ void Scene::render(GLuint depthMap) {
 }
 
 void Scene::renderLight(std::unique_ptr<ppgso::Shader> &shader, bool onlyMain) {
-    shader->setUniform("LightsCount", float(int(onlyMain ? 0 : lights.size()) + (mainlight != nullptr)));
-
     int i = 0;
     if (mainlight != nullptr) {
         std::string base = "lights[" + std::to_string(i) + "].";
@@ -41,22 +39,25 @@ void Scene::renderLight(std::unique_ptr<ppgso::Shader> &shader, bool onlyMain) {
         shader->setUniform(base + "outerCutOff", mainlight->outerCutOff);
         i++;
     }
-    for (auto& light: lights) {
-        std::string base = "lights[" + std::to_string(i) + "].";
+    if (!onlyMain) {
+        for (auto &light: lights) {
+            std::string base = "lights[" + std::to_string(i) + "].";
 
-        shader->setUniform(base + "position", light->position);
-        shader->setUniform(base + "constant", light->constant);
-        shader->setUniform(base + "linear", light->linear);
-        shader->setUniform(base + "quadratic", light->quadratic);
-        shader->setUniform(base + "color", light->color);
-        shader->setUniform(base + "maxDist", light->maxDist);
-        shader->setUniform(base + "isSpotlight", light->isSpotlight);
-        shader->setUniform(base + "direction", light->direction);
-        shader->setUniform(base + "cutOff", light->cutOff);
-        shader->setUniform(base + "outerCutOff", light->outerCutOff);
-        i++;
+            shader->setUniform(base + "position", light->position);
+            shader->setUniform(base + "constant", light->constant);
+            shader->setUniform(base + "linear", light->linear);
+            shader->setUniform(base + "quadratic", light->quadratic);
+            shader->setUniform(base + "color", light->color);
+            shader->setUniform(base + "maxDist", light->maxDist);
+            shader->setUniform(base + "isSpotlight", light->isSpotlight);
+            shader->setUniform(base + "direction", light->direction);
+            shader->setUniform(base + "cutOff", light->cutOff);
+            shader->setUniform(base + "outerCutOff", light->outerCutOff);
+            i++;
+        }
     }
 
+    shader->setUniform("LightsCount", i);
 }
 
 void Scene::renderForShadow() {

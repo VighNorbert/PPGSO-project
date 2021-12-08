@@ -2,6 +2,8 @@
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
+#include <shaders/shadow_vert_glsl.h>
+#include <shaders/shadow_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Road::mesh_road;
@@ -37,6 +39,7 @@ Road::Road(Object* parent) {
     if (!mesh_sidewalk_gutter) mesh_sidewalk_gutter = std::make_unique<ppgso::Mesh>("objects/roads/sidewalk_gutter.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
+    if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
 
     if (!texture_side) texture_side = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Road_Side.bmp"));
     if (!texture_center) texture_center = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Road_Main.bmp"));
@@ -60,7 +63,7 @@ void Road::render(Scene &scene, GLuint depthMap) {
 
     // Set up light
 //    shader->setUniform("LightPosition", scene.lightPosition);
-    scene.renderLight(shader);
+    scene.renderLight(shader, false);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
@@ -73,6 +76,13 @@ void Road::render(Scene &scene, GLuint depthMap) {
 
     // render mesh
     shader->setUniform("ModelMatrix", modelMatrix);
+
+    shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    shader->setUniformInt("ShadowMap", (int)depthMap);
 
     switch (roadType) {
         case StraightRoad:

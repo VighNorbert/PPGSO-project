@@ -3,6 +3,8 @@
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
+#include <shaders/shadow_vert_glsl.h>
+#include <shaders/shadow_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Apartment::mesh_door_1;
@@ -49,6 +51,7 @@ Apartment::Apartment(Object* parent, ApartmentType apartmentType) : texture(Text
     if (!mesh_roof_corner_3) mesh_roof_corner_3 = std::make_unique<ppgso::Mesh>("objects/buildings/apartment_corner/apartment_roof_corner_3.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
+    if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
 
     position = {0, 0, 0};
     rotation = {0, 0, 0};
@@ -122,6 +125,13 @@ void Apartment::render(Scene &scene, GLuint depthMap) {
     shader->setUniform("ModelMatrix", modelMatrix);
 
     shader->setUniform("Texture", texture);
+
+    shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    shader->setUniformInt("ShadowMap", (int)depthMap);
 
     switch (abType) {
         case Door1:

@@ -1,5 +1,4 @@
-
-#ifndef PPGSO_KEYFRAME_H
+#ifndef PPGSO_CAMERA_H
 #define PPGSO_CAMERA_H
 
 #include <memory>

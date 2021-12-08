@@ -73,7 +73,7 @@ void Bank::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
-    scene.renderLight(shader);
+    scene.renderLight(shader, !(bankType == BankInside || bankType == BankInsideAlarmBottom));
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);

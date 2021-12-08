@@ -2,6 +2,8 @@
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
+#include <shaders/shadow_vert_glsl.h>
+#include <shaders/shadow_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Particle::mesh;
@@ -27,6 +29,7 @@ Particle::Particle(Object *parent, ParticleType particleType, glm::vec3 initialP
     if (!mesh) mesh = std::make_unique<ppgso::Mesh>("objects/sphere.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
+    if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
 
     if (!fire_texture) fire_texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/fire_texture.bmp"));
     if (!water_texture) water_texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/water_texture.bmp"));
@@ -100,7 +103,12 @@ void Particle::render(Scene &scene, GLuint depthMap) {
     }
     shader->setUniform("TextureOffset", glm::vec2{age / (maxAge + .1f), 0});
 
+    shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
 
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    shader->setUniformInt("ShadowMap", (int)depthMap);
 
     // Enable blending
     glEnable(GL_BLEND);
@@ -109,9 +117,8 @@ void Particle::render(Scene &scene, GLuint depthMap) {
 
     shader->setUniform("Transparency", 1.f);
     mesh->render();
-//    if (particleType == ParticleType::Fire) {
-        glDisable(GL_BLEND);
-//    }
+
+    glDisable(GL_BLEND);
 }
 
 void Particle::renderForShadow(Scene &scene) {

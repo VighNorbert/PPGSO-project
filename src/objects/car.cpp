@@ -6,6 +6,8 @@
 #include <shaders/phong_frag_glsl.h>
 #include <shaders/color_vert_glsl.h>
 #include <shaders/color_frag_glsl.h>
+#include <shaders/shadow_vert_glsl.h>
+#include <shaders/shadow_frag_glsl.h>
 #include <src/objects/lightWrapper.h>
 
 // Static resources
@@ -72,6 +74,7 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarGlass, scene));
 
         auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
+//        auto light = new Light({1.0f, 0.975f, 0.853f}, .5f, .1f, 0.05f, 35.f);
         auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.80443, 0.66418, 2.5}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
@@ -177,7 +180,7 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         wheel_lb->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lb));
 
-        isExtinguishing = true;
+//        isExtinguishing = true;
     }
 
     position = {0, 0, 0};
@@ -207,6 +210,7 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
 
     if (!color_shader) color_shader = std::make_unique<ppgso::Shader>(color_vert_glsl, color_frag_glsl);
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
+    if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_02_A.bmp"));
     if (!texture_van) texture_van = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/PolygonCity_Texture_01_A.bmp"));
@@ -215,8 +219,6 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
 
 
 bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
-    position += speed * dt;
-
     if (isWheel() && parentObject != nullptr) {
         rotation.x += dt * glm::length(parentObject->speed) / getWheelDiameter();
         if (rotation.x > 2 * ppgso::PI)
@@ -237,9 +239,19 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
         }
     }
 
-    generateModelMatrix(parentModelMatrix);
+    if (keyframes.empty()) {
+        position += speed * dt;
 
-    return true;
+        generateModelMatrix(parentModelMatrix);
+
+        return true;
+    } else {
+        glm::vec3 lastposition = position;
+        if (keyframesUpdate(scene, dt)) {
+            speed = (position - lastposition) / dt;
+            return true;
+        } else return false;
+    }
 }
 
 void Car::render(Scene &scene, GLuint depthMap) {
@@ -286,6 +298,14 @@ void Car::render(Scene &scene, GLuint depthMap) {
             shader->setUniform("Texture", *texture);
         }
         shader->setUniform("Transparency", 1.f);
+
+
+        shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+        shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        shader->setUniformInt("ShadowMap", (int)depthMap);
     }
 
     switch (this->carType) {
@@ -436,6 +456,8 @@ void Car::renderForShadow(Scene &scene) {
             break;
         case CarType::FiretruckWheel:
             mesh_firetruck_wheel->render();
+            break;
+        default:
             break;
     }
 }
