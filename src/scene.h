@@ -51,6 +51,7 @@ public:
 
     bool showBoundingBoxes = false;
     bool showFPS = false;
+    short scene_id;
 };
 
 #endif // _PPGSO_SCENE_H
