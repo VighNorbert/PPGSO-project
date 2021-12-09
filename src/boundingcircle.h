@@ -1,10 +1,10 @@
-#ifndef PPGSO_BOUNDINGBOX_H
-#define PPGSO_BOUNDINGBOX_H
+#ifndef PPGSO_BOUNDINGCIRCLE_H
+#define PPGSO_BOUNDINGCIRCLE_H
 
 #include "src/scene.h"
 #include "src/object.h"
 
-class BoundingBox : public Object {
+class BoundingCircle : public Object {
 private:
 
     static std::unique_ptr<ppgso::Mesh> mesh;
@@ -14,10 +14,8 @@ private:
     static std::unique_ptr<ppgso::Texture> texture;
 
 public:
-    glm::vec3 originalRotation{0.f, 0.f, 0.f};
 
-
-    BoundingBox(glm::vec3 position, glm::vec3 size, glm::vec3 rotation = {0.f, 0.f, 0.f});
+    BoundingCircle(glm::vec3 position, float radius);
 
     /*!
      * @param scene Scene to interact with
@@ -37,7 +35,9 @@ public:
      * @param scene Scene to render in
      */
     void renderForShadow(Scene &scene) override;
+
+    float radius;
 };
 
 
-#endif //PPGSO_BOUNDINGBOX_H
+#endif //PPGSO_BOUNDINGCIRCLE_H

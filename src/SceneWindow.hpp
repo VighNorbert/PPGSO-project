@@ -1,9 +1,6 @@
 #ifndef PPGSO_SCENEWINDOW_HPP
 #define PPGSO_SCENEWINDOW_HPP
 
-#include <shaders/diffuse_vert_glsl.h>
-#include <shaders/diffuse_frag_glsl.h>
-
 #include <utility>
 #include <src/objects/road.h>
 #include <src/objects/character.h>
@@ -47,9 +44,9 @@ private:
                 {Camera::getViewMatrix(15.f, 225.f, {.0f, 10.0f, -9.0f}), 2.f},
                 {Camera::getViewMatrix(15.f, 225.f, {.0f, 10.0f, -9.0f}), 9.f},
                 {Camera::getViewMatrix(15.f, 225.f, {80.f, 10.0f, -9.0f}), 5.f},
-                {Camera::getViewMatrix(15.f, 210.f, {130.0f, 2.5f, -2.5f}), 3.f},
-                {Camera::getViewMatrix(15.f, 210.f, {150.0f, 2.5f, -2.5f}), 3.f},
-                {Camera::getViewMatrix(15.f, 225.f, {185.0f, 2.5f, -2.5f}), 3.f},
+                {Camera::getViewMatrix(15.f, 210.f, {110.0f, 2.5f, -2.5f}), 3.f},
+                {Camera::getViewMatrix(15.f, 210.f, {135.0f, 2.5f, -2.5f}), 3.f},
+                {Camera::getViewMatrix(15.f, 225.f, {165.0f, 2.5f, -2.5f}), 3.f},
                 {Camera::getViewMatrix(15.f, 225.f, {220.f, 10.0f, -12.f}), 6.f},
                 {Camera::getViewMatrix(15.f, 225.f, {220.f, 10.0f, -12.f}), 2.f},
                 {Camera::getViewMatrix(15.f, 300.f, {220.f, 10.0f, -12.f}), 5.f},
@@ -70,7 +67,7 @@ private:
             Road::generateRoad(scene, 3, 5, {-40.f, -10.f});
 
             for (int i = -1; i >= -11; i -= 2) {
-                for (int j = 0; j <= 1; j++) {
+                for (int j = 0; j <= 2; j++) {
                     auto road = std::make_unique<Road>(nullptr);
                     road->roadType = RoadType::Sidewalk;
                     road->position = {i * 2.5f, 0, 12.5f + j * 5.0f};
@@ -161,10 +158,8 @@ private:
             car->keyframes = {
                     {7.f, {-50, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {2.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {15.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {3.f, {130, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {7.f, {150, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {0.f, {200, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
+                    {20.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {0.f, {156.8, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
             };
             scene.rootObjects.push_back(move(car));
 
@@ -392,7 +387,7 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Set gray background
-        glClearColor(.5f, .5f, .5f, 1.0f);
+        glClearColor(.695f, .822f, .987f, 1.0f);
 
         scene.render(depthMap);
     }
