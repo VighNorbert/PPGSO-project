@@ -1,32 +1,32 @@
 #include <glm/glm.hpp>
 
-#include "boundingbox.h"
+#include "boundingcircle.h"
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
 
-std::unique_ptr<ppgso::Mesh> BoundingBox::mesh;
-std::unique_ptr<ppgso::Shader> BoundingBox::shader;
-std::unique_ptr<ppgso::Texture> BoundingBox::texture;
+std::unique_ptr<ppgso::Mesh> BoundingCircle::mesh;
+std::unique_ptr<ppgso::Shader> BoundingCircle::shader;
+std::unique_ptr<ppgso::Texture> BoundingCircle::texture;
 
-BoundingBox::BoundingBox(glm::vec3 position, glm::vec3 size, glm::vec3 rotation) {
+BoundingCircle::BoundingCircle(glm::vec3 position, float radius) {
+    float diameter = radius * 2;
     this->position = position;
-    this->scale = size;
-    this->originalRotation = rotation;
-    this->rotation = rotation;
+    this->radius = radius;
+    this->scale = glm::vec3{diameter};
 
-    if (!mesh) mesh = std::make_unique<ppgso::Mesh>("objects/cube.obj");
+    if (!mesh) mesh = std::make_unique<ppgso::Mesh>("objects/sphere.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/bb.bmp"));
 }
 
-bool BoundingBox::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
+bool BoundingCircle::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
     generateModelMatrix(parentModelMatrix);
     return true;
 }
 
-void BoundingBox::render(Scene &scene, GLuint depthMap) {
+void BoundingCircle::render(Scene &scene, GLuint depthMap) {
     if (!scene.showBoundingBoxes)
         return;
 
@@ -62,4 +62,4 @@ void BoundingBox::render(Scene &scene, GLuint depthMap) {
     glDisable(GL_BLEND);
 }
 
-void BoundingBox::renderForShadow(Scene &scene) {}
+void BoundingCircle::renderForShadow(Scene &scene) {}

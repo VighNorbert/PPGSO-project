@@ -1,9 +1,6 @@
 #ifndef PPGSO_SCENEWINDOW_HPP
 #define PPGSO_SCENEWINDOW_HPP
 
-#include <shaders/diffuse_vert_glsl.h>
-#include <shaders/diffuse_frag_glsl.h>
-
 #include <utility>
 #include <src/objects/road.h>
 #include <src/objects/character.h>
@@ -60,7 +57,7 @@ private:
             Road::generateRoad(scene, 3, 5, {-40.f, -10.f});
 
             for (int i = -1; i >= -11; i -= 2) {
-                for (int j = 0; j <= 1; j++) {
+                for (int j = 0; j <= 2; j++) {
                     auto road = std::make_unique<Road>(nullptr);
                     road->roadType = RoadType::Sidewalk;
                     road->position = {i * 2.5f, 0, 12.5f + j * 5.0f};
@@ -132,11 +129,6 @@ private:
             bank->position = {-15, 0, 10};
             bank->rotation.z = ppgso::PI;
             scene.rootObjects.push_back(move(bank));
-
-            auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
-            car->position = {0, 0, -2.5f};
-            car->rotation.z = - ppgso::PI / 2;
-            scene.rootObjects.push_back(move(car));
         }
 
         // dynamic objects
@@ -156,8 +148,8 @@ private:
             car->keyframes = {
                     {7.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {2.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {25.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {0.f, {200, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
+                    {20.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {0.f, {156.8, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
             };
             scene.rootObjects.push_back(move(car));
 
@@ -386,7 +378,7 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Set gray background
-        glClearColor(.5f, .5f, .5f, 1.0f);
+        glClearColor(.695f, .822f, .987f, 1.0f);
 
         scene.render(depthMap);
     }

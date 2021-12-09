@@ -52,7 +52,6 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_firetruck_wheel;
 
     static std::unique_ptr<ppgso::Shader> shader;
-    static std::unique_ptr<ppgso::Shader> color_shader;
     static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     static std::unique_ptr<ppgso::Texture> texture;
@@ -91,6 +90,7 @@ public:
   */
     void renderForShadow(Scene &scene) override;
 
+    float weight = 0;
 };
 
 

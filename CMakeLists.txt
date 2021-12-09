@@ -63,9 +63,6 @@ endif ()
 #
 
 set(PPGSO_SHADER_SRC
-        shader/color_vert.glsl shader/color_frag.glsl
-        shader/texture_vert.glsl shader/texture_frag.glsl
-        shader/diffuse_vert.glsl shader/diffuse_frag.glsl
         shader/phong_vert.glsl shader/phong_frag.glsl
         shader/shadow_vert.glsl shader/shadow_frag.glsl
         )
@@ -109,7 +106,7 @@ add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/sce
         src/texture.h src/texture.cpp
         src/light.cpp src/light.h
         src/mainlight.cpp src/mainlight.h
-        src/boundingbox.cpp src/boundingbox.h
+        src/boundingcircle.cpp src/boundingcircle.h
         src/objects/lightWrapper.cpp src/objects/lightWrapper.h
         src/objects/road.cpp src/objects/road.h
         src/objects/car.cpp src/objects/car.h

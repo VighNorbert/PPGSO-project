@@ -1,14 +1,6 @@
 #include <iostream>
-#include <vector>
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtx/matrix_transform_2d.hpp>
-#include <glm/gtx/euler_angles.hpp>
-#include <ppgso/ppgso.h>
-
-#include <shaders/color_vert_glsl.h>
-#include <shaders/color_frag_glsl.h>
 #include "SceneWindow.hpp"
 
 const int SIZE_X = 1920;

@@ -1,12 +1,10 @@
 #include "car.h"
 #include "character.h"
 #include "particle.h"
-#include "src/boundingbox.h"
+#include "src/boundingcircle.h"
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
-#include <shaders/color_vert_glsl.h>
-#include <shaders/color_frag_glsl.h>
 #include <shaders/shadow_vert_glsl.h>
 #include <shaders/shadow_frag_glsl.h>
 #include <src/objects/lightWrapper.h>
@@ -34,7 +32,6 @@ std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck;
 std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck_wheel;
 
 std::unique_ptr<ppgso::Shader> Car::shader;
-std::unique_ptr<ppgso::Shader> Car::color_shader;
 std::unique_ptr<ppgso::Shader> Car::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Car::texture;
@@ -71,7 +68,7 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarGlass, scene));
 
-        childObjects.push_back(std::make_unique<BoundingBox>(glm::vec3{0.f, 0.f, 0.13021f}, glm::vec3{2.42998f, 1.5f, 5.64258f}));
+        childObjects.push_back(std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.13021f}, 2.82129f));
 
         auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.80443, 0.66418, 2.5}, light);
@@ -155,7 +152,8 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
 
-        childObjects.push_back(std::make_unique<BoundingBox>(glm::vec3{0.f, 0.f, 0.1f}, glm::vec3{2.47f, 2.11f, 5.02f}));
+//        childObjects.push_back(std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.1f}, glm::vec3{2.47f, 2.11f, 5.02f}));
+        childObjects.push_back(std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.1f}, 2.51f));
 
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanFrontLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanBackLight, scene));
@@ -205,7 +203,6 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
     if (!mesh_firetruck) mesh_firetruck = std::make_unique<ppgso::Mesh>("objects/cars/firetruck.obj");
     if (!mesh_firetruck_wheel) mesh_firetruck_wheel = std::make_unique<ppgso::Mesh>("objects/cars/firetruck_wheel.obj");
 
-    if (!color_shader) color_shader = std::make_unique<ppgso::Shader>(color_vert_glsl, color_frag_glsl);
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
     if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
 
@@ -263,58 +260,47 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
 }
 
 void Car::render(Scene &scene, GLuint depthMap) {
+    shader->use();
+
+    // Set up light
+    scene.renderLight(shader);
+
+    // use camera
+    shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
+    shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
+    shader->setUniform("ViewPosition", scene.camera->position);
+
     if (carType == CarType::MuscleCarFrontLight || carType == CarType::MuscleCarBackLight
-        || carType == CarType::PoliceCarFrontLight || carType == CarType::PoliceCarBackLight
-        || carType == CarType::VanFrontLight || carType == CarType::VanBackLight) {
-        color_shader->use();
-
-        if (carType == CarType::MuscleCarFrontLight || carType == CarType::PoliceCarFrontLight || carType == CarType::VanFrontLight) {
-            color_shader->setUniform("OverallColor", {1.0f, 0.975f, 0.853f});
-        } else {
-            color_shader->setUniform("OverallColor", {1.f, 0.f, 0.f});
-        }
-
-        // use camera
-        color_shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
-        color_shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
-
-        // render mesh
-        color_shader->setUniform("ModelMatrix", modelMatrix);
+    || carType == CarType::PoliceCarFrontLight || carType == CarType::PoliceCarBackLight
+    || carType == CarType::VanFrontLight || carType == CarType::VanBackLight) {
+        shader->setUniform("DiffuseStrength", .2f);
+        shader->setUniform("AmbientStrength", 2.0f);
+        shader->setUniform("SpecularStrength", .3f);
     } else {
-        shader->use();
-
-        // Set up light
-        scene.renderLight(shader);
-
-        // use camera
-        shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
-        shader->setUniform("ViewMatrix", scene.camera->viewMatrix);
-        shader->setUniform("ViewPosition", scene.camera->position);
-
         shader->setUniform("DiffuseStrength", 1.f);
         shader->setUniform("AmbientStrength", .3f);
         shader->setUniform("SpecularStrength", 2.5f);
 
-        // render mesh
-        shader->setUniform("ModelMatrix", modelMatrix);
-
-        if(carType == CarType::Van){
-            shader->setUniform("Texture", *texture_van);
-        } else if(carType == CarType::Firetruck) {
-            shader->setUniform("Texture", *texture_firetruck);
-        } else{
-            shader->setUniform("Texture", *texture);
-        }
-        shader->setUniform("Transparency", 1.f);
-
-
-        shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
-        shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-        shader->setUniformInt("ShadowMap", (int)depthMap);
     }
+
+    shader->setUniform("ModelMatrix", modelMatrix);
+
+    if(carType == CarType::Van){
+        shader->setUniform("Texture", *texture_van);
+    } else if(carType == CarType::Firetruck) {
+        shader->setUniform("Texture", *texture_firetruck);
+    } else{
+        shader->setUniform("Texture", *texture);
+    }
+    shader->setUniform("Transparency", 1.f);
+
+
+    shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    shader->setUniformInt("ShadowMap", (int)depthMap);
 
     switch (this->carType) {
         case CarType::MuscleCar:
