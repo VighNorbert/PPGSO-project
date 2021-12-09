@@ -38,14 +38,24 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-        camera->position = {0.0f, 10.0f, -10.0f};
-        camera->tilt = 20.f;
-        camera->rotation = 180.f;
-//        camera->keyframes = {
-//                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
-//                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
-//                {Camera::getViewMatrix(20.f, 225.f, {.0f, 10.0f, -9.0f}), 0.f}
-//        };
+//        camera->position = {0.0f, 10.0f, -10.0f};
+//        camera->tilt = 20.f;
+//        camera->rotation = 180.f;
+        camera->keyframes = {
+                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
+                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
+                {Camera::getViewMatrix(15.f, 225.f, {.0f, 10.0f, -9.0f}), 2.f},
+                {Camera::getViewMatrix(15.f, 225.f, {.0f, 10.0f, -9.0f}), 9.f},
+                {Camera::getViewMatrix(15.f, 225.f, {80.f, 10.0f, -9.0f}), 5.f},
+                {Camera::getViewMatrix(15.f, 210.f, {130.0f, 2.5f, -2.5f}), 3.f},
+                {Camera::getViewMatrix(15.f, 210.f, {150.0f, 2.5f, -2.5f}), 3.f},
+                {Camera::getViewMatrix(15.f, 225.f, {185.0f, 2.5f, -2.5f}), 3.f},
+                {Camera::getViewMatrix(15.f, 225.f, {220.f, 10.0f, -12.f}), 6.f},
+                {Camera::getViewMatrix(15.f, 225.f, {220.f, 10.0f, -12.f}), 2.f},
+                {Camera::getViewMatrix(15.f, 300.f, {220.f, 10.0f, -12.f}), 5.f},
+                {Camera::getViewMatrix(15.f, 300.f, {220.f, 10.0f, -12.f}), 2.f},
+                {Camera::getViewMatrix(15.f, 240.f, {220.f, 10.0f, -12.f}), 0.f},
+        };
         scene.camera = move(camera);
 
         scene.mainlight = std::make_unique<MainLight>();
@@ -132,11 +142,6 @@ private:
             bank->position = {-15, 0, 10};
             bank->rotation.z = ppgso::PI;
             scene.rootObjects.push_back(move(bank));
-
-            auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
-            car->position = {0, 0, -2.5f};
-            car->rotation.z = - ppgso::PI / 2;
-            scene.rootObjects.push_back(move(car));
         }
 
         // dynamic objects
@@ -154,9 +159,11 @@ private:
 
             auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
             car->keyframes = {
-                    {7.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {7.f, {-50, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {2.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {25.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {15.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {3.f, {130, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {7.f, {150, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {0.f, {200, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
             };
             scene.rootObjects.push_back(move(car));
@@ -184,7 +191,6 @@ private:
                     {0.f, {197.5, 0, -10}, {0, 0, 0}}
             };
             scene.rootObjects.push_back(move(car));
-
         }
     }
 

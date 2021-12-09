@@ -245,6 +245,24 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
             auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, 2.f, 0.f});
             childObjects.push_back(move(particle));
         }
+    } else if (carType == PoliceCar && age > 70 && police_alive) {
+        police_alive = false;
+        childObjects.pop_front();
+        childObjects.pop_front();
+
+        auto character = std::make_unique<Character>(nullptr, CharacterType::MalePoliceStanding);
+        character->keyframes = {
+                {2.5f, {185.f, 0.f, 4.f}, {0, 0, ppgso::PI/2}},
+                {0.f, {193.f, 0.f, 4.f}, {0, 0, ppgso::PI/2}},
+        };
+        scene.rootObjects.push_back(move(character));
+
+        character = std::make_unique<Character>(nullptr, CharacterType::MalePoliceStanding);
+        character->keyframes = {
+                {4.f, {185.f, 0.f, 1.f}, {0, 0, ppgso::PI/2}},
+                {0.f, {195.f, 0.f, 1.f}, {0, 0, ppgso::PI/2}},
+        };
+        scene.rootObjects.push_back(move(character));
     }
 
     if (keyframes.empty()) {

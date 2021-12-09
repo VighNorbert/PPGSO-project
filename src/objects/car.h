@@ -62,6 +62,7 @@ private:
     CarType carType;
 
     bool not_sitting = true;
+    bool police_alive = true;
 
 public:
     /*!
