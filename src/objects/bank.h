@@ -34,6 +34,8 @@ private:
     static std::unique_ptr<ppgso::Texture> texture;
 
     BankType bankType;
+    bool male_dead = false;
+    bool alarm_pushed = false;
 
 public:
     /*!

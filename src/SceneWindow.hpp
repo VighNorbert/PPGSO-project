@@ -31,6 +31,7 @@ private:
      * Creating unique smart pointers to objects that are stored in the scene object list
      */
     void initScene() {
+        scene.scene_id = 1;
         scene.rootObjects.clear();
 
         // Create a camera
@@ -191,6 +192,7 @@ private:
 
 
     void initSceneBank() {
+        scene.scene_id = 0;
         scene.rootObjects.clear();
 
         scene.mainlight = std::make_unique<MainLight>();
@@ -198,14 +200,18 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-        camera->position = {8.5f, 3.5f, 3.5f};
-        camera->tilt = 20.f;
-        camera->rotation = -60.f;
-//        camera->keyframes = {
-//                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
-//                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
-//                {Camera::getViewMatrix(20.f, 225.f, {.0f, 10.0f, -9.0f}), 0.f}
-//        };
+//        camera->position = {8.5f, 3.5f, 3.5f};
+//        camera->tilt = 20.f;
+//        camera->rotation = -60.f;
+        camera->keyframes = {
+                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 2.f},
+                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 3.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 15.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 3.f},
+                {Camera::getViewMatrix(40.f, -30.f, {1.5, 1.5, 1.5}), 5.f},
+                {Camera::getViewMatrix(40.f, -30.f, {1.5, 1.5, 1.5}), 2.f},
+                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 0.f},
+        };
 
         scene.camera = move(camera);
 
@@ -219,102 +225,117 @@ private:
 //        character->position = {0, 0, 0.5};
 //        scene.rootObjects.push_back(move(character));
 
-        auto bank = std::make_unique<Bank>(nullptr, BankType::BankInside, scene);
-        scene.rootObjects.push_back(move(bank));
+        // static objects
+        {
+            auto bank = std::make_unique<Bank>(nullptr, BankType::BankInside, scene);
+            scene.rootObjects.push_back(move(bank));
 
-        auto table = std::make_unique<Furniture>(nullptr, FurnitureType::Table);
-        table->position = {0,0,4};
-        scene.rootObjects.push_back(move(table));
+            auto table = std::make_unique<Furniture>(nullptr, FurnitureType::Table);
+            table->position = {0,0,4};
+            scene.rootObjects.push_back(move(table));
 
-        auto chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->position = {-0.5,0,3};
-        scene.rootObjects.push_back(move(chair));
+            auto chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->position = {-0.5,0,3};
+            scene.rootObjects.push_back(move(chair));
 
-        chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->position = {0.5,0,3};
-        scene.rootObjects.push_back(move(chair));
+            chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->position = {0.5,0,3};
+            scene.rootObjects.push_back(move(chair));
 
-        chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->rotation.z = ppgso::PI;
-        chair->position = {0,0,5};
-        scene.rootObjects.push_back(move(chair));
+            chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->rotation.z = ppgso::PI;
+            chair->position = {0,0,5};
+            scene.rootObjects.push_back(move(chair));
 
-        auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitPushingButton);
-        character->rotation.z = ppgso::PI;
-        character->position = {0, 0, 0.5};
-        scene.rootObjects.push_back(move(character));
+            table = std::make_unique<Furniture>(nullptr, FurnitureType::Table);
+            table->rotation.z = ppgso::PI/2;
+            table->position = {7,0,-1};
+            scene.rootObjects.push_back(move(table));
 
-        table = std::make_unique<Furniture>(nullptr, FurnitureType::Table);
-        table->rotation.z = ppgso::PI/2;
-        table->position = {7,0,-1};
-        scene.rootObjects.push_back(move(table));
+            chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->rotation.z = ppgso::PI/2;
+            chair->position = {6,0,-1.5};
+            scene.rootObjects.push_back(move(chair));
 
-        chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->rotation.z = ppgso::PI/2;
-        chair->position = {6,0,-1.5};
-        scene.rootObjects.push_back(move(chair));
+            chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->rotation.z = ppgso::PI/2;
+            chair->position = {6,0,-0.5};
+            scene.rootObjects.push_back(move(chair));
 
-        chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->rotation.z = ppgso::PI/2;
-        chair->position = {6,0,-0.5};
-        scene.rootObjects.push_back(move(chair));
+            chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->rotation.z = ppgso::PI * 3/2;
+            chair->position = {8,0,-1};
+            scene.rootObjects.push_back(move(chair));
 
-        chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->rotation.z = ppgso::PI * 3/2;
-        chair->position = {8,0,-1};
-        scene.rootObjects.push_back(move(chair));
+            auto character = std::make_unique<Character>(nullptr, CharacterType::FemaleBusinessSuitStanding);
+            character->rotation.y = ppgso::PI/2;
+            character->rotation.x = ppgso::PI/2;
+            character->position = {8, 0.13, -3};
+            scene.rootObjects.push_back(move(character));
 
-        character = std::make_unique<Character>(nullptr, CharacterType::FemaleBusinessSuitStanding);
-        character->rotation.y = ppgso::PI/2;
-        character->rotation.x = ppgso::PI/2;
-        character->position = {8, 0.13, -3};
-        scene.rootObjects.push_back(move(character));
+            character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessShirtStanding);
+            character->rotation.y = ppgso::PI/2;
+            character->rotation.x = ppgso::PI/2;
+            character->rotation.z = ppgso::PI * 3/2;
+            character->position = {5, 0.13, -1};
+            scene.rootObjects.push_back(move(character));
 
-        character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessShirtStanding);
-        character->rotation.y = ppgso::PI/2;
-        character->rotation.x = ppgso::PI/2;
-        character->rotation.z = ppgso::PI * 3/2;
-        character->position = {5, 0.13, -1};
-        scene.rootObjects.push_back(move(character));
+            table = std::make_unique<Furniture>(nullptr, FurnitureType::Table);
+            table->rotation.z = ppgso::PI/2;
+            table->position = {-7,0,-1};
+            scene.rootObjects.push_back(move(table));
 
-        table = std::make_unique<Furniture>(nullptr, FurnitureType::Table);
-        table->rotation.z = ppgso::PI/2;
-        table->position = {-7,0,-1};
-        scene.rootObjects.push_back(move(table));
+            chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->rotation.z = ppgso::PI * 3/2;
+            chair->position = {-6,0,-1.5};
+            scene.rootObjects.push_back(move(chair));
 
-        chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->rotation.z = ppgso::PI * 3/2;
-        chair->position = {-6,0,-1.5};
-        scene.rootObjects.push_back(move(chair));
+            chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->rotation.z = ppgso::PI * 3/2;
+            chair->position = {-6,0,-0.5};
+            scene.rootObjects.push_back(move(chair));
 
-        chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->rotation.z = ppgso::PI * 3/2;
-        chair->position = {-6,0,-0.5};
-        scene.rootObjects.push_back(move(chair));
+            chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
+            chair->rotation.z = ppgso::PI/2;
+            chair->position = {-8,0,-1};
+            scene.rootObjects.push_back(move(chair));
 
-        chair = std::make_unique<Furniture>(nullptr, FurnitureType::Chair);
-        chair->rotation.z = ppgso::PI/2;
-        chair->position = {-8,0,-1};
-        scene.rootObjects.push_back(move(chair));
+            character = std::make_unique<Character>(nullptr, CharacterType::FemaleBusinessSuitStanding);
+            character->rotation.y = ppgso::PI/2;
+            character->rotation.x = ppgso::PI/2;
+            character->rotation.z = ppgso::PI;
+            character->position = {-5.5, 0.13, -3};
+            scene.rootObjects.push_back(move(character));
 
-        character = std::make_unique<Character>(nullptr, CharacterType::FemaleBusinessSuitStanding);
-        character->rotation.y = ppgso::PI/2;
-        character->rotation.x = ppgso::PI/2;
-        character->rotation.z = ppgso::PI;
-        character->position = {-5.5, 0.13, -3};
-        scene.rootObjects.push_back(move(character));
+            character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessShirtStanding);
+            character->rotation.y = ppgso::PI/2;
+            character->rotation.x = ppgso::PI/2;
+            character->rotation.z = ppgso::PI;
+            character->position = {-5, 0.13, -1};
+            scene.rootObjects.push_back(move(character));
+        }
 
-        character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessShirtStanding);
-        character->rotation.y = ppgso::PI/2;
-        character->rotation.x = ppgso::PI/2;
-        character->rotation.z = ppgso::PI;
-        character->position = {-5, 0.13, -1};
-        scene.rootObjects.push_back(move(character));
+        // dynamic objects
+        {
+            auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitStanding);
+            character->keyframes = {
+                    {6.f, {3, 0.13, 4}, {ppgso::PI/2, 0, ppgso::PI}},
+                    {2.f, {3, 0.13, 4}, {ppgso::PI/2, 0, ppgso::PI}},
+                    {2.f, {3, 0, 4}, {0, 0, ppgso::PI}},
+                    {0.f, {0, 0, 0.5}, {0, 0, ppgso::PI}},
+                    {-1, {0, 0, 0.5}, {0, 0, ppgso::PI}}
+            };
+            scene.rootObjects.push_back(move(character));
 
-        character = std::make_unique<Character>(nullptr, CharacterType::MaleHoodieShooting);
-        character->position = {0, 0, -4};
-        scene.rootObjects.push_back(move(character));
-
+            character = std::make_unique<Character>(nullptr, CharacterType::MaleHoodieShooting);
+            character->position = {0, 0, -4};
+            character->keyframes = {
+                    {32.f, {0, 0, -4}, {0, 0, 0}},
+                    {3.f, {0, 0, -4}, {0, 0, 0}},
+                    {0, {0, 0, -6}, {0, 0, 0}}
+            };
+            scene.rootObjects.push_back(move(character));
+        }
     }
 
     GLuint depthMapFBO;
@@ -358,8 +379,8 @@ public:
         glReadBuffer(GL_NONE);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        initScene();
-//        initSceneBank();
+//        initScene();
+        initSceneBank();
     }
 
     /*!

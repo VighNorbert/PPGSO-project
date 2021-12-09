@@ -1,5 +1,6 @@
 #include "bank.h"
 #include "lightWrapper.h"
+#include "character.h"
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
@@ -64,6 +65,29 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
 
 
 bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
+    age += dt;
+
+    if (scene.scene_id == 0) {
+        if (age > 10 && !alarm_pushed) {
+            alarm_pushed = true;
+            auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitPushingButton);
+            character->keyframes = {
+                    {5.f, {0, 0, 0.5}, {0, 0, ppgso::PI}},
+                    {1.f, {0, 0, 0.5}, {0, 0, ppgso::PI}},
+                    {-1, {0, 0.13, 0.5}, {ppgso::PI/2, ppgso::PI/2, ppgso::PI}},
+            };
+            scene.rootObjects.push_back(move(character));
+        }else if (age > 16 && !male_dead) {
+            male_dead = true;
+            auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitStanding);
+            character->rotation.x = ppgso::PI/2;
+            character->rotation.y = ppgso::PI/2;
+            character->rotation.z = ppgso::PI;
+            character->position = {0, 0.13, 0.5};
+            scene.rootObjects.push_back(move(character));
+        }
+    }
+
     generateModelMatrix(parentModelMatrix);
 
     return true;
