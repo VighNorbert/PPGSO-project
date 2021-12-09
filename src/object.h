@@ -110,14 +110,17 @@ public:
   }
 
   bool keyframesUpdate(Scene &scene, float dt) {
+
       age += dt;
+
       float t = 0.0f;
       glm::mat4 actual, next, last;
       glm::vec3 actualrot, nextrot, lastrot;
       glm::vec3 actualpos, nextpos, lastpos;
       float duration;
       for (auto iter= keyframes.begin(); iter != keyframes.end(); iter++) {
-          if (t + iter->duration > age) {
+          if (iter->duration == -1) return false;
+          else if (t + iter->duration > age) {
               actual = iter->matrix;
               actualrot = iter->rotation;
               actualpos = iter->position;

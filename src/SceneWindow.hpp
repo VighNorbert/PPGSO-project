@@ -38,7 +38,7 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-        camera->position = {.0f, 10.0f, -10.0f};
+        camera->position = {0.0f, 10.0f, -10.0f};
         camera->tilt = 20.f;
         camera->rotation = 180.f;
 //        camera->keyframes = {
@@ -141,8 +141,8 @@ private:
                     {2.f, {-15.f, 1.7f, 20.f}, {0, 0, ppgso::PI}},
                     {4.f, {-15.f, 1.7f, 20.f}, {0, 0, ppgso::PI}},
                     {1.f, {-16.5f, 1.7f, 12.f}, {0, 0, ppgso::PI}},
-                    {1.f, {-16.5f, 0.f, 10.f}, {0, 0, ppgso::PI}},
-                    {0.f, {-16.5f, 0.f, 5.f}, {0, 0, ppgso::PI}}
+                    {2.f, {-16.5f, 0.f, 10.f}, {0, 0, ppgso::PI}},
+                    {-1.f, {-16.5f, 0.f, 5.f}, {0, 0, ppgso::PI}},
             };
             scene.rootObjects.push_back(move(character));
 
@@ -151,8 +151,32 @@ private:
             car->keyframes = {
                     {7.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {2.f, {-15, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {2.f, {-15, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {0.f, {0, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
+                    {25.f, {-15, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {0.f, {200, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
+            };
+            scene.rootObjects.push_back(move(car));
+
+            car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
+            car->keyframes = {
+                    {8.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {27.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {0.f, {185, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
+            };
+            scene.rootObjects.push_back(move(car));
+
+            car = std::make_unique<Car>(nullptr, CarType::Van, scene);
+            car->keyframes = {
+                    {27.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
+                    {7.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
+                    {0.f, {202.5, 0, 0}, {0, 0, ppgso::PI}}
+            };
+            scene.rootObjects.push_back(move(car));
+
+            car = std::make_unique<Car>(nullptr, CarType::Firetruck, scene);
+            car->keyframes = {
+                    {37.f, {197.5, 0, -100}, {0, 0, 0}},
+                    {7.f, {197.5, 0, -100}, {0, 0, 0}},
+                    {0.f, {197.5, 0, -10}, {0, 0, 0}}
             };
             scene.rootObjects.push_back(move(car));
 
@@ -193,6 +217,11 @@ private:
 //        auto sunWrapper = std::make_unique<LightWrapper>(nullptr, glm::vec3{1000.f, 1000.f, 1000.f}, sun);
 //        scene.lights.push_back(sun);
 //        scene.rootObjects.push_back(move(sunWrapper));
+
+//        auto character = std::make_unique<Character>(nullptr, CharacterType::MaleHoodieStanding);
+//        character->rotation.z = ppgso::PI;
+//        character->position = {0, 0, 0.5};
+//        scene.rootObjects.push_back(move(character));
 
         auto bank = std::make_unique<Bank>(nullptr, BankType::BankInside, scene);
         scene.rootObjects.push_back(move(bank));

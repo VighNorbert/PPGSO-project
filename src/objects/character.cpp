@@ -41,6 +41,24 @@ Character::Character(Object *parent, CharacterType characterType) {
         childObjects.push_back(move(money));
     }
 
+    if (this->characterType == CharacterType::MaleHoodieSittingMuscleCar) {
+        auto pistol = std::make_unique<Gun>(this, GunType::Pistol);
+        childObjects.push_back(move(pistol));
+
+        auto money = std::make_unique<MoneyBag>(this);
+        childObjects.push_back(move(money));
+    }
+
+    if (this->characterType == CharacterType::MaleHoodieStanding) {
+        auto pistol = std::make_unique<Gun>(this, GunType::Pistol);
+        pistol->rotation.x = ppgso::PI/3;
+        pistol->position = {-0.15,0.65,-1.5};
+        childObjects.push_back(move(pistol));
+
+        auto money = std::make_unique<MoneyBag>(this);
+        childObjects.push_back(move(money));
+    }
+
     position = {0, 0, 0};
     rotation = {0, 0, 0};
     scale = {1, 1, 1};
