@@ -132,6 +132,11 @@ private:
             bank->position = {-15, 0, 10};
             bank->rotation.z = ppgso::PI;
             scene.rootObjects.push_back(move(bank));
+
+            auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
+            car->position = {0, 0, -2.5f};
+            car->rotation.z = - ppgso::PI / 2;
+            scene.rootObjects.push_back(move(car));
         }
 
         // dynamic objects
@@ -150,8 +155,8 @@ private:
             auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
             car->keyframes = {
                     {7.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {2.f, {-15, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {25.f, {-15, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {2.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {25.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {0.f, {200, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
             };
             scene.rootObjects.push_back(move(car));
@@ -180,16 +185,6 @@ private:
             };
             scene.rootObjects.push_back(move(car));
 
-//        car = std::make_unique<Car>(nullptr, CarType::Firetruck, scene);
-//        car->position = {0, 0, -2.5f};
-//        car->rotation.z = - ppgso::PI / 2;
-//        scene.rootObjects.push_back(move(car));
-//
-//        car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
-//        car->position = {-25, 0, 2.5};
-//        car->speed = {1, 0, 0};
-//        car->rotation.z = ppgso::PI / 2;
-//        scene.rootObjects.push_back(move(car));
         }
     }
 

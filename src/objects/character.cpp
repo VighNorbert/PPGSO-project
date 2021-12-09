@@ -43,9 +43,12 @@ Character::Character(Object *parent, CharacterType characterType) {
 
     if (this->characterType == CharacterType::MaleHoodieSittingMuscleCar) {
         auto pistol = std::make_unique<Gun>(this, GunType::Pistol);
+        pistol->rotation.x = - ppgso::PI/5;
+        pistol->position = {-0.4,-0.5,0.65};
         childObjects.push_back(move(pistol));
 
         auto money = std::make_unique<MoneyBag>(this);
+        money->position = {-0.7,0.3,0.3};
         childObjects.push_back(move(money));
     }
 
@@ -84,11 +87,13 @@ Character::Character(Object *parent, CharacterType characterType) {
 
 
 bool Character::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentPosition) {
+    age += dt;
+
     if (keyframes.empty()) {
         generateModelMatrix(parentModelMatrix);
         return true;
     } else {
-        return keyframesUpdate(scene, dt);
+        return keyframesUpdate(scene);
     }
 }
 

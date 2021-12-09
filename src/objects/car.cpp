@@ -48,9 +48,6 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         auto char_driving = std::make_unique<Character>(this, CharacterType::MaleJacketDrivingMuscleCar);
         childObjects.push_back(move(char_driving));
 
-        auto char_sitting = std::make_unique<Character>(this, CharacterType::MaleHoodieSittingMuscleCar);
-        childObjects.push_back(move(char_sitting));
-
         auto wheel_rf = std::make_unique<Car>(this, CarType::MuscleCarWheel, scene);
         wheel_rf->position = {-0.88974, 0.41045, 1.935};
         childObjects.push_back(move(wheel_rf));
@@ -83,8 +80,6 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {-0.80443, 0.66418, 2.5}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
-
-        isOnFire = true;
 
     } else if (this->carType == CarType::PoliceCar) {
         auto char_driving = std::make_unique<Character>(this, CharacterType::MalePoliceDrivingPoliceCar);
@@ -179,8 +174,6 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         wheel_lb->position = {0.90771, 0.400, -1.4637};
         wheel_lb->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lb));
-
-//        isExtinguishing = true;
     }
 
     position = {0, 0, 0};
@@ -219,19 +212,30 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
 
 
 bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
+    age += dt;
+
     if (isWheel() && parentObject != nullptr) {
         rotation.x += dt * glm::length(parentObject->speed) / getWheelDiameter();
         if (rotation.x > 2 * ppgso::PI)
             rotation.x -= float(int(rotation.x / (2 * ppgso::PI)) * 2 * ppgso::PI);
     }
 
-    if (carType == MuscleCar && isOnFire) {
-        int maxcount_per_sec = 100;
-        for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
-            auto particle = std::make_unique<Particle>(this, ParticleType::Fire, glm::vec3{0.f, .5f, 2.f});
-            childObjects.push_back(move(particle));
+    if (carType == MuscleCar) {
+        if (age > 9 && not_sitting) {
+            not_sitting = false;
+            auto char_sitting = std::make_unique<Character>(this, CharacterType::MaleHoodieSittingMuscleCar);
+            childObjects.push_front(move(char_sitting));
         }
-    } else if (carType == Firetruck && isExtinguishing) {
+
+        if (age < 65 && age > 34){
+            int maxcount_per_sec = 100;
+            for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
+                auto particle = std::make_unique<Particle>(this, ParticleType::Fire, glm::vec3{0.f, .5f, 2.f});
+                childObjects.push_back(move(particle));
+            }
+        }
+
+    } else if (carType == Firetruck && age < 67 && age > 45) {
         int maxcount_per_sec = 200;
         for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
             auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, 2.f, 0.f});
@@ -247,7 +251,7 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
         return true;
     } else {
         glm::vec3 lastposition = position;
-        if (keyframesUpdate(scene, dt)) {
+        if (keyframesUpdate(scene)) {
             speed = (position - lastposition) / dt;
             return true;
         } else return false;

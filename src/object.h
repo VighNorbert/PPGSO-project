@@ -109,10 +109,7 @@ public:
       return finalMat;
   }
 
-  bool keyframesUpdate(Scene &scene, float dt) {
-
-      age += dt;
-
+  bool keyframesUpdate(Scene &scene) {
       float t = 0.0f;
       glm::mat4 actual, next, last;
       glm::vec3 actualrot, nextrot, lastrot;

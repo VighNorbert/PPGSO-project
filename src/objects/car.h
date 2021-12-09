@@ -61,8 +61,8 @@ private:
 
     CarType carType;
 
-    bool isOnFire = false;
-    bool isExtinguishing = false;
+    bool not_sitting = true;
+
 public:
     /*!
      * Create new object
