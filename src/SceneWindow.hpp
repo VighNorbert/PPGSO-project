@@ -418,6 +418,24 @@ public:
         if (keys[GLFW_KEY_E]) {
             scene.camera->rotate(1);
         }
+        if (keys[GLFW_KEY_B]) {
+            if (scene.showBoundingBoxes) {
+                scene.showBoundingBoxes = false;
+                std::cout << "Debug: Bounding boxes disabled" << std::endl;
+            } else {
+                scene.showBoundingBoxes = true;
+                std::cout << "Debug: Bounding boxes enabled" << std::endl;
+            }
+        }
+        if (keys[GLFW_KEY_F]) {
+            if (scene.showFPS) {
+                scene.showFPS = false;
+                std::cout << "Debug: FPS disabled" << std::endl;
+            } else {
+                scene.showFPS = true;
+                std::cout << "Debug: FPS enabled" << std::endl;
+            }
+        }
     }
 };
 

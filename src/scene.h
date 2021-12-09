@@ -48,6 +48,9 @@ public:
     std::list<Light *> lights = {};
 
     std::unique_ptr<MainLight> mainlight = nullptr;
+
+    bool showBoundingBoxes = false;
+    bool showFPS = false;
 };
 
 #endif // _PPGSO_SCENE_H

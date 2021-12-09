@@ -1,6 +1,7 @@
 #include "car.h"
 #include "character.h"
 #include "particle.h"
+#include "src/boundingbox.h"
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
@@ -70,8 +71,9 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarGlass, scene));
 
+        childObjects.push_back(std::make_unique<BoundingBox>(glm::vec3{0.f, 0.f, 0.13021f}, glm::vec3{2.42998f, 1.5f, 5.64258f}));
+
         auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
-//        auto light = new Light({1.0f, 0.975f, 0.853f}, .5f, .1f, 0.05f, 35.f);
         auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.80443, 0.66418, 2.5}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
@@ -152,6 +154,8 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {-0.84, 0.83, 2.15}, light);
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
+
+        childObjects.push_back(std::make_unique<BoundingBox>(glm::vec3{0.f, 0.f, 0.1f}, glm::vec3{2.47f, 2.11f, 5.02f}));
 
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanFrontLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanBackLight, scene));
