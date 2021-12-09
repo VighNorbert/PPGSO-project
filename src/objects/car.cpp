@@ -68,7 +68,11 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarGlass, scene));
 
-        childObjects.push_back(std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.13021f}, 2.82129f));
+//        boundingCircle = std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.13021f}, 2.82129f);
+
+        weight = 1400.f;
+
+//        scene.colliders.push_back(this);
 
         auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.80443, 0.66418, 2.5}, light);
@@ -152,8 +156,11 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
 
-//        childObjects.push_back(std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.1f}, glm::vec3{2.47f, 2.11f, 5.02f}));
-        childObjects.push_back(std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.1f}, 2.51f));
+//        boundingCircle = std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.1f}, 2.51f);
+
+        weight = 2400.f;
+
+//        scene.colliders.push_back(this);
 
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanFrontLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanBackLight, scene));
@@ -262,16 +269,21 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
         scene.rootObjects.push_back(move(character));
     }
 
-    if (keyframes.empty()) {
+    if (keyframes.empty() || keyframesOver) {
+//        for (Car *o: scene.colliders) {
+//            if (o == this)
+//                continue;
+//
+//            if (length(o->position - this->position) > o->boundingCircle->radius + this->boundingCircle->radius) {
+//                std::cout << "collision" << std::endl;
+//            }
+//        }
         position += speed * dt;
 
         generateModelMatrix(parentModelMatrix);
-
         return true;
     } else {
-        glm::vec3 lastposition = position;
         if (keyframesUpdate(scene)) {
-            speed = (position - lastposition) / dt;
             return true;
         } else return false;
     }

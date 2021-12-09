@@ -35,9 +35,9 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-//        camera->position = {0.0f, 10.0f, -10.0f};
-//        camera->tilt = 20.f;
-//        camera->rotation = 180.f;
+        camera->position = {0.0f, 10.0f, -10.0f};
+        camera->tilt = 20.f;
+        camera->rotation = 180.f;
         camera->keyframes = {
                 {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
                 {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
@@ -153,13 +153,12 @@ private:
             };
             scene.rootObjects.push_back(move(character));
 
-
             auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
             car->keyframes = {
                     {7.f, {-50, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {2.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {20.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {0.f, {156.8, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
+                    {-2.f, {156.8, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
             };
             scene.rootObjects.push_back(move(car));
 
@@ -174,8 +173,8 @@ private:
             car = std::make_unique<Car>(nullptr, CarType::Van, scene);
             car->keyframes = {
                     {27.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
-                    {7.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
-                    {0.f, {202.5, 0, 0}, {0, 0, ppgso::PI}}
+                    {4.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
+                    {-2.f, {202.5, 0, 25}, {0, 0, ppgso::PI}}
             };
             scene.rootObjects.push_back(move(car));
 

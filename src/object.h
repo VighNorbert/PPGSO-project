@@ -88,6 +88,7 @@ public:
 
   std::list<Keyframe> keyframes;
   float age = 0.f;
+  bool keyframesOver = false;
 
   static glm::mat4 getModelMatrix(glm::vec3 position, glm::vec3 rotation = {0, 0, 0}, glm::vec3 scale = {1, 1, 1}) {
     return glm::translate(glm::mat4(1.0f), position)
@@ -111,6 +112,7 @@ public:
 
   bool keyframesUpdate(Scene &scene) {
       float t = 0.0f;
+      float lastdur;
       glm::mat4 actual, next, last;
       glm::vec3 actualrot, nextrot, lastrot;
       glm::vec3 actualpos, nextpos, lastpos;
@@ -136,16 +138,23 @@ public:
               modelMatrix = Object::interpolate(actual, next, a);
               rotation = glm::lerp(actualrot, nextrot, a);
               position = glm::lerp(actualpos, nextpos, a);
+              if (duration > 0.f) {
+                  speed = (nextpos - actualpos) / duration;
+              }
               return true;
           }
           last = iter->matrix;
           lastrot = iter->rotation;
           lastpos = iter->position;
+          lastdur = iter->duration;
           t += iter->duration;
       }
       modelMatrix = last;
       rotation = lastrot;
       position = lastpos;
+      if (lastdur == -2.f) {
+          keyframesOver = true;
+      }
       return true;
   }
 
