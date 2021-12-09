@@ -109,6 +109,7 @@ add_executable(main src/main.cpp src/camera.h src/camera.cpp src/scene.h src/sce
         src/texture.h src/texture.cpp
         src/light.cpp src/light.h
         src/mainlight.cpp src/mainlight.h
+        src/boundingbox.cpp src/boundingbox.h
         src/objects/lightWrapper.cpp src/objects/lightWrapper.h
         src/objects/road.cpp src/objects/road.h
         src/objects/car.cpp src/objects/car.h
