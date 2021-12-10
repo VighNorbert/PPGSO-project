@@ -65,7 +65,8 @@ endif ()
 set(PPGSO_SHADER_SRC
         shader/phong_vert.glsl shader/phong_frag.glsl
         shader/shadow_vert.glsl shader/shadow_frag.glsl
-        shader/hdr_vert.glsl shader/hdr_frag.glsl
+        shader/blur_vert.glsl shader/blur_frag.glsl
+        shader/bloom_frag.glsl
         )
 add_resources(shaders ${PPGSO_SHADER_SRC})
 

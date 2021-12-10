@@ -11,8 +11,9 @@
 #include <src/objects/furniture.h>
 #include <src/objects/lightWrapper.h>
 
-#include <shaders/hdr_vert_glsl.h>
-#include <shaders/hdr_frag_glsl.h>
+#include <shaders/blur_vert_glsl.h>
+#include <shaders/blur_frag_glsl.h>
+#include <shaders/bloom_frag_glsl.h>
 
 #include "camera.h"
 #include "scene.h"
@@ -340,16 +341,23 @@ private:
     }
 
     GLuint hdrFBO = 0;
-    GLuint colorBuffer = 0;
+    GLuint colorBuffers[2];
     GLuint depthMapFBO;
     GLuint depthMap;
     GLuint rboDepth;
+
+    GLuint pingpongFBO[2];
+    GLuint pingpongBuffers[2];
     int size_x, size_y;
 
-    bool hdr = true;
+    GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+
+    bool bloom = true;
     float exposure = 1.0f;
 
-    std::unique_ptr<ppgso::Shader> hdrShader;
+    std::unique_ptr<ppgso::Shader> blurShader;
+    std::unique_ptr<ppgso::Shader> bloomShader;
+
 public:
     /*!
      * Construct custom game window
@@ -359,7 +367,8 @@ public:
         size_x = SIZE_X;
         size_y = SIZE_Y;
 
-        if (!hdrShader) hdrShader = std::make_unique<ppgso::Shader>(hdr_vert_glsl, hdr_frag_glsl);
+        if (!blurShader) blurShader = std::make_unique<ppgso::Shader>(blur_vert_glsl, blur_frag_glsl);
+        if (!bloomShader) bloomShader = std::make_unique<ppgso::Shader>(blur_vert_glsl, bloom_frag_glsl);
 
         glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 
@@ -375,15 +384,24 @@ public:
 
         glGenFramebuffers(1, &hdrFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-        glGenTextures(1, &colorBuffer);
-        glBindTexture(GL_TEXTURE_2D, colorBuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SIZE_X, SIZE_Y, 0, GL_RGBA, GL_FLOAT, nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glGenTextures(2, colorBuffers);
+        for (unsigned int i = 0; i < 2; i++)
+        {
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SIZE_X, SIZE_Y, 0, GL_RGBA, GL_FLOAT, nullptr);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            // attach texture to framebuffer
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+        }
 
         glGenRenderbuffers(1, &rboDepth);
         glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SIZE_X, SIZE_Y);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+        glDrawBuffers(2, attachments);
 
         glGenFramebuffers(1, &depthMapFBO);
         glGenTextures(1, &depthMap);
@@ -396,18 +414,29 @@ public:
         float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
         glDrawBuffer(GL_NONE);
         glReadBuffer(GL_NONE);
+
+        glGenFramebuffers(2, pingpongFBO);
+        glGenTextures(2, pingpongBuffers);
+        for (unsigned int i = 0; i < 2; i++)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+            glBindTexture(GL_TEXTURE_2D, pingpongBuffers[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SIZE_X, SIZE_Y, 0, GL_RGBA, GL_FLOAT, nullptr);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongBuffers[i], 0);
+        }
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-//        initScene();
-        initSceneBank();
+        initScene();
+//        initSceneBank();
     }
 
     GLuint quadVAO = 0;
@@ -454,40 +483,56 @@ public:
         // Update and render all objects
         scene.update(dt);
 
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
+        // depth map
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.renderForShadow();
 
+        // hdr colors with 2 layers (first = hdr, second = light objects)
         glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
         glViewport(0, 0, size_x, size_y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Set gray background
         glClearColor(.695f, .822f, .987f, 1.0f);
-
         scene.render(depthMap);
 
-        glDisable(GL_DEPTH_TEST);
+        // blurring in 5 iterations
+        bool horizontal = true, first_iteration = true;
+        unsigned int amount = 5;
+        blurShader->use();
+        for (unsigned int i = 0; i < amount * 2; i++)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+            glActiveTexture(GL_TEXTURE0 + (first_iteration ? colorBuffers[1] : pingpongBuffers[!horizontal]));
+            blurShader->setUniformInt("image", first_iteration ? colorBuffers[1] : pingpongBuffers[!horizontal]);
+            blurShader->setUniformInt("horizontal", horizontal);
+            glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongBuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
+            renderQuad();
+            horizontal = !horizontal;
+            if (first_iteration)
+                first_iteration = false;
+        }
 
+        // output the combination
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, size_x, size_y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        hdrShader->use();
-        hdrShader->setUniformInt("hdr", hdr);
-        hdrShader->setUniformInt("hdrBuffer", colorBuffer);
-        glActiveTexture(GL_TEXTURE0 + colorBuffer);
-        glBindTexture(GL_TEXTURE_2D, hdrFBO);
-        hdrShader->setUniform("exposure", exposure);
+        bloomShader->use();
+        bloomShader->setUniformInt("bloom", bloom);
+        bloomShader->setUniform("exposure", exposure);
+        glActiveTexture(GL_TEXTURE0 + colorBuffers[0]);
+        glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+        bloomShader->setUniformInt("scene", colorBuffers[0]);
+        glActiveTexture(GL_TEXTURE0 + pingpongBuffers[!horizontal]);
+        glBindTexture(GL_TEXTURE_2D, pingpongBuffers[!horizontal]);
+        bloomShader->setUniformInt("bloomBlur", pingpongBuffers[!horizontal]);
         renderQuad();
     }
 
     void onKey(int key, int scanCode, int action, int mods) override {
         // Collect key state in a map
         keys[key] = action;
+
+        // camera movement
         if (keys[GLFW_KEY_A]) {
             scene.camera->moveX(1);
         }
@@ -506,12 +551,16 @@ public:
         if (keys[GLFW_KEY_DOWN]) {
             scene.camera->moveY(-1);
         }
+
+        // camera rotation
         if (keys[GLFW_KEY_Q]) {
             scene.camera->rotate(-1);
         }
         if (keys[GLFW_KEY_E]) {
             scene.camera->rotate(1);
         }
+
+        // debug
         if (keys[GLFW_KEY_B]) {
             if (scene.showBoundingBoxes) {
                 scene.showBoundingBoxes = false;
@@ -538,6 +587,15 @@ public:
                 scene.camera->debugEnabled = true;
                 std::cout << "Debug: Camera position enabled" << std::endl;
                 scene.camera->debug();
+            }
+        }
+        if (keys[GLFW_KEY_L]) {
+            if (bloom) {
+                bloom = false;
+                std::cout << "Debug: Bloom disabled" << std::endl;
+            } else {
+                bloom = true;
+                std::cout << "Debug: Bloom enabled" << std::endl;
             }
         }
     }
