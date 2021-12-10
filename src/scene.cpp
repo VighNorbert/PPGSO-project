@@ -3,8 +3,11 @@
 void Scene::update(float time) {
   camera->update(time);
 
-  if (showFPS)
-    std::cout << "FPS: " << 1 / time << std::endl;
+  lastFPSOutputTime += time;
+  if (showFPS && lastFPSOutputTime > 1.f) {
+      std::cout << "FPS: " << int(1 / time) << std::endl;
+      lastFPSOutputTime = 0.f;
+  }
 
   // Use iterator to update all objects so we can remove while iterating
   auto i = std::begin(rootObjects);

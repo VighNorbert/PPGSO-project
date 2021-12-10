@@ -229,18 +229,18 @@ void Car::checkCollisions(Scene &scene, float dt) {
 
                 float dist = distance(this->position, o->position);
                 float mindist = o->radius + this->radius;
-                if (dist < mindist) { // collision detected
+                if (dist < mindist && length(o->speed) > .1f) { // collision detected
                     glm::vec3 oMomentum = o->speed * o->weight;
-                    glm::vec3 momentum = this->speed * this->weight;
-                    float factor = (mindist - dist) / mindist;
+                    float factor = .1f + 3.f * (mindist - dist) / mindist;
                     this->collisionSpeedDelta += factor * (oMomentum / this->weight - this->speed);
                     if (this->carType == MuscleCar)
-                        this->rotation += factor * dt;
+                        this->rotation.z += factor * length(speed) * .2f * dt;
                     else {
-                        this->rotation -= factor * dt;
+                        this->rotation.z -= factor * length(speed) * .2f * dt;
                     }
                     brakesApplied = true;
-                    std::cout << "collision " << carType << " " << radius << std::endl;
+                    if (scene.showBoundingBoxes)
+                        std::cout << "Debug: Collision detected" << std::endl;
                 }
             }
         }
@@ -300,9 +300,18 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
     }
 
     if (keyframes.empty() || keyframesOver) {
-        speed += collisionSpeedDelta;
+        if (length(collisionSpeedDelta) > 0.f) {
+            speed += collisionSpeedDelta;
+            brakingCounterSpeed = speed * .8f;
+        }
         if (brakesApplied) {
-            speed *= (1 - .5f * dt);
+            if (length(speed) > length(brakingCounterSpeed)) {
+                speed -= brakingCounterSpeed * dt;
+            } else {
+                speed = {0.f, 0.f, 0.f};
+                brakingCounterSpeed = {0, 0, 0};
+                brakesApplied = false;
+            }
         }
         position += speed * dt;
 

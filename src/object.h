@@ -149,6 +149,8 @@ public:
               position = glm::lerp(actualpos, nextpos, a);
               if (duration > 0.f) {
                   speed = (nextpos - actualpos) / duration;
+              } else {
+                  speed = {0.f, 0.f, 0.f};
               }
               return true;
           }
@@ -163,6 +165,8 @@ public:
       position = lastpos;
       if (lastdur == -2.f) {
           keyframesOver = true;
+      } else if (lastdur == 0.f) {
+          speed = {0.f, 0.f, 0.f};
       }
       return true;
   }

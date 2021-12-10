@@ -178,5 +178,7 @@ void Bank::renderForShadow(Scene &scene) {
         case BankType::BankInsideAlarmBottom:
             mesh_bank_inside_alarm_bottom->render();
             break;
+        default:
+            break;
     }
 }
