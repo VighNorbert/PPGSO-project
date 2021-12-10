@@ -41,24 +41,18 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
     if (bankType == BankType::BankInside) {
 
         auto sun = new Light({1, 1, 1}, 1.0f, 0.09f, 0.032f, 50.f);
-        auto sunWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 5.f, 0.f}, sun);
+        auto sunWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 3.f, 0.f}, sun);
         scene.lights.push_back(sun);
-        scene.rootObjects.push_back(move(sunWrapper));
+        childObjects.push_back(move(sunWrapper));
 
         auto glass = std::make_unique<Bank>(this, BankType::BankInsideGlass, scene);
-        scene.rootObjects.push_back(move(glass));
+        childObjects.push_back(move(glass));
 
         auto alarm_base = std::make_unique<Bank>(this, BankType::BankInsideAlarmBottom, scene);
-        scene.rootObjects.push_back(move(alarm_base));
+        childObjects.push_back(move(alarm_base));
 
         auto alarm_top = std::make_unique<Bank>(this, BankType::BankInsideAlarmTop, scene);
-        scene.rootObjects.push_back(move(alarm_top));
-
-        auto alarm = new Light({1, 0, 0}, 1.0f, .75f, .5f, 50.f);
-        auto alarmWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 1.f, 0.f}, alarm);
-        scene.lights.push_back(alarm);
-        scene.rootObjects.push_back(move(alarmWrapper));
-
+        childObjects.push_back(move(alarm_top));
 
     }
 }
@@ -70,6 +64,12 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
     if (scene.scene_id == 0) {
         if (age > 10 && !alarm_pushed) {
             alarm_pushed = true;
+
+            auto alarm = new Light({1, 0, 0}, 1.0f, .75f, .5f, 50.f);
+            auto alarmWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 1.f, 0.f}, alarm);
+            scene.lights.push_back(alarm);
+            childObjects.push_back(move(alarmWrapper));
+
             auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitPushingButton);
             character->keyframes = {
                     {5.f, {0, 0, 0.5}, {0, 0, ppgso::PI}},
@@ -120,7 +120,6 @@ void Bank::render(Scene &scene, GLuint depthMap) {
     glBindTexture(GL_TEXTURE_2D, depthMap);
     shader->setUniformInt("ShadowMap", (int)depthMap);
 
-
     switch (this->bankType) {
         case BankType::BankOutside:
             mesh_bank->render();
@@ -139,13 +138,10 @@ void Bank::render(Scene &scene, GLuint depthMap) {
             glDisable(GL_BLEND);
             break;
         case BankType::BankInsideAlarmTop:
-            // Enable blending
+            shader->setUniform("Transparency", 10000000.f);
             glEnable(GL_BLEND);
-            // Additive blending
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
             mesh_bank_inside_alarm_top->render();
-            // Disable blending
             glDisable(GL_BLEND);
             break;
         case BankType::BankInsideAlarmBottom:
