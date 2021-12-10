@@ -2,6 +2,7 @@
 #define PPGSO_LIGHT_H
 
 #include "object.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 class Light {
 public:
@@ -25,7 +26,6 @@ public:
     Light(glm::vec3 color, float constant, float linear, float quadratic, float maxDist);
 
     Light(glm::vec3 color, glm::vec3 direction, float cutOff, float outerCutOff, float constant, float linear, float quadratic, float maxDist);
-
 };
 
 

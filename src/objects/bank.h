@@ -13,7 +13,8 @@ enum BankType
     BankOutside = 0,
     BankInside = 1,
     BankInsideGlass = 2,
-    BankInsideAlarm = 3
+    BankInsideAlarmBottom = 3,
+    BankInsideAlarmTop = 4
 };
 
 
@@ -24,19 +25,25 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_bank;
     static std::unique_ptr<ppgso::Mesh> mesh_bank_inside;
     static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_glass;
-    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_alarm;
+    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_alarm_top;
+    static std::unique_ptr<ppgso::Mesh> mesh_bank_inside_alarm_bottom;
 
     static std::unique_ptr<ppgso::Shader> shader;
+    static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     static std::unique_ptr<ppgso::Texture> texture;
 
     BankType bankType;
+    bool male_dead = false;
+    bool alarm_pushed = false;
 
 public:
     /*!
      * Create new object
      */
     Bank(Object* parent, BankType bankType, Scene& scene);
+
+    void checkCollisions(Scene &scene, float dt) override {};
 
     /*!
      * Update asteroid
@@ -50,7 +57,13 @@ public:
      * Render asteroid
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
+
+    /*!
+     * Render asteroid
+     * @param scene Scene to render in
+     */
+    void renderForShadow(Scene &scene) override;
 };
 
 

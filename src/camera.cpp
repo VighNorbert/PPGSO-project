@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 
 #include "camera.h"
+#include "scene.h"
 
 
 Camera::Camera(float fow, float ratio, float near, float far) {
@@ -58,17 +59,23 @@ void Camera::update(float time) {
 
 void Camera::moveX(int dir) {
     position.x += dir * .5;
-    std::cout << position.x << " " << position.y << " " << position.z << std::endl;
+    debug();
 }
 void Camera::moveY(int dir) {
     position.y += dir * .5;
-    std::cout << position.x << " " << position.y << " " << position.z << std::endl;
+    debug();
 }
 void Camera::moveZ(int dir) {
     position.z += dir * .5;
-    std::cout << position.x << " " << position.y << " " << position.z << std::endl;
+    debug();
 }
 void Camera::rotate(int dir) {
     rotation += dir * 1.5;
-    std::cout << position.x << " " << position.y << " " << position.z << " " << rotation << std::endl;
+    debug();
+}
+
+void Camera::debug() {
+    if (debugEnabled) {
+        std::cout << "Debug: Camera position " << position.x << " " << position.y << " " << position.z << " " << rotation << std::endl;
+    }
 }

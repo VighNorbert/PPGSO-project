@@ -2,12 +2,15 @@
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
+#include <shaders/shadow_vert_glsl.h>
+#include <shaders/shadow_frag_glsl.h>
 
 // Static resources
 std::unique_ptr<ppgso::Mesh> Gun::mesh_pistol;
 std::unique_ptr<ppgso::Mesh> Gun::mesh_bullet;
 
 std::unique_ptr<ppgso::Shader> Gun::shader;
+std::unique_ptr<ppgso::Shader> Gun::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Gun::texture;
 
@@ -23,6 +26,7 @@ Gun::Gun(Object* parent, GunType gunType) {
     if (!mesh_bullet) mesh_bullet = std::make_unique<ppgso::Mesh>("objects/handgun/bullet.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
+    if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/Handgun_C.bmp"));
 }
@@ -34,11 +38,11 @@ bool Gun::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
     return true;
 }
 
-void Gun::render(Scene &scene) {
+void Gun::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
-    scene.renderLight(shader);
+    scene.renderLight(shader, false);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
@@ -54,6 +58,31 @@ void Gun::render(Scene &scene) {
 
     shader->setUniform("Texture", *texture);
 
+    shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    shader->setUniformInt("ShadowMap", (int)depthMap);
+
+    switch (this->gunType) {
+        case GunType::Bullet:
+            mesh_bullet->render();
+            break;
+        case GunType::Pistol:
+            mesh_pistol->render();
+            break;
+
+    }
+}
+
+void Gun::renderForShadow(Scene &scene) {
+    shader_shadow->use();
+
+    shader_shadow->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
+    shader_shadow->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
+
+    shader_shadow->setUniform("ModelMatrix", modelMatrix);
 
     switch (this->gunType) {
         case GunType::Bullet:

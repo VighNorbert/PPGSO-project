@@ -1,5 +1,4 @@
-
-#ifndef PPGSO_KEYFRAME_H
+#ifndef PPGSO_CAMERA_H
 #define PPGSO_CAMERA_H
 
 #include <memory>
@@ -21,6 +20,8 @@ public:
 
     float age = 0.0f;
 
+    bool debugEnabled = false;
+
     /*!
      * Create new Camera that will generate viewMatrix and projectionMatrix based on its position, up and back vectors
      * @param fow - Field of view in degrees
@@ -40,6 +41,8 @@ public:
     void moveZ(int dir);
 
     void rotate(int dir);
+
+    void debug();
 
     static glm::mat4 getViewMatrix(float tilt, float rotation, glm::vec3 position) {
         return glm::mat4{1.0f}

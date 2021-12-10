@@ -57,6 +57,7 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_roof_corner_3;
 
     static std::unique_ptr<ppgso::Shader> shader;
+    static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     ApartmentType apartmentType;
 
@@ -70,6 +71,8 @@ public:
 
     explicit Apartment(Object* parent, ApartmentBlockType abt, const ppgso::Texture& texture);
 
+    void checkCollisions(Scene &scene, float dt) override {};
+
     /*!
      * Update asteroid
      * @param scene Scene to interact with
@@ -82,7 +85,13 @@ public:
      * Render asteroid
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
+
+    /*!
+     * Render asteroid
+     * @param scene Scene to render in
+     */
+    void renderForShadow(Scene &scene) override;
 };
 
 

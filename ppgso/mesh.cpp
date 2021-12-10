@@ -36,7 +36,7 @@ ppgso::Mesh::Mesh(const std::string &obj_file) {
     }
 
     if(!shape.mesh.texcoords.empty()) {
-      // Generate and upload a buffer with texture coordinates to GPU
+      // Generate and upload a buffer with fire_texture coordinates to GPU
       glGenBuffers(1, &buffer.tbo);
       glBindBuffer(GL_ARRAY_BUFFER, buffer.tbo);
       glBufferData(GL_ARRAY_BUFFER, shape.mesh.texcoords.size() * sizeof(float), shape.mesh.texcoords.data(),
@@ -47,7 +47,7 @@ ppgso::Mesh::Mesh(const std::string &obj_file) {
     }
 
     if(!shape.mesh.normals.empty()) {
-      // Generate and upload a buffer with texture coordinates to GPU
+      // Generate and upload a buffer with fire_texture coordinates to GPU
       glGenBuffers(1, &buffer.nbo);
       glBindBuffer(GL_ARRAY_BUFFER, buffer.nbo);
       glBufferData(GL_ARRAY_BUFFER, shape.mesh.normals.size() * sizeof(float), shape.mesh.normals.data(),

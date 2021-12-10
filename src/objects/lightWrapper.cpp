@@ -21,5 +21,6 @@ bool LightWrapper::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, g
     return true;
 }
 
-void LightWrapper::render(Scene &scene) {}
+void LightWrapper::render(Scene &scene, GLuint depthMap) {}
+void LightWrapper::renderForShadow(Scene &scene) {}
 

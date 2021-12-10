@@ -23,6 +23,7 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_chair;
 
     static std::unique_ptr<ppgso::Shader> shader;
+    static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     static std::unique_ptr<ppgso::Texture> texture;
 
@@ -33,6 +34,8 @@ public:
      * Create new object
      */
     Furniture(Object* parent, FurnitureType furnitureType);
+
+    void checkCollisions(Scene &scene, float dt) override {};
 
     /*!
      * Update asteroid
@@ -46,7 +49,13 @@ public:
      * Render asteroid
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
+
+    /*!
+     * Render asteroid
+     * @param scene Scene to render in
+     */
+    void renderForShadow(Scene &scene) override;
 };
 
 

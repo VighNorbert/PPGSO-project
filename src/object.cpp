@@ -6,7 +6,6 @@
 #include <shader.h>
 
 #include "object.h"
-#include "light.h"
 
 /**
  * @param scene
@@ -32,10 +31,19 @@ bool Object::updateChildren(Scene &scene, float time, glm::mat4 parentModelMatri
 /**
  * @param scene
  */
-void Object::renderChildren(Scene &scene) {
-    this->render(scene);
+void Object::renderChildren(Scene &scene, GLuint depthMap) {
+    this->render(scene, depthMap);
     for ( auto& obj : childObjects )
-        obj->renderChildren(scene);
+        obj->renderChildren(scene, depthMap);
+}
+
+/**
+ * @param scene
+ */
+void Object::renderForShadowChildren(Scene &scene) {
+    this->renderForShadow(scene);
+    for ( auto& obj : childObjects )
+        obj->renderForShadowChildren(scene);
 }
 
 void Object::generateModelMatrix(glm::mat4 parentModelMatrix) {

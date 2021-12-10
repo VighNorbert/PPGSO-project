@@ -31,6 +31,7 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_sidewalk_gutter;
 
     static std::unique_ptr<ppgso::Shader> shader;
+    static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     static std::unique_ptr<ppgso::Texture> texture_side;
     static std::unique_ptr<ppgso::Texture> texture_center;
@@ -44,6 +45,8 @@ public:
      */
     explicit Road(Object* parent);
 
+    void checkCollisions(Scene &scene, float dt) override {};
+
     /*!
      * Update asteroid
      * @param scene Scene to interact with
@@ -56,7 +59,13 @@ public:
      * Render asteroid
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
+
+    /*!
+     * Render asteroid
+     * @param scene Scene to render in
+     */
+    void renderForShadow(Scene &scene) override;
 
     /**
      * Creates a complete road with sidewalk and everything that goes with it

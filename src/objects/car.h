@@ -24,7 +24,9 @@ enum CarType
     VanGlass = 11,
     VanWheel = 12,
     VanFrontLight = 13,
-    VanBackLight = 14
+    VanBackLight = 14,
+    Firetruck = 15,
+    FiretruckWheel = 16
 };
 
 class Car : public Object {
@@ -46,20 +48,33 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_van_wheel;
     static std::unique_ptr<ppgso::Mesh> mesh_van_front_light;
     static std::unique_ptr<ppgso::Mesh> mesh_van_back_light;
+    static std::unique_ptr<ppgso::Mesh> mesh_firetruck;
+    static std::unique_ptr<ppgso::Mesh> mesh_firetruck_wheel;
 
     static std::unique_ptr<ppgso::Shader> shader;
-    static std::unique_ptr<ppgso::Shader> color_shader;
+    static std::unique_ptr<ppgso::Shader> shader_shadow;
 
     static std::unique_ptr<ppgso::Texture> texture;
     static std::unique_ptr<ppgso::Texture> texture_van;
+    static std::unique_ptr<ppgso::Texture> texture_firetruck;
 
     CarType carType;
+
+    bool not_sitting = true;
+    bool police_alive = true;
+
+    glm::vec3 collisionSpeedDelta{0, 0, 0};
+
+    bool brakesApplied = false;
+    glm::vec3 brakingCounterSpeed{0, 0, 0};
 
 public:
     /*!
      * Create new object
      */
     Car(Object* parent, CarType carType, Scene& scene);
+
+    void checkCollisions(Scene &scene, float dt) override;
 
     /*!
      * @param scene Scene to interact with
@@ -71,12 +86,17 @@ public:
     /*!
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
 
     bool isWheel();
 
     float getWheelDiameter();
 
+    /*!
+  * Render asteroid
+  * @param scene Scene to render in
+  */
+    void renderForShadow(Scene &scene) override;
 };
 
 

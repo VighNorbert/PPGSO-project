@@ -12,6 +12,8 @@ public:
     LightWrapper(Object* parent, Light* light);
     LightWrapper(Object* parent, glm::vec3 position, Light* light);
 
+    void checkCollisions(Scene &scene, float dt) override {};
+
     /*!
      * @param scene Scene to interact with
      * @param dt Time delta for animation purposes
@@ -23,7 +25,13 @@ public:
      * Render asteroid
      * @param scene Scene to render in
      */
-    void render(Scene &scene) override;
+    void render(Scene &scene, GLuint depthMap) override;
+
+    /*!
+     * Render asteroid
+     * @param scene Scene to render in
+     */
+    void renderForShadow(Scene &scene) override;
 };
 
 

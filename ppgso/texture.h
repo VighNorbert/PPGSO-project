@@ -14,7 +14,7 @@ namespace ppgso {
   public:
 
     /*!
-     * Create new empty texture and bind it to OpenGL.
+     * Create new empty fire_texture and bind it to OpenGL.
      *
      * @param width - Width in pixels.
      * @param height - Height in pixels.
@@ -31,19 +31,19 @@ namespace ppgso {
     ~Texture();
 
     /*!
-     * Update the OpenGL texture in memory.
+     * Update the OpenGL fire_texture in memory.
      */
     void update();
 
     /*!
-     * Get OpenGL texture identifier number.
+     * Get OpenGL fire_texture identifier number.
      *
-     * @return - OpenGL texture identifier number.
+     * @return - OpenGL fire_texture identifier number.
      */
     GLuint getTexture();
 
     /*!
-     * Bind the OpenGL texture for use.
+     * Bind the OpenGL fire_texture for use.
      *
      * @param id - OpenGL Texture id to bind to (0 default)
      */

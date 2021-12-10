@@ -562,56 +562,56 @@ std::string LoadMtl(std::map<std::string, int> &material_map,
       continue;
     }
 
-    // ambient texture
+    // ambient fire_texture
     if ((0 == strncmp(token, "map_Ka", 6)) && isSpace(token[6])) {
       token += 7;
       material.ambient_texname = token;
       continue;
     }
 
-    // diffuse texture
+    // diffuse fire_texture
     if ((0 == strncmp(token, "map_Kd", 6)) && isSpace(token[6])) {
       token += 7;
       material.diffuse_texname = token;
       continue;
     }
 
-    // specular texture
+    // specular fire_texture
     if ((0 == strncmp(token, "map_Ks", 6)) && isSpace(token[6])) {
       token += 7;
       material.specular_texname = token;
       continue;
     }
 
-    // specular highlight texture
+    // specular highlight fire_texture
     if ((0 == strncmp(token, "map_Ns", 6)) && isSpace(token[6])) {
       token += 7;
       material.specular_highlight_texname = token;
       continue;
     }
 
-    // bump texture
+    // bump fire_texture
     if ((0 == strncmp(token, "map_bump", 8)) && isSpace(token[8])) {
       token += 9;
       material.bump_texname = token;
       continue;
     }
 
-    // alpha texture
+    // alpha fire_texture
     if ((0 == strncmp(token, "map_d", 5)) && isSpace(token[5])) {
       token += 6;
       material.alpha_texname = token;
       continue;
     }
 
-    // bump texture
+    // bump fire_texture
     if ((0 == strncmp(token, "bump", 4)) && isSpace(token[4])) {
       token += 5;
       material.bump_texname = token;
       continue;
     }
 
-    // displacement texture
+    // displacement fire_texture
     if ((0 == strncmp(token, "disp", 4)) && isSpace(token[4])) {
       token += 5;
       material.displacement_texname = token;
