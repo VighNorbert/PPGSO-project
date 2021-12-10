@@ -53,7 +53,8 @@ in vec3 fragmetPosition;
 in vec4 fragmentPositionLightSpace;
 
 // The final color
-out vec4 FragmentColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 float ShadowCalculation(vec3 lightDir)
 {
@@ -128,9 +129,16 @@ void main() {
   // Lookup the color in Texture on coordinates given by texCoord
   vec4 objectColor = texture(Texture, vec2(texCoord.x, 1.0 - texCoord.y) + TextureOffset);
 
-  FragmentColor = vec4(0.f);
+  FragColor = vec4(0.f);
+  vec3 result = vec3(0.f);
   for (int i = 0; i<LightsCount; i++) {
-    FragmentColor += vec4(CalcLight(lights[i], viewDir, vec3(objectColor), (i == 0)), 0.f);
+    result += CalcLight(lights[i], viewDir, vec3(objectColor), (i == 0));
   }
-  FragmentColor[3] = Transparency;
+  float brightness = dot(result, vec3(0.2126, 0.7152, 0.0722));
+  if(brightness > 1.0) {
+    BrightColor = vec4(result, 1.0);
+  } else {
+    BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+  }
+  FragColor = vec4(result, Transparency);
 }
