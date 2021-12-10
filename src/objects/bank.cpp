@@ -1,6 +1,7 @@
 #include "bank.h"
 #include "lightWrapper.h"
 #include "character.h"
+#include "particle.h"
 
 #include <shaders/phong_vert_glsl.h>
 #include <shaders/phong_frag_glsl.h>
@@ -85,6 +86,14 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
             character->rotation.z = ppgso::PI;
             character->position = {0, 0.13, 0.5};
             scene.rootObjects.push_back(move(character));
+        }
+
+        if (age > 16 && age < 40){
+            int maxcount_per_sec = 100;
+            for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
+                auto particle = std::make_unique<Particle>(this, ParticleType::Blood, glm::vec3{1, 0, 0.5});
+                childObjects.push_back(move(particle));
+            }
         }
     }
 

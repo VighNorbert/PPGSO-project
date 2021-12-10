@@ -22,6 +22,8 @@ float FIRE_VER_SPEED = .2f;
 float WATER_VER = .01f;
 float WATER_HOR = .01f;
 
+float BLOOD_HOR = .3f;
+
 
 Particle::Particle(Object *parent, ParticleType particleType, glm::vec3 initialPosition) {
     parentObject = parent;
@@ -34,6 +36,7 @@ Particle::Particle(Object *parent, ParticleType particleType, glm::vec3 initialP
 
     if (!fire_texture) fire_texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/fire_texture.bmp"));
     if (!water_texture) water_texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/water_texture.bmp"));
+    if (!blood_texture) blood_texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/blood_texture.bmp"));
 
     rotation = {0, 0, 0};
 
@@ -45,6 +48,10 @@ Particle::Particle(Object *parent, ParticleType particleType, glm::vec3 initialP
     if (particleType == ParticleType::Water) {
         scale = {.1, .1, .1};
         speed = {glm::linearRand(-WATER_HOR, WATER_HOR) , 2.0f + glm::linearRand(-WATER_VER, WATER_VER), 5.0f + glm::linearRand(-WATER_HOR, WATER_HOR)};
+        maxAge = 5.f;
+    }
+    if (particleType == ParticleType::Blood) {
+        speed = glm::rotate(glm::mat4(1.0f), glm::linearRand(0.f,ppgso::PI), glm::vec3(0, 1, 0)) * glm::vec4{glm::linearRand(-BLOOD_HOR, BLOOD_HOR), 0, 0, 0};
         maxAge = 5.f;
     }
 
@@ -61,13 +68,16 @@ bool Particle::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::
     }
 
     if (particleType == ParticleType::Fire) {
-        scale = glm::vec3{.3, .3, .3} / (1.0f + age * 1.5f ) ;
+        scale = glm::vec3{.3, .3, .3} / (1.0f + age * 1.5f );
         speed.y += FIRE_VER_SPEED * dt;
     }
     if (particleType == ParticleType::Water) {
         speed.y += -1.f * dt - glm::linearRand(-WATER_HOR, WATER_HOR) * dt * 100;
         speed.x += glm::linearRand(-WATER_HOR, WATER_HOR) * dt * 100;
         speed.z += glm::linearRand(-WATER_HOR, WATER_HOR) * dt * 100;
+    }
+    if (particleType == ParticleType::Blood) {
+        scale = glm::vec3{0.2, 0.2, 0.2} / (1.0f + age * 1.5f );
     }
 
     position += speed * dt;
@@ -97,10 +107,11 @@ void Particle::render(Scene &scene, GLuint depthMap) {
     shader->setUniform("ModelMatrix", modelMatrix);
 
     if (particleType == ParticleType::Fire) {
-
         shader->setUniform("Texture", *fire_texture);
-    } else {
+    } else if (particleType == ParticleType::Water) {
         shader->setUniform("Texture", *water_texture);
+    } else {
+        shader->setUniform("Texture", *blood_texture);
     }
     shader->setUniform("TextureOffset", glm::vec2{age / (maxAge + .1f), 0});
 
@@ -111,15 +122,20 @@ void Particle::render(Scene &scene, GLuint depthMap) {
     glBindTexture(GL_TEXTURE_2D, depthMap);
     shader->setUniformInt("ShadowMap", (int)depthMap);
 
-    // Enable blending
-    glEnable(GL_BLEND);
-    // Additive blending
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    if (particleType == ParticleType::Fire || particleType == ParticleType::Water) {
+        // Enable blending
+        glEnable(GL_BLEND);
+        // Additive blending
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-    shader->setUniform("Transparency", 1.f);
-    mesh->render();
+        shader->setUniform("Transparency", 1.f);
+        mesh->render();
 
-    glDisable(GL_BLEND);
+        glDisable(GL_BLEND);
+    } else {
+        mesh->render();
+    }
+
 }
 
 void Particle::renderForShadow(Scene &scene) {
