@@ -8,9 +8,8 @@ std::unique_ptr<ppgso::Mesh> BoundingCircle::mesh;
 std::unique_ptr<ppgso::Shader> BoundingCircle::shader;
 std::unique_ptr<ppgso::Texture> BoundingCircle::texture;
 
-BoundingCircle::BoundingCircle(glm::vec3 position, float radius) {
+BoundingCircle::BoundingCircle(float radius) {
     float diameter = radius * 2;
-    this->position = position;
     this->radius = radius;
     this->scale = glm::vec3{diameter};
 
@@ -19,6 +18,10 @@ BoundingCircle::BoundingCircle(glm::vec3 position, float radius) {
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
 
     if (!texture) texture = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/bb.bmp"));
+}
+
+void BoundingCircle::checkCollisions(Scene &scene, float dt) {
+
 }
 
 bool BoundingCircle::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {

@@ -63,11 +63,17 @@ private:
     bool not_sitting = true;
     bool police_alive = true;
 
+    glm::vec3 collisionSpeedDelta{0, 0, 0};
+
+    bool brakesApplied = false;
+
 public:
     /*!
      * Create new object
      */
     Car(Object* parent, CarType carType, Scene& scene);
+
+    void checkCollisions(Scene &scene, float dt) override;
 
     /*!
      * @param scene Scene to interact with
@@ -90,8 +96,6 @@ public:
   * @param scene Scene to render in
   */
     void renderForShadow(Scene &scene) override;
-
-    float weight = 0;
 };
 
 

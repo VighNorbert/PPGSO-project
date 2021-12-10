@@ -83,7 +83,7 @@ float ShadowCalculation(vec3 lightDir)
   return shadow;
 }
 
-vec3 CalcLight(Light light, vec3 viewDir, vec3 objectColor)
+vec3 CalcLight(Light light, vec3 viewDir, vec3 objectColor, bool shadowsEnabled)
 {
 
   // attenuation
@@ -117,7 +117,7 @@ vec3 CalcLight(Light light, vec3 viewDir, vec3 objectColor)
   vec3 reflectDir = reflect(-lightDir, vec3(normal));
   vec3 specular = SpecularStrength * pow(max(dot(viewDir, reflectDir), 0.0), 32) * color;
 
-  float shadow = ShadowCalculation(lightDir);
+  float shadow = shadowsEnabled ? ShadowCalculation(lightDir) : 0.f;
 
   return (ambient + (1.0 - shadow) * (diffuse + specular)) * intensity;
 }
@@ -130,7 +130,7 @@ void main() {
 
   FragmentColor = vec4(0.f);
   for (int i = 0; i<LightsCount; i++) {
-    FragmentColor += vec4(CalcLight(lights[i], viewDir, vec3(objectColor)), 0.f);
+    FragmentColor += vec4(CalcLight(lights[i], viewDir, vec3(objectColor), (i == 0)), 0.f);
   }
   FragmentColor[3] = Transparency;
 }

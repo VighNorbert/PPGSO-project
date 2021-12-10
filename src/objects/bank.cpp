@@ -40,7 +40,7 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
 
     if (bankType == BankType::BankInside) {
 
-        auto sun = new Light({1, 1, 1}, 1.0f, 0.09f, 0.032f, 50.f);
+        auto sun = new Light({1, 1, 1}, 1.0f, 0.04f, 0.0032f, 50.f);
         auto sunWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 3.f, 0.f}, sun);
         scene.lights.push_back(sun);
         childObjects.push_back(move(sunWrapper));
@@ -138,9 +138,9 @@ void Bank::render(Scene &scene, GLuint depthMap) {
             glDisable(GL_BLEND);
             break;
         case BankType::BankInsideAlarmTop:
-            shader->setUniform("Transparency", 10000000.f);
+            shader->setUniform("Transparency", .7f);
             glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             mesh_bank_inside_alarm_top->render();
             glDisable(GL_BLEND);
             break;

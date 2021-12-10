@@ -15,7 +15,9 @@ private:
 
 public:
 
-    BoundingCircle(glm::vec3 position, float radius);
+    explicit BoundingCircle(float radius);
+
+    void checkCollisions(Scene &scene, float dt) override;
 
     /*!
      * @param scene Scene to interact with
@@ -35,8 +37,6 @@ public:
      * @param scene Scene to render in
      */
     void renderForShadow(Scene &scene) override;
-
-    float radius;
 };
 
 

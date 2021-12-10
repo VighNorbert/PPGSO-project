@@ -68,11 +68,10 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::MuscleCarGlass, scene));
 
-//        boundingCircle = std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.13021f}, 2.82129f);
-
+        radius = 2.82f;
         weight = 1400.f;
 
-//        scene.colliders.push_back(this);
+        childObjects.push_back(std::make_unique<BoundingCircle>(radius));
 
         auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
         auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.80443, 0.66418, 2.5}, light);
@@ -156,11 +155,10 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
 
-//        boundingCircle = std::make_unique<BoundingCircle>(glm::vec3{0.f, 0.f, 0.1f}, 2.51f);
-
+        radius = 2.51f;
         weight = 2400.f;
 
-//        scene.colliders.push_back(this);
+        childObjects.push_back(std::make_unique<BoundingCircle>(radius));
 
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanFrontLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanBackLight, scene));
@@ -218,6 +216,36 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
     if (!texture_firetruck) texture_firetruck = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("textures/hasici.bmp"));
 }
 
+void Car::checkCollisions(Scene &scene, float dt) {
+    this->collisionSpeedDelta = {0, 0, 0};
+    if (keyframes.empty() || keyframesOver) {
+        if (radius > 0.f) {
+            for (auto &o: scene.rootObjects) {
+                if (o.get() == this) continue;
+
+                auto car = dynamic_cast<Car *>(o.get());
+                if (!car) continue;
+                if (o->radius == 0.f) continue;
+
+                float dist = distance(this->position, o->position);
+                float mindist = o->radius + this->radius;
+                if (dist < mindist) { // collision detected
+                    glm::vec3 oMomentum = o->speed * o->weight;
+                    glm::vec3 momentum = this->speed * this->weight;
+                    float factor = (mindist - dist) / mindist;
+                    this->collisionSpeedDelta += factor * (oMomentum / this->weight - this->speed);
+                    if (this->carType == MuscleCar)
+                        this->rotation += factor * dt;
+                    else {
+                        this->rotation -= factor * dt;
+                    }
+                    brakesApplied = true;
+                    std::cout << "collision " << carType << " " << radius << std::endl;
+                }
+            }
+        }
+    }
+}
 
 bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
     age += dt;
@@ -243,13 +271,15 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
             }
         }
 
-    } else if (carType == Firetruck && age < 67 && age > 45) {
+    }
+    else if (carType == Firetruck && age < 67 && age > 45) {
         int maxcount_per_sec = 200;
         for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
             auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, 2.f, 0.f});
             childObjects.push_back(move(particle));
         }
-    } else if (carType == PoliceCar && age > 70 && police_alive) {
+    }
+    else if (carType == PoliceCar && age > 70 && police_alive) {
         police_alive = false;
         childObjects.pop_front();
         childObjects.pop_front();
@@ -270,14 +300,10 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
     }
 
     if (keyframes.empty() || keyframesOver) {
-//        for (Car *o: scene.colliders) {
-//            if (o == this)
-//                continue;
-//
-//            if (length(o->position - this->position) > o->boundingCircle->radius + this->boundingCircle->radius) {
-//                std::cout << "collision" << std::endl;
-//            }
-//        }
+        speed += collisionSpeedDelta;
+        if (brakesApplied) {
+            speed *= (1 - .5f * dt);
+        }
         position += speed * dt;
 
         generateModelMatrix(parentModelMatrix);

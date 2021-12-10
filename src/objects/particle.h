@@ -37,7 +37,9 @@ public:
     /*!
      * Create new object
      */
-    explicit Particle(Object* parent, ParticleType apartmentType, glm::vec3 initialPosition);
+    Particle(Object* parent, ParticleType apartmentType, glm::vec3 initialPosition);
+
+    void checkCollisions(Scene &scene, float dt) override {};
 
     /*!
      * Update asteroid

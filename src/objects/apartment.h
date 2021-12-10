@@ -71,6 +71,8 @@ public:
 
     explicit Apartment(Object* parent, ApartmentBlockType abt, const ppgso::Texture& texture);
 
+    void checkCollisions(Scene &scene, float dt) override {};
+
     /*!
      * Update asteroid
      * @param scene Scene to interact with

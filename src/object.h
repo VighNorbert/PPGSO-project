@@ -33,6 +33,12 @@ public:
   Object* parentObject = nullptr;
 
   /*!
+   * @param scene - Reference to the Scene the object is rendered in
+   * @param dt - Time delta for animation purposes
+   */
+  virtual void checkCollisions(Scene &scene, float dt) = 0;
+
+  /*!
    * Update Object parameters, usually used to update the modelMatrix based on position, scale and rotation of children
    *
    * @param scene - Reference to the Scene the object is rendered in
@@ -89,6 +95,9 @@ public:
   std::list<Keyframe> keyframes;
   float age = 0.f;
   bool keyframesOver = false;
+
+  float weight = 0.f;
+  float radius = 0.f;
 
   static glm::mat4 getModelMatrix(glm::vec3 position, glm::vec3 rotation = {0, 0, 0}, glm::vec3 scale = {1, 1, 1}) {
     return glm::translate(glm::mat4(1.0f), position)

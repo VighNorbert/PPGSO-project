@@ -12,6 +12,8 @@ public:
     LightWrapper(Object* parent, Light* light);
     LightWrapper(Object* parent, glm::vec3 position, Light* light);
 
+    void checkCollisions(Scene &scene, float dt) override {};
+
     /*!
      * @param scene Scene to interact with
      * @param dt Time delta for animation purposes

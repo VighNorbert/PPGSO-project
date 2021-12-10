@@ -40,7 +40,7 @@ void MoneyBag::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
-    scene.renderLight(shader);
+    scene.renderLight(shader, false);
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);

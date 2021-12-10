@@ -35,6 +35,8 @@ public:
      */
     Gun(Object* parent, GunType gunType);
 
+    void checkCollisions(Scene &scene, float dt) override {};
+
     /*!
      * Update asteroid
      * @param scene Scene to interact with

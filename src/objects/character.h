@@ -64,6 +64,8 @@ public:
      */
     Character(Object* parent, CharacterType characterType);
 
+    void checkCollisions(Scene &scene, float dt) override {};
+
     /*!
      * Update asteroid
      * @param scene Scene to interact with

@@ -9,6 +9,14 @@ void Scene::update(float time) {
   // Use iterator to update all objects so we can remove while iterating
   auto i = std::begin(rootObjects);
 
+  for (auto &o: rootObjects) {
+    // Update and remove from list if needed
+    o->checkCollisions(*this, time);
+  }
+
+  // Use iterator to update all objects so we can remove while iterating
+  i = std::begin(rootObjects);
+
   while (i != std::end(rootObjects)) {
     // Update and remove from list if needed
     auto obj = i->get();

@@ -43,6 +43,8 @@ public:
      */
     Bank(Object* parent, BankType bankType, Scene& scene);
 
+    void checkCollisions(Scene &scene, float dt) override {};
+
     /*!
      * Update asteroid
      * @param scene Scene to interact with
