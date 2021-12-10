@@ -13,6 +13,7 @@ std::unique_ptr<ppgso::Shader> Particle::shader_shadow;
 
 std::unique_ptr<ppgso::Texture> Particle::fire_texture;
 std::unique_ptr<ppgso::Texture> Particle::water_texture;
+std::unique_ptr<ppgso::Texture> Particle::blood_texture;
 
 float FIRE_HOR = .3f;
 float FIRE_VER = 1.f;

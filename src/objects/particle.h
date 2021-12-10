@@ -11,7 +11,8 @@
 enum ParticleType
 {
     Fire = 0,
-    Water = 1
+    Water = 1,
+    Blood = 2
 };
 
 class Particle : public Object {
@@ -25,6 +26,7 @@ private:
 
     static std::unique_ptr<ppgso::Texture> fire_texture;
     static std::unique_ptr<ppgso::Texture> water_texture;
+    static std::unique_ptr<ppgso::Texture> blood_texture;
 
     ParticleType particleType;
 

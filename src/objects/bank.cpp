@@ -97,7 +97,7 @@ void Bank::render(Scene &scene, GLuint depthMap) {
     shader->use();
 
     // Set up light
-    scene.renderLight(shader, !(bankType == BankInside || bankType == BankInsideAlarmBottom));
+    scene.renderLight(shader, !(bankType == BankInside || bankType == BankInsideAlarmBottom ||  bankType == BankInsideAlarmTop));
 
     // use camera
     shader->setUniform("ProjectionMatrix", scene.camera->projectionMatrix);
@@ -138,7 +138,8 @@ void Bank::render(Scene &scene, GLuint depthMap) {
             glDisable(GL_BLEND);
             break;
         case BankType::BankInsideAlarmTop:
-            shader->setUniform("Transparency", .7f);
+            shader->setUniform("SpecularStrength", .7f);
+            shader->setUniform("Transparency", .9f);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             mesh_bank_inside_alarm_top->render();
