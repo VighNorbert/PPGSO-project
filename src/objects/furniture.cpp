@@ -61,7 +61,7 @@ void Furniture::render(Scene &scene, GLuint depthMap) {
     shader->setUniform("LightProjectionMatrix", scene.mainlight->lightProjection);
     shader->setUniform("LightViewMatrix", scene.mainlight->getLightView(scene.camera->position));
 
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE0 + depthMap);
     glBindTexture(GL_TEXTURE_2D, depthMap);
     shader->setUniformInt("ShadowMap", (int)depthMap);
 

@@ -22,7 +22,7 @@ void ppgso::Texture::initGL() {
   glBindTexture(GL_TEXTURE_2D, texture);
 
   // Reserve texture storage
-  glTexStorage2D(GL_TEXTURE_2D, 3, GL_RGBA16, image.width, image.height);
+  glTexStorage2D(GL_TEXTURE_2D, 3, GL_RGBA8, image.width, image.height);
 
   // Set up mipmapping
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

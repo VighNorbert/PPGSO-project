@@ -11,6 +11,9 @@
 #include <src/objects/furniture.h>
 #include <src/objects/lightWrapper.h>
 
+#include <shaders/hdr_vert_glsl.h>
+#include <shaders/hdr_frag_glsl.h>
+
 #include "camera.h"
 #include "scene.h"
 
@@ -189,7 +192,6 @@ private:
         }
     }
 
-
     void initSceneBank() {
         scene.scene_id = 0;
         scene.rootObjects.clear();
@@ -199,18 +201,18 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-//        camera->position = {8.5f, 3.5f, 3.5f};
-//        camera->tilt = 20.f;
-//        camera->rotation = -60.f;
-        camera->keyframes = {
-                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 2.f},
-                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 3.f},
-                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 15.f},
-                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 3.f},
-                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 5.f},
-                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 2.f},
-                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 0.f},
-        };
+        camera->position = {8.5f, 3.5f, 3.5f};
+        camera->tilt = 20.f;
+        camera->rotation = -60.f;
+//        camera->keyframes = {
+//                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 2.f},
+//                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 3.f},
+//                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 15.f},
+//                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 3.f},
+//                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 5.f},
+//                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 2.f},
+//                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 0.f},
+//        };
 
         scene.camera = move(camera);
 
@@ -337,11 +339,17 @@ private:
         }
     }
 
-    GLuint fbo = 0;
-    GLuint rbo = 0;
+    GLuint hdrFBO = 0;
+    GLuint colorBuffer = 0;
     GLuint depthMapFBO;
     GLuint depthMap;
+    GLuint rboDepth;
     int size_x, size_y;
+
+    bool hdr = true;
+    float exposure = 1.0f;
+
+    std::unique_ptr<ppgso::Shader> hdrShader;
 public:
     /*!
      * Construct custom game window
@@ -350,7 +358,9 @@ public:
         ratio = float(SIZE_X) / float(SIZE_Y);
         size_x = SIZE_X;
         size_y = SIZE_Y;
-        //hideCursor();
+
+        if (!hdrShader) hdrShader = std::make_unique<ppgso::Shader>(hdr_vert_glsl, hdr_frag_glsl);
+
         glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
 
         // Initialize OpenGL state
@@ -363,12 +373,17 @@ public:
         glFrontFace(GL_CCW);
         glCullFace(GL_BACK);
 
-        glGenFramebuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glGenFramebuffers(1, &hdrFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+        glGenTextures(1, &colorBuffer);
+        glBindTexture(GL_TEXTURE_2D, colorBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SIZE_X, SIZE_Y, 0, GL_RGBA, GL_FLOAT, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glGenRenderbuffers(1, &rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        glGenRenderbuffers(1, &rboDepth);
+        glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SIZE_X, SIZE_Y);
 
         glGenFramebuffers(1, &depthMapFBO);
         glGenTextures(1, &depthMap);
@@ -381,6 +396,10 @@ public:
         float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
         glDrawBuffer(GL_NONE);
@@ -391,15 +410,41 @@ public:
         initSceneBank();
     }
 
+    GLuint quadVAO = 0;
+    GLuint quadVBO;
+    void renderQuad()
+    {
+        if (quadVAO == 0)
+        {
+            float quadVertices[] = {
+                    // positions        // texture Coords
+                    -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+                    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                    1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+                    1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            };
+            // setup plane VAO
+            glGenVertexArrays(1, &quadVAO);
+            glGenBuffers(1, &quadVBO);
+            glBindVertexArray(quadVAO);
+            glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        }
+        glBindVertexArray(quadVAO);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glBindVertexArray(0);
+    }
+
     /*!
      * Window update implementation that will be called automatically from pollEvents
      */
     void onIdle() override {
         // Track time
         static auto time = (float) glfwGetTime();
-
-        glViewport(0, 0, size_x, size_y);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
         // Compute time delta
         float dt = animate ? (float) glfwGetTime() - time : 0;
@@ -409,12 +454,15 @@ public:
         // Update and render all objects
         scene.update(dt);
 
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         scene.renderForShadow();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
         glViewport(0, 0, size_x, size_y);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -422,6 +470,19 @@ public:
         glClearColor(.695f, .822f, .987f, 1.0f);
 
         scene.render(depthMap);
+
+        glDisable(GL_DEPTH_TEST);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, size_x, size_y);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        hdrShader->use();
+        hdrShader->setUniformInt("hdr", hdr);
+        hdrShader->setUniformInt("hdrBuffer", colorBuffer);
+        glActiveTexture(GL_TEXTURE0 + colorBuffer);
+        glBindTexture(GL_TEXTURE_2D, hdrFBO);
+        hdrShader->setUniform("exposure", exposure);
+        renderQuad();
     }
 
     void onKey(int key, int scanCode, int action, int mods) override {
