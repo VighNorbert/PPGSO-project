@@ -174,7 +174,7 @@ private:
             car = std::make_unique<Car>(nullptr, CarType::Van, scene);
             car->keyframes = {
                     {27.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
-                    {4.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
+                    {3.75f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
                     {-2.f, {202.5, 0, 25}, {0, 0, ppgso::PI}}
             };
             scene.rootObjects.push_back(move(car));
@@ -455,6 +455,16 @@ public:
             } else {
                 scene.showFPS = true;
                 std::cout << "Debug: FPS enabled" << std::endl;
+            }
+        }
+        if (keys[GLFW_KEY_C]) {
+            if (scene.camera->debugEnabled) {
+                scene.camera->debugEnabled = false;
+                std::cout << "Debug: Camera position disabled" << std::endl;
+            } else {
+                scene.camera->debugEnabled = true;
+                std::cout << "Debug: Camera position enabled" << std::endl;
+                scene.camera->debug();
             }
         }
     }

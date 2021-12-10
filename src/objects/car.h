@@ -66,6 +66,7 @@ private:
     glm::vec3 collisionSpeedDelta{0, 0, 0};
 
     bool brakesApplied = false;
+    glm::vec3 brakingCounterSpeed{0, 0, 0};
 
 public:
     /*!
