@@ -33,6 +33,13 @@ Gun::Gun(Object* parent, GunType gunType) {
 
 
 bool Gun::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
+    age += dt;
+
+    if (age > 11 && age < 16) {
+        shoot(this, age, 1.f, 5);
+    }
+
+    position += speed * dt;
     generateModelMatrix(parentModelMatrix);
 
     return true;

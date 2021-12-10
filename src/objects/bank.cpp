@@ -63,7 +63,7 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
     age += dt;
 
     if (scene.scene_id == 0) {
-        if (age > 10 && !alarm_pushed) {
+        if (age > 11 && !alarm_pushed) {
             alarm_pushed = true;
 
             auto alarm = new Light({1, 0, 0}, 1.0f, .75f, .5f, 50.f);
@@ -78,7 +78,7 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
                     {-1, {0, 0.13, 0.5}, {ppgso::PI/2, ppgso::PI/2, ppgso::PI}},
             };
             scene.rootObjects.push_back(move(character));
-        }else if (age > 16 && !male_dead) {
+        }else if (age > 17 && !male_dead) {
             male_dead = true;
             auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitStanding);
             character->rotation.x = ppgso::PI/2;
@@ -88,7 +88,7 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
             scene.rootObjects.push_back(move(character));
         }
 
-        if (age > 16 && age < 40){
+        if (age > 17 && age < 40){
             int maxcount_per_sec = 100;
             for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
                 auto particle = std::make_unique<Particle>(this, ParticleType::Blood, glm::vec3{1, 0, 0.5});

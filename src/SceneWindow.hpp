@@ -205,9 +205,13 @@ private:
         camera->keyframes = {
                 {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 2.f},
                 {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 3.f},
-                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 15.f},
                 {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 3.f},
-                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 5.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 2.5f},
+                {Camera::getViewMatrix(0.f, 180.f, {0, 1.7, -3.8}), 6.5f},
+                {Camera::getViewMatrix(0.f, 180.f, {0, 1.7, -3.8}), 3.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 4.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 2.f},
+                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 6.f},
                 {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 2.f},
                 {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 0.f},
         };
@@ -320,7 +324,7 @@ private:
             character->keyframes = {
                     {6.f, {3, 0.13, 4}, {ppgso::PI/2, 0, ppgso::PI}},
                     {2.f, {3, 0.13, 4}, {ppgso::PI/2, 0, ppgso::PI}},
-                    {2.f, {3, 0, 4}, {0, 0, ppgso::PI}},
+                    {3.f, {3, 0, 4}, {0, 0, ppgso::PI}},
                     {0.f, {0, 0, 0.5}, {0, 0, ppgso::PI}},
                     {-1, {0, 0, 0.5}, {0, 0, ppgso::PI}}
             };
@@ -329,7 +333,7 @@ private:
             character = std::make_unique<Character>(nullptr, CharacterType::MaleHoodieShooting);
             character->position = {0, 0, -4};
             character->keyframes = {
-                    {32.f, {0, 0, -4}, {0, 0, 0}},
+                    {37.f, {0, 0, -4}, {0, 0, 0}},
                     {3.f, {0, 0, -4}, {0, 0, 0}},
                     {0, {0, 0, -6}, {0, 0, 0}}
             };
