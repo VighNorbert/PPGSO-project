@@ -1,7 +1,6 @@
 #include <glm/glm.hpp>
 
 #include "camera.h"
-#include "scene.h"
 
 
 Camera::Camera(float fow, float ratio, float near, float far) {
@@ -10,50 +9,51 @@ Camera::Camera(float fow, float ratio, float near, float far) {
     projectionMatrix = glm::perspective(fowInRad, ratio, near, far);
 }
 
-glm::mat4 interpolate(glm::mat4& _mat1, glm::mat4& _mat2, float _time)
-{
-    glm::quat rot0 = glm::quat_cast(_mat1);
-    glm::quat rot1= glm::quat_cast(_mat2);
-
-    glm::quat finalRot = glm::slerp(rot0, rot1, _time);
-
-    glm::mat4 finalMat = glm::mat4_cast(finalRot);
-
-    finalMat[3] = _mat1[3] * (1 - _time) + _mat2[3] * _time;
-
-    return finalMat;
-}
-
 void Camera::update(float time) {
-    if (keyframes.empty()) {
-        viewMatrix = glm::mat4{1.0f}
-                     * glm::rotate(glm::mat4{1.0f}, (ppgso::PI / 180.0f) * tilt, {1, 0, 0})
-                     * glm::rotate(glm::mat4{1.0f}, (ppgso::PI / 180.0f) * rotation, {0, 1, 0})
-                     * glm::translate(glm::mat4{1.0f}, -position);
-    } else {
-        age += time;
+    age += time;
+    if (!keyframes.empty() && useKeyframes) {
         float t = 0.0f;
-        glm::mat4 actual, next, last;
+        glm::vec3 actualpos, nextpos, lastpos;
+        glm::vec3 actualrot, nextrot, lastrot;
         float duration;
+        bool flag = false;
         for (auto iter= keyframes.begin(); iter != keyframes.end(); iter++) {
             if (t + iter->duration > age) {
-                actual = iter->matrix;
+                actualpos = iter->position;
+                actualrot = iter->rotation;
                 duration = iter->duration;
                 iter++;
                 if (iter == keyframes.end()) {
-                    viewMatrix = actual;
-                    return;
+                    position = actualpos;
+                    tilt = actualrot[0];
+                    rotation = actualrot[1];
+                    flag = true;
+                    break;
                 }
-                next = iter->matrix;
+                nextpos = iter->position;
+                nextrot = iter->rotation;
                 float a = (age - t) / duration;
-                viewMatrix = interpolate(actual, next, a);
-                return;
+                position = glm::lerp(actualpos, nextpos, a);
+                glm::vec3 r = glm::lerp(actualrot, nextrot, a);
+                tilt = r[0];
+                rotation = r[1];
+                flag = true;
+                break;
             }
-            last = iter->matrix;
+            lastpos = iter->position;
+            lastrot = iter->rotation;
             t += iter->duration;
         }
-        viewMatrix = last;
+        if (!flag) {
+            position = lastpos;
+            tilt = lastrot[0];
+            rotation = lastrot[1];
+        }
     }
+    viewMatrix = glm::mat4{1.0f}
+                 * glm::rotate(glm::mat4{1.0f}, (ppgso::PI / 180.0f) * tilt, {1, 0, 0})
+                 * glm::rotate(glm::mat4{1.0f}, (ppgso::PI / 180.0f) * rotation, {0, 1, 0})
+                 * glm::translate(glm::mat4{1.0f}, -position);
 }
 
 
