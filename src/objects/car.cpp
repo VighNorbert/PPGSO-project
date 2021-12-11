@@ -263,7 +263,7 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
             childObjects.push_front(move(char_sitting));
         }
 
-        if (age < 65 && age > 34){
+        if (age < 71 && age > 34){
             int maxcount_per_sec = 50;
             for (int i = 1; i <= ceil(maxcount_per_sec * dt); i++) {
                 auto particle = std::make_unique<Particle>(this, ParticleType::Fire, glm::vec3{0.f, .5f, 2.f});
@@ -272,14 +272,14 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
         }
 
     }
-    else if (carType == Firetruck && age < 67 && age > 45) {
+    else if (carType == Firetruck && age < 73 && age > 51) {
         int maxcount_per_sec = 100;
         for (int i = 1; i <= ceil(maxcount_per_sec * dt); i++) {
             auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, 2.f, 0.f});
             childObjects.push_back(move(particle));
         }
     }
-    else if (carType == PoliceCar && age > 70 && police_alive) {
+    else if (carType == PoliceCar && age > 76 && police_alive) {
         police_alive = false;
         childObjects.pop_front();
         childObjects.pop_front();
