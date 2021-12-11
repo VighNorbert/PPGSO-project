@@ -89,8 +89,8 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
         }
 
         if (age > 17 && age < 40){
-            int maxcount_per_sec = 100;
-            for (int i = 1; i <= ceil(int(maxcount_per_sec * dt)); i++) {
+            int maxcount_per_sec = 50;
+            for (int i = 1; i <= ceil(maxcount_per_sec * dt); i++) {
                 auto particle = std::make_unique<Particle>(this, ParticleType::Blood, glm::vec3{1, 0, 0.5});
                 childObjects.push_back(move(particle));
             }

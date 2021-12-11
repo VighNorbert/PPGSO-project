@@ -47,19 +47,23 @@ private:
 //        camera->tilt = 20.f;
 //        camera->rotation = 180.f;
         camera->keyframes = {
-                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
-                {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
-                {Camera::getViewMatrix(15.f, 225.f, {.0f, 10.0f, -9.0f}), 2.f},
-                {Camera::getViewMatrix(15.f, 225.f, {.0f, 10.0f, -9.0f}), 9.f},
-                {Camera::getViewMatrix(15.f, 225.f, {80.f, 10.0f, -9.0f}), 5.f},
-                {Camera::getViewMatrix(15.f, 210.f, {110.0f, 2.5f, -2.5f}), 3.f},
-                {Camera::getViewMatrix(15.f, 210.f, {135.0f, 2.5f, -2.5f}), 3.f},
-                {Camera::getViewMatrix(15.f, 225.f, {165.0f, 2.5f, -2.5f}), 3.f},
-                {Camera::getViewMatrix(15.f, 225.f, {220.f, 10.0f, -12.f}), 6.f},
-                {Camera::getViewMatrix(15.f, 225.f, {220.f, 10.0f, -12.f}), 2.f},
-                {Camera::getViewMatrix(15.f, 300.f, {220.f, 10.0f, -12.f}), 5.f},
-                {Camera::getViewMatrix(15.f, 300.f, {220.f, 10.0f, -12.f}), 2.f},
-                {Camera::getViewMatrix(15.f, 240.f, {220.f, 10.0f, -12.f}), 0.f},
+                {2.f, {-17.f, 5.0f, 12.0f}, {15.f, 177.f, 0.f}},
+                {5.f, {-17.f, 5.0f, 12.0f}, {15.f, 177.f, 0.f}},
+                {2.f, {.0f, 10.0f, -9.0f}, {15.f, 225.f, 0.f}},
+                {9.f, {.0f, 10.0f, -9.0f}, {15.f, 225.f, 0.f}},
+                {5.f, {80.f, 10.0f, -9.0f}, {15.f, 225.f, 0.f}},
+                {3.f, {110.0f, 2.5f, -2.5f}, {15.f, 210.f, 0.f}},
+                {3.f, {135.0f, 2.5f, -2.5f}, {15.f, 210.f, 0.f}},
+                {3.f, {165.0f, 2.5f, -2.5f}, {15.f, 225.f, 0.f}},
+                {6.f, {220.f, 10.0f, -12.f}, {15.f, 225.f, 0.f}},
+
+
+
+
+                {2.f, {220.f, 10.0f, -12.f}, {15.f, 225.f, 0.f}},
+                {4.f, {220.f, 10.0f, -12.f}, {15.f, 300.f, 0.f}},
+                {2.f, {220.f, 10.0f, -12.f}, {15.f, 300.f, 0.f}},
+                {0.f, {220.f, 10.0f, -12.f}, {15.f, 240.f, 0.f}}
         };
         scene.camera = move(camera);
 
