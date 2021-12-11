@@ -30,8 +30,10 @@ private:
     GunType gunType;
     double shootFireAge = 0.0;
     float dispersion;
+    bool willHit = false;
     double timeBetweenShoots;
     int shootsNumber = 1;
+    float correctDispersion;
 
 public:
     /*!
@@ -61,10 +63,11 @@ public:
      */
     void renderForShadow(Scene &scene) override;
 
-    void shoot(Object* parent, float age, float probability, int shootsFired) {
+    void shoot(Object* parent, float bodyWidth, float age, float probability, int shootsFired) {
         if (shootFireAge == 0.0){
+            correctDispersion = bodyWidth/2 * 10 / 3.07f;
             shootFireAge = age;
-            dispersion = (0.2f / probability)*10/3.07f;
+            dispersion = (bodyWidth/2 / probability) * 10 / 3.07f;
             timeBetweenShoots = 4.9/(1.0 * shootsFired);
         }
 
@@ -72,13 +75,19 @@ public:
             auto bullet = std::make_unique<Gun>(parent, GunType::Bullet);
             bullet->speed.z = 10;
             bullet->speed.x = glm::linearRand(-dispersion, dispersion) + 0.55f;
-            bullet->speed.y = glm::linearRand(-dispersion, .0f);
+            bullet->speed.y = glm::linearRand(-0.9f, .0f);
             bullet->scale = {2,2,2};
             bullet->position = {-0.2, 1.43, 1};
 
             if (shootsNumber == shootsFired) {
-                bullet->speed.x = glm::linearRand(-0.2f, 0.2f) + 0.55f;
+                bullet->speed.x = glm::linearRand(-correctDispersion, correctDispersion) + 0.55f;
                 bullet->speed.y = 0.f;
+            }
+
+            std::cout<<bullet->speed.x<<std::endl;
+            if (bullet->speed.x >= - correctDispersion + 0.55f && bullet->speed.x <= correctDispersion + 0.55f) {
+                bullet->willHit = true;
+                std::cout<<"a"<<std::endl;
             }
 
             childObjects.push_back(move(bullet));
