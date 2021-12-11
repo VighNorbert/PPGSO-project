@@ -272,7 +272,7 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
         }
 
     }
-    else if (carType == Firetruck && age < 73 && age > 51) {
+    else if (carType == Firetruck && age < 73 && age > 52) {
         int maxcount_per_sec = 100;
         for (int i = 1; i <= ceil(maxcount_per_sec * dt); i++) {
             auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, 2.f, 0.f});
