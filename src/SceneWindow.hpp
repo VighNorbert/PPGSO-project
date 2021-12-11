@@ -38,11 +38,14 @@ private:
         scene.scene_id = 1;
         scene.rootObjects.clear();
 
+        scene.mainlight = std::make_unique<MainLight>();
+        scene.mainlight->position = glm::vec3 {1000.f, 1000.f, -1000.f};
+
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-        camera->position = {0.0f, 10.0f, -10.0f};
-        camera->tilt = 20.f;
-        camera->rotation = 180.f;
+//        camera->position = {0.0f, 10.0f, -10.0f};
+//        camera->tilt = 20.f;
+//        camera->rotation = 180.f;
         camera->keyframes = {
                 {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 2.f},
                 {Camera::getViewMatrix(15.f, 177.f, {-17.f, 5.0f, 12.0f}), 5.f},
@@ -59,9 +62,6 @@ private:
                 {Camera::getViewMatrix(15.f, 240.f, {220.f, 10.0f, -12.f}), 0.f},
         };
         scene.camera = move(camera);
-
-        scene.mainlight = std::make_unique<MainLight>();
-        scene.mainlight->position = glm::vec3 {1000.f, 1000.f, -1000.f};
 
         // static objects
         {
@@ -206,30 +206,20 @@ private:
 //        camera->tilt = 20.f;
 //        camera->rotation = -60.f;
         camera->keyframes = {
-                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 2.f},
-                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 3.f},
-                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 3.f},
-                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 2.5f},
-                {Camera::getViewMatrix(0.f, 180.f, {0, 1.7, -3.8}), 6.5f},
-                {Camera::getViewMatrix(0.f, 180.f, {0, 1.7, -3.8}), 3.f},
-                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 4.f},
-                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 2.f},
-                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 6.f},
-                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 2.f},
-                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 0.f},
+                {2.f, {0, 1.5, -2.5}, {0.f, 0.f, 0.f}},
+                {3.f, {0, 1.5, -2.5}, {0.f, 0.f, 0.f}},
+                {3.f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}},
+                {2.5f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}},
+                {6.5f, {0, 1.7, -3.8}, {0.f, -180.f, 0.f}},
+                {3.f, {0, 1.7, -3.8}, {0.f, -180.f, 0.f}},
+                {4.f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}},
+                {2.f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}},
+                {6.f, {2.5, 2.5, 2.5}, {40.f, -30.f, 0.f}},
+                {2.f, {2.5, 2.5, 2.5}, {40.f, -30.f, 0.f}},
+                {0.f, {0, 1.5, -2.5}, {0.f, 0.f, 0.f}}
         };
 
         scene.camera = move(camera);
-
-//        auto sun = new Light();
-//        auto sunWrapper = std::make_unique<LightWrapper>(nullptr, glm::vec3{1000.f, 1000.f, 1000.f}, sun);
-//        scene.lights.push_back(sun);
-//        scene.rootObjects.push_back(move(sunWrapper));
-
-//        auto character = std::make_unique<Character>(nullptr, CharacterType::MaleHoodieStanding);
-//        character->rotation.z = ppgso::PI;
-//        character->position = {0, 0, 0.5};
-//        scene.rootObjects.push_back(move(character));
 
         // static objects
         {
@@ -600,6 +590,15 @@ public:
             } else {
                 bloom = true;
                 std::cout << "Debug: Bloom enabled" << std::endl;
+            }
+        }
+        if (keys[GLFW_KEY_K]) {
+            if (scene.camera->useKeyframes) {
+                scene.camera->useKeyframes = false;
+                std::cout << "Debug: Camera keyframes disabled" << std::endl;
+            } else {
+                scene.camera->useKeyframes = true;
+                std::cout << "Debug: Camera keyframes enabled" << std::endl;
             }
         }
     }

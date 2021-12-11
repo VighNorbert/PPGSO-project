@@ -21,6 +21,7 @@ public:
     float age = 0.0f;
 
     bool debugEnabled = false;
+    bool useKeyframes = true;
 
     /*!
      * Create new Camera that will generate viewMatrix and projectionMatrix based on its position, up and back vectors
