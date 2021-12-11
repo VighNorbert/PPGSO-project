@@ -36,7 +36,7 @@ bool Gun::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
     age += dt;
 
     if (age > 11 && age < 16 && gunType == GunType::Pistol) {
-        shoot(this, 0.4f, age, 1.f, 10000);
+        shoot(this, 0.4f, age, 1.f, 5);
     }
 
     if(gunType == GunType::Bullet && (age>1.f || (willHit && age>0.33f))){

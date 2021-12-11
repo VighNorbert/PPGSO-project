@@ -202,22 +202,22 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-        camera->position = {8.5f, 3.5f, 3.5f};
-        camera->tilt = 20.f;
-        camera->rotation = -60.f;
-//        camera->keyframes = {
-//                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 2.f},
-//                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 3.f},
-//                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 3.f},
-//                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 2.5f},
-//                {Camera::getViewMatrix(0.f, 180.f, {0, 1.7, -3.8}), 6.5f},
-//                {Camera::getViewMatrix(0.f, 180.f, {0, 1.7, -3.8}), 3.f},
-//                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 4.f},
-//                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 2.f},
-//                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 6.f},
-//                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 2.f},
-//                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 0.f},
-//        };
+//        camera->position = {8.5f, 3.5f, 3.5f};
+//        camera->tilt = 20.f;
+//        camera->rotation = -60.f;
+        camera->keyframes = {
+                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 2.f},
+                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 3.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 3.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 2.5f},
+                {Camera::getViewMatrix(0.f, 180.f, {0, 1.7, -3.8}), 6.5f},
+                {Camera::getViewMatrix(0.f, 180.f, {0, 1.7, -3.8}), 3.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 4.f},
+                {Camera::getViewMatrix(20.f, -60.f, {8.5f, 3.5f, 3.5f}), 2.f},
+                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 6.f},
+                {Camera::getViewMatrix(40.f, -30.f, {2.5, 2.5, 2.5}), 2.f},
+                {Camera::getViewMatrix(0.f, 0.f, {0, 1.5, -2.5}), 0.f},
+        };
 
         scene.camera = move(camera);
 

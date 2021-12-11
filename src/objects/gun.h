@@ -74,20 +74,18 @@ public:
         if (age >= shootFireAge && shootsNumber <= shootsFired) {
             auto bullet = std::make_unique<Gun>(parent, GunType::Bullet);
             bullet->speed.z = 10;
-            bullet->speed.x = glm::linearRand(-dispersion, dispersion) + 0.55f;
+            bullet->speed.x = glm::linearRand(-dispersion, dispersion) + 0.65f;
             bullet->speed.y = glm::linearRand(-0.9f, .0f);
             bullet->scale = {2,2,2};
             bullet->position = {-0.2, 1.43, 1};
 
             if (shootsNumber == shootsFired) {
-                bullet->speed.x = glm::linearRand(-correctDispersion, correctDispersion) + 0.55f;
+                bullet->speed.x = glm::linearRand(-correctDispersion, correctDispersion) + 0.65f;
                 bullet->speed.y = 0.f;
             }
 
-            std::cout<<bullet->speed.x<<std::endl;
-            if (bullet->speed.x >= - correctDispersion + 0.55f && bullet->speed.x <= correctDispersion + 0.55f) {
+            if (bullet->speed.x >= - correctDispersion + 0.65f && bullet->speed.x <= correctDispersion + 0.65f) {
                 bullet->willHit = true;
-                std::cout<<"a"<<std::endl;
             }
 
             childObjects.push_back(move(bullet));
