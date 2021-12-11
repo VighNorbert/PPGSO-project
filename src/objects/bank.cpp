@@ -41,9 +41,9 @@ Bank::Bank(Object* parent, BankType bankType, Scene& scene) {
 
     if (bankType == BankType::BankInside) {
 
-        auto sun = new Light({1, 1, 1}, 1.0f, 0.04f, 0.0032f, 50.f);
-        auto sunWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 3.f, 0.f}, sun);
-        scene.lights.push_back(sun);
+        auto light = new Light({1, 1, 1}, 1.0f, 0.04f, 0.0032f, 50.f);
+        auto sunWrapper = std::make_unique<LightWrapper>(this, glm::vec3{0.f, 3.f, 0.f}, light);
+        scene.lights.push_back(light);
         childObjects.push_back(move(sunWrapper));
 
         auto glass = std::make_unique<Bank>(this, BankType::BankInsideGlass, scene);
@@ -90,7 +90,7 @@ bool Bank::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3
 
         if (age > 17 && age < 40){
             int maxcount_per_sec = 100;
-            for (int i = 1; i <= int(maxcount_per_sec * dt); i++) {
+            for (int i = 1; i <= ceil(int(maxcount_per_sec * dt)); i++) {
                 auto particle = std::make_unique<Particle>(this, ParticleType::Blood, glm::vec3{1, 0, 0.5});
                 childObjects.push_back(move(particle));
             }

@@ -47,7 +47,7 @@ Particle::Particle(Object *parent, ParticleType particleType, glm::vec3 initialP
     }
     if (particleType == ParticleType::Water) {
         scale = {.1, .1, .1};
-        speed = {glm::linearRand(-WATER_HOR, WATER_HOR) , 2.0f + glm::linearRand(-WATER_VER, WATER_VER), 5.0f + glm::linearRand(-WATER_HOR, WATER_HOR)};
+        speed = {2.f + glm::linearRand(-WATER_HOR, WATER_HOR) , 1.0f + glm::linearRand(-WATER_VER, WATER_VER), 3.5f + glm::linearRand(-WATER_HOR, WATER_HOR)};
         maxAge = 5.f;
     }
     if (particleType == ParticleType::Blood) {
