@@ -21,6 +21,10 @@ std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_glass;
 std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_wheel;
 std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_front_light;
 std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_back_light;
+std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_beacons_red;
+std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_beacons_red_on;
+std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_beacons_white;
+std::unique_ptr<ppgso::Mesh> Car::mesh_police_car_beacons_white_on;
 
 std::unique_ptr<ppgso::Mesh> Car::mesh_van;
 std::unique_ptr<ppgso::Mesh> Car::mesh_van_glass;
@@ -92,7 +96,6 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
 
         auto wheel_rf = std::make_unique<Car>(this, CarType::PoliceCarWheel, scene);
         wheel_rf->position = {-0.83132, 0.37224, 1.6563};
-
         childObjects.push_back(move(wheel_rf));
 
         auto wheel_rb = std::make_unique<Car>(this, CarType::PoliceCarWheel, scene);
@@ -122,6 +125,8 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarFrontLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarGlass, scene));
+        childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhite, scene));
+        childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRed, scene));
 
     } else if (this->carType == CarType::Van) {
         auto char_driving = std::make_unique<Character>(this, CharacterType::FemaleBusinessSuitDrivingVan);
@@ -200,6 +205,10 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
     if (!mesh_police_car_wheel) mesh_police_car_wheel = std::make_unique<ppgso::Mesh>("objects/cars/police_car_wheel.obj");
     if (!mesh_police_car_front_light) mesh_police_car_front_light = std::make_unique<ppgso::Mesh>("objects/cars/police_car_frontlight.obj");
     if (!mesh_police_car_back_light) mesh_police_car_back_light = std::make_unique<ppgso::Mesh>("objects/cars/police_car_backlight.obj");
+    if (!mesh_police_car_beacons_white) mesh_police_car_beacons_white = std::make_unique<ppgso::Mesh>("objects/cars/police_car_beacons_white.obj");
+    if (!mesh_police_car_beacons_red) mesh_police_car_beacons_red = std::make_unique<ppgso::Mesh>("objects/cars/police_car_beacons_red.obj");
+    if (!mesh_police_car_beacons_white_on) mesh_police_car_beacons_white_on = std::make_unique<ppgso::Mesh>("objects/cars/police_car_beacons_white.obj");
+    if (!mesh_police_car_beacons_red_on) mesh_police_car_beacons_red_on = std::make_unique<ppgso::Mesh>("objects/cars/police_car_beacons_red.obj");
     if (!mesh_van) mesh_van = std::make_unique<ppgso::Mesh>("objects/cars/van.obj");
     if (!mesh_van_glass) mesh_van_glass = std::make_unique<ppgso::Mesh>("objects/cars/van_glass.obj");
     if (!mesh_van_wheel) mesh_van_wheel = std::make_unique<ppgso::Mesh>("objects/cars/van_wheel.obj");
@@ -249,6 +258,19 @@ void Car::checkCollisions(Scene &scene, float dt) {
 
 bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
     age += dt;
+
+    if (carType == CarType::PoliceCar  && age > 7) {
+        childObjects.pop_back();
+        childObjects.pop_back();
+
+        if (int(age) % 2 == 0) {
+            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhite, scene));
+            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRedOn, scene));
+        } else {
+            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhiteOn, scene));
+            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRed, scene));
+        }
+    }
 
     if (isWheel() && parentObject != nullptr) {
         rotation.x += dt * glm::length(parentObject->speed) / getWheelDiameter();
@@ -337,7 +359,8 @@ void Car::render(Scene &scene, GLuint depthMap) {
 
     if (carType == CarType::MuscleCarFrontLight || carType == CarType::MuscleCarBackLight
     || carType == CarType::PoliceCarFrontLight || carType == CarType::PoliceCarBackLight
-    || carType == CarType::VanFrontLight || carType == CarType::VanBackLight) {
+    || carType == CarType::VanFrontLight || carType == CarType::VanBackLight
+    || carType == CarType::PoliceCarBeaconsWhiteOn || carType == CarType::PoliceCarBeaconsRedOn) {
         shader->setUniform("DiffuseStrength", .2f);
         shader->setUniform("AmbientStrength", 2.0f);
         shader->setUniform("SpecularStrength", .3f);
@@ -345,7 +368,6 @@ void Car::render(Scene &scene, GLuint depthMap) {
         shader->setUniform("DiffuseStrength", 1.f);
         shader->setUniform("AmbientStrength", .3f);
         shader->setUniform("SpecularStrength", 2.5f);
-
     }
 
     shader->setUniform("ModelMatrix", modelMatrix);
@@ -411,6 +433,18 @@ void Car::render(Scene &scene, GLuint depthMap) {
             break;
         case CarType::PoliceCarBackLight:
             mesh_police_car_back_light->render();
+            break;
+        case CarType::PoliceCarBeaconsWhite:
+            mesh_police_car_beacons_white->render();
+            break;
+        case CarType::PoliceCarBeaconsRed:
+            mesh_police_car_beacons_red->render();
+            break;
+        case CarType::PoliceCarBeaconsWhiteOn:
+            mesh_police_car_beacons_white_on->render();
+            break;
+        case CarType::PoliceCarBeaconsRedOn:
+            mesh_police_car_beacons_red_on->render();
             break;
         case CarType::Van:
             mesh_van->render();
@@ -497,6 +531,18 @@ void Car::renderForShadow(Scene &scene) {
             break;
         case CarType::PoliceCarBackLight:
             mesh_police_car_back_light->render();
+            break;
+        case CarType::PoliceCarBeaconsWhite:
+            mesh_police_car_beacons_white->render();
+            break;
+        case CarType::PoliceCarBeaconsRed:
+            mesh_police_car_beacons_red->render();
+            break;
+        case CarType::PoliceCarBeaconsWhiteOn:
+            mesh_police_car_beacons_white_on->render();
+            break;
+        case CarType::PoliceCarBeaconsRedOn:
+            mesh_police_car_beacons_red_on->render();
             break;
         case CarType::Van:
             mesh_van->render();
