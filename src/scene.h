@@ -34,6 +34,11 @@ public:
     void renderForShadow();
 
     /*!
+     * Destroy all objects in the scene
+     */
+    void close();
+
+    /*!
      * @param scene
      * @param shader
      */
@@ -52,7 +57,6 @@ public:
     bool showBoundingBoxes = false;
     bool showFPS = false;
     float lastFPSOutputTime = 0.f;
-    bool showCameraPosition = false;
     short scene_id;
 };
 

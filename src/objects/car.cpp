@@ -128,6 +128,10 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhite, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRed, scene));
 
+        light = new Light({0.f, .0f, .0f}, 1.f, .0f, .0f, 0.f);
+        lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
+        scene.lights.push_back(light);
+
     } else if (this->carType == CarType::Van) {
         auto char_driving = std::make_unique<Character>(this, CharacterType::FemaleBusinessSuitDrivingVan);
         childObjects.push_back(move(char_driving));
@@ -186,6 +190,19 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         wheel_lb->position = {0.90771, 0.400, -1.4637};
         wheel_lb->rotation.y = ppgso::PI;
         childObjects.push_back(move(wheel_lb));
+
+        auto light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
+        auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0.84, 0.83, 2.15}, light);
+        scene.lights.push_back(light);
+        childObjects.push_back(move(lightWrapper));
+
+        light = new Light({1.0f, 0.975f, 0.853f}, {0, -0.13165, 1}, 10.f, 15.f, .5f, .1f, 0.05f, 35.f);
+        lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {-0.84, 0.83, 2.15}, light);
+        scene.lights.push_back(light);
+        childObjects.push_back(move(lightWrapper));
+
+        childObjects.push_back(std::make_unique<Car>(this, CarType::VanFrontLight, scene));
+        childObjects.push_back(std::make_unique<Car>(this, CarType::VanBackLight, scene));
     }
 
     position = {0, 0, 0};
@@ -259,14 +276,24 @@ void Car::checkCollisions(Scene &scene, float dt) {
 bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
     age += dt;
 
-    if (carType == CarType::PoliceCar  && age > 7) {
+    if (carType == CarType::PoliceCar && age > 7) {
         childObjects.pop_back();
         childObjects.pop_back();
+        childObjects.pop_back();
+        scene.lights.pop_back();
 
-        if (int(age) % 2 == 0) {
+        if (int(age*2) % 2 == 0) {
+            auto light = new Light({1.f, .0f, .0f}, .5f, .2f, 0.1f, 15.f);
+            auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
+            scene.lights.push_back(light);
+            childObjects.push_back(move(lightWrapper));
             childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhite, scene));
             childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRedOn, scene));
         } else {
+            auto light = new Light({1.f, 1.f, 1.f}, .5f, .2f, 0.1f, 15.f);
+            auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
+            scene.lights.push_back(light);
+            childObjects.push_back(move(lightWrapper));
             childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhiteOn, scene));
             childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRed, scene));
         }
@@ -285,7 +312,7 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
             childObjects.push_front(move(char_sitting));
         }
 
-        if (age < 71 && age > 34){
+        if (age < 65 && age > 34){
             int maxcount_per_sec = 50;
             for (int i = 1; i <= ceil(maxcount_per_sec * dt); i++) {
                 auto particle = std::make_unique<Particle>(this, ParticleType::Fire, glm::vec3{0.f, .5f, 2.f});
@@ -294,29 +321,31 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
         }
 
     }
-    else if (carType == Firetruck && age < 73 && age > 52) {
+    else if (carType == Firetruck && age < 66 && age > 52) {
         int maxcount_per_sec = 100;
         for (int i = 1; i <= ceil(maxcount_per_sec * dt); i++) {
             auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, 2.f, 0.f});
             childObjects.push_back(move(particle));
         }
     }
-    else if (carType == PoliceCar && age > 76 && police_alive) {
+    else if (carType == PoliceCar && age > 71 && police_alive) {
         police_alive = false;
         childObjects.pop_front();
         childObjects.pop_front();
 
         auto character = std::make_unique<Character>(nullptr, CharacterType::MalePoliceStanding);
         character->keyframes = {
-                {2.5f, {185.f, 0.f, 4.f}, {0, 0, ppgso::PI/2}},
-                {0.f, {193.f, 0.f, 4.f}, {0, 0, ppgso::PI/2}},
+                {1.5f, {185.f, 0.f, 4.f}, {0, 0, ppgso::PI/2}},
+                {5.f, {185.f, 0.f, 4.f}, {0, 0, ppgso::PI * 109.5f / 180.f}},
+                {0.f, {201.f, 0.f, 1.5f}, {0, 0, ppgso::PI * 109.5f / 180.f}},
         };
         scene.rootObjects.push_back(move(character));
 
         character = std::make_unique<Character>(nullptr, CharacterType::MalePoliceStanding);
         character->keyframes = {
-                {4.f, {185.f, 0.f, 1.f}, {0, 0, ppgso::PI/2}},
-                {0.f, {195.f, 0.f, 1.f}, {0, 0, ppgso::PI/2}},
+                {1.5f, {185.f, 0.f, 1.f}, {0, 0, ppgso::PI/2}},
+                {5.f, {185.f, 0.f, 1.f}, {0, 0, ppgso::PI * 118.5f / 180.f}},
+                {0.f, {199.f, 0.f, -4.5f}, {0, 0, ppgso::PI * 118.f / 180.f}},
         };
         scene.rootObjects.push_back(move(character));
     }

@@ -23,9 +23,31 @@ const GLuint SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 class SceneWindow : public ppgso::Window {
 private:
     Scene scene;
-    bool animate = true;
-    float fow = 60.0f;
+    bool animate = false;
+    const float fow = 60.0f;
     float ratio = 1.0f;
+    float loadTime = -1.f;
+    const float overlayLength = 5.f;
+
+    GLuint hdrFBO = 0;
+    GLuint colorBuffers[2];
+    GLuint depthMapFBO;
+    GLuint depthMap;
+    GLuint rboDepth;
+
+    GLuint pingpongFBO[2];
+    GLuint pingpongBuffers[2];
+    int size_x, size_y;
+
+    GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+
+    bool bloom = true;
+    float exposure = 1.0f;
+
+    std::unique_ptr<ppgso::Shader> blurShader;
+    std::unique_ptr<ppgso::Shader> bloomShader;
+
+    std::unique_ptr<ppgso::Texture> overlay;
 
     // Store keyboard state
     std::map<int, int> keys;
@@ -34,7 +56,7 @@ private:
      * Reset and initialize the game scene
      * Creating unique smart pointers to objects that are stored in the scene object list
      */
-    void initScene() {
+    void initSceneOutside() {
         scene.scene_id = 1;
         scene.rootObjects.clear();
 
@@ -58,11 +80,17 @@ private:
                 {3.f, {165.0f, 2.5f, -2.5f}, {15.f, 225.f, 0.f}},
                 {6.f, {220.f, 10.0f, -12.f}, {15.f, 240.f, 0.f}},
                 {2.f, {220.f, 10.0f, -12.f}, {15.f, 240.f, 0.f}},
-                {3.f, {210.f, 5.0f, -8.f}, {25.f, 240.f, 0.f}},
-                {3.f, {210.f, 5.0f, -8.f}, {25.f, 240.f, 0.f}},
-                {3.f, {220.f, 10.0f, -12.f}, {15.f, 300.f, 0.f}},
-                {2.f, {220.f, 10.0f, -12.f}, {15.f, 300.f, 0.f}},
-                {0.f, {220.f, 10.0f, -12.f}, {15.f, 240.f, 0.f}}
+                {6.f, {210.f, 5.0f, -8.f}, {25.f, 240.f, 0.f}},
+                {2.f, {210.f, 5.0f, -8.f}, {25.f, 240.f, 0.f}},
+                {2.f, {210.5f, 6.0f, -11.5f}, {15.f, 300.f, 0.f}},
+                {2.f, {210.5f, 6.0f, -11.5f}, {15.f, 300.f, 0.f}},
+                {5.f, {209.f, 5.0f, -13.5f}, {15.f, 232.5f, 0.f}},
+                {2.f, {209.f, 5.0f, -13.5f}, {15.f, 232.5f, 0.f}},
+                {10.f, {206.5f, 2.f, -8.5f}, {15.f, 225.f, 0.f}},
+                {2.f, {206.5f, 2.f, -8.5f}, {15.f, 225.f, 0.f}},
+                {3.f, {191.f, 2.5f, -2.f}, {15.f, 225.f, 0.f}},
+                {2.f, {191.f, 2.5f, -2.f}, {15.f, 225.f, 0.f}},
+                {0.f, {206.5f, 2.f, -8.5f}, {15.f, 225.f, 0.f}},
         };
         scene.camera = move(camera);
 
@@ -170,14 +198,6 @@ private:
             };
             scene.rootObjects.push_back(move(car));
 
-            car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
-            car->keyframes = {
-                    {8.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {27.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {0.f, {185, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
-            };
-            scene.rootObjects.push_back(move(car));
-
             car = std::make_unique<Car>(nullptr, CarType::Van, scene);
             car->keyframes = {
                     {27.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
@@ -191,6 +211,14 @@ private:
                     {43.f, {197.5, 0, -100}, {0, 0, 0}},
                     {8.f, {197.5, 0, -100}, {0, 0, 0}},
                     {0.f, {197.5, 0, -15}, {0, 0, 0}}
+            };
+            scene.rootObjects.push_back(move(car));
+
+            car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
+            car->keyframes = {
+                    {8.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {27.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {0.f, {185, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
             };
             scene.rootObjects.push_back(move(car));
         }
@@ -337,24 +365,6 @@ private:
         }
     }
 
-    GLuint hdrFBO = 0;
-    GLuint colorBuffers[2];
-    GLuint depthMapFBO;
-    GLuint depthMap;
-    GLuint rboDepth;
-
-    GLuint pingpongFBO[2];
-    GLuint pingpongBuffers[2];
-    int size_x, size_y;
-
-    GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-
-    bool bloom = true;
-    float exposure = 1.0f;
-
-    std::unique_ptr<ppgso::Shader> blurShader;
-    std::unique_ptr<ppgso::Shader> bloomShader;
-
 public:
     /*!
      * Construct custom game window
@@ -368,6 +378,8 @@ public:
         if (!bloomShader) bloomShader = std::make_unique<ppgso::Shader>(blur_vert_glsl, bloom_frag_glsl);
 
         glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
+
+        overlay = std::make_unique<ppgso::Texture>(ppgso::image::loadBMP("overlay.bmp"));
 
         // Initialize OpenGL state
         // Enable Z-buffer
@@ -432,8 +444,7 @@ public:
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        initScene();
-//        initSceneBank();
+        initSceneBank();
     }
 
     GLuint quadVAO = 0;
@@ -470,12 +481,27 @@ public:
      */
     void onIdle() override {
         // Track time
-        static auto time = (float) glfwGetTime();
+        if (loadTime == -1.f) {
+            loadTime = (float) glfwGetTime();
+            std::cout << "loadtime set " << loadTime << std::endl;
+        }
+
+        static float time = (float) glfwGetTime() - loadTime;
 
         // Compute time delta
-        float dt = animate ? (float) glfwGetTime() - time : 0;
+        if (time > overlayLength) {
+            animate = true;
+        }
 
-        time = (float) glfwGetTime();
+        float dt = animate ? (float) glfwGetTime() - loadTime - time : 0;
+
+        time = (float) glfwGetTime() - loadTime;
+
+        if (time > 46.f && scene.scene_id == 0) {
+            scene.close();
+            initSceneOutside();
+            dt = 0;
+        }
 
         // Update and render all objects
         scene.update(dt);
@@ -514,14 +540,19 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         bloomShader->use();
-        bloomShader->setUniformInt("bloom", bloom);
         bloomShader->setUniform("exposure", exposure);
-        glActiveTexture(GL_TEXTURE0 + colorBuffers[0]);
-        glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
-        bloomShader->setUniformInt("scene", colorBuffers[0]);
-        glActiveTexture(GL_TEXTURE0 + pingpongBuffers[!horizontal]);
-        glBindTexture(GL_TEXTURE_2D, pingpongBuffers[!horizontal]);
-        bloomShader->setUniformInt("bloomBlur", pingpongBuffers[!horizontal]);
+        if (time < overlayLength) {
+            bloomShader->setUniformInt("bloom", false);
+            bloomShader->setUniform("scene", *overlay);
+        } else {
+            bloomShader->setUniformInt("bloom", bloom);
+            glActiveTexture(GL_TEXTURE0 + colorBuffers[0]);
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+            bloomShader->setUniformInt("scene", colorBuffers[0]);
+            glActiveTexture(GL_TEXTURE0 + pingpongBuffers[!horizontal]);
+            glBindTexture(GL_TEXTURE_2D, pingpongBuffers[!horizontal]);
+            bloomShader->setUniformInt("bloomBlur", pingpongBuffers[!horizontal]);
+        }
         renderQuad();
     }
 

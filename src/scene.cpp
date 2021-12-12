@@ -78,3 +78,17 @@ void Scene::renderForShadow() {
     for ( auto& obj : rootObjects )
         obj->renderForShadowChildren(*this);
 }
+
+void Scene::close() {
+    auto li = std::begin(lights);
+    while (li != std::end(lights)) {
+        lights.erase(li);
+        ++li;
+    }
+
+    auto oi = std::begin(rootObjects);
+    while (oi != std::end(rootObjects)) {
+        rootObjects.erase(oi);
+        ++oi;
+    }
+}
