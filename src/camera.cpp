@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 
 #include "camera.h"
+#include "object.h"
 
 
 Camera::Camera(float fow, float ratio, float near, float far) {
@@ -15,6 +16,7 @@ void Camera::update(float time) {
         float t = 0.0f;
         glm::vec3 actualpos, nextpos, lastpos;
         glm::vec3 actualrot, nextrot, lastrot;
+        bool easeIn, easeOut;
         float duration;
         bool flag = false;
         for (auto iter= keyframes.begin(); iter != keyframes.end(); iter++) {
@@ -22,6 +24,8 @@ void Camera::update(float time) {
                 actualpos = iter->position;
                 actualrot = iter->rotation;
                 duration = iter->duration;
+                easeIn = iter->easeIn;
+                easeOut = iter->easeOut;
                 iter++;
                 if (iter == keyframes.end()) {
                     position = actualpos;
@@ -33,6 +37,7 @@ void Camera::update(float time) {
                 nextpos = iter->position;
                 nextrot = iter->rotation;
                 float a = (age - t) / duration;
+                a = Object::mapTime(a, easeIn, easeOut);
                 position = glm::lerp(actualpos, nextpos, a);
                 glm::vec3 r = glm::lerp(actualrot, nextrot, a);
                 tilt = r[0];

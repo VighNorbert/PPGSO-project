@@ -34,6 +34,8 @@ std::unique_ptr<ppgso::Mesh> Car::mesh_van_back_light;
 
 std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck;
 std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck_wheel;
+std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck_lights;
+std::unique_ptr<ppgso::Mesh> Car::mesh_firetruck_beacons;
 
 std::unique_ptr<ppgso::Shader> Car::shader;
 std::unique_ptr<ppgso::Shader> Car::shader_shadow;
@@ -87,7 +89,8 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
 
-    } else if (this->carType == CarType::PoliceCar) {
+    }
+    else if (this->carType == CarType::PoliceCar) {
         auto char_driving = std::make_unique<Character>(this, CharacterType::MalePoliceDrivingPoliceCar);
         childObjects.push_back(move(char_driving));
 
@@ -125,14 +128,26 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarFrontLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarGlass, scene));
-        childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhite, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRed, scene));
+        childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhite, scene));
 
-        light = new Light({0.f, .0f, .0f}, 1.f, .0f, .0f, 0.f);
+        auto beacons = std::make_unique<Car>(this, CarType::PoliceCarBeaconsRedOn, scene);
+        light = new Light({.0f, .0f, .0f}, .5f, .2f, 0.1f, 15.f);
         lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
+        beacons->lights.push_back(light);
         scene.lights.push_back(light);
+        childObjects.push_back(move(lightWrapper));
+        childObjects.push_back(move(beacons));
 
-    } else if (this->carType == CarType::Van) {
+        beacons = std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhiteOn, scene);
+        light = new Light({.0f, .0f, .0f}, .5f, .2f, 0.1f, 15.f);
+        lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
+        beacons->lights.push_back(light);
+        scene.lights.push_back(light);
+        childObjects.push_back(move(lightWrapper));
+        childObjects.push_back(move(beacons));
+    }
+    else if (this->carType == CarType::Van) {
         auto char_driving = std::make_unique<Character>(this, CharacterType::FemaleBusinessSuitDrivingVan);
         childObjects.push_back(move(char_driving));
 
@@ -172,7 +187,8 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanFrontLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanBackLight, scene));
         childObjects.push_back(std::make_unique<Car>(this, CarType::VanGlass, scene));
-    } else if (this->carType == CarType::Firetruck) {
+    }
+    else if (this->carType == CarType::Firetruck) {
         auto wheel_rf = std::make_unique<Car>(this, CarType::FiretruckWheel, scene);
         wheel_rf->position = {-0.90771, 0.400, 1.8499};
         childObjects.push_back(move(wheel_rf));
@@ -201,8 +217,18 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
         scene.lights.push_back(light);
         childObjects.push_back(move(lightWrapper));
 
-        childObjects.push_back(std::make_unique<Car>(this, CarType::VanFrontLight, scene));
-        childObjects.push_back(std::make_unique<Car>(this, CarType::VanBackLight, scene));
+        auto beacons = std::make_unique<Car>(this, CarType::FiretruckBeacons, scene);
+
+        light = new Light({.0f, .0f, .0f}, .5f, .2f, 0.1f, 15.f);
+        lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
+
+        beacons->lights.push_back(light);
+        scene.lights.push_back(light);
+        childObjects.push_back(move(lightWrapper));
+
+        childObjects.push_back(move(beacons));
+
+        childObjects.push_back(std::make_unique<Car>(this, CarType::FiretruckLights, scene));
     }
 
     position = {0, 0, 0};
@@ -233,6 +259,8 @@ Car::Car(Object* parent, CarType carType, Scene& scene) {
     if (!mesh_van_back_light) mesh_van_back_light = std::make_unique<ppgso::Mesh>("objects/cars/van_backlight.obj");
     if (!mesh_firetruck) mesh_firetruck = std::make_unique<ppgso::Mesh>("objects/cars/firetruck.obj");
     if (!mesh_firetruck_wheel) mesh_firetruck_wheel = std::make_unique<ppgso::Mesh>("objects/cars/firetruck_wheel.obj");
+    if (!mesh_firetruck_lights) mesh_firetruck_lights = std::make_unique<ppgso::Mesh>("objects/cars/firetruck_lights.obj");
+    if (!mesh_firetruck_beacons) mesh_firetruck_beacons = std::make_unique<ppgso::Mesh>("objects/cars/firetruck_beacons.obj");
 
     if (!shader) shader = std::make_unique<ppgso::Shader>(phong_vert_glsl, phong_frag_glsl);
     if (!shader_shadow) shader_shadow = std::make_unique<ppgso::Shader>(shadow_vert_glsl, shadow_frag_glsl);
@@ -276,26 +304,58 @@ void Car::checkCollisions(Scene &scene, float dt) {
 bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) {
     age += dt;
 
-    if (carType == CarType::PoliceCar && age > 7) {
-        childObjects.pop_back();
-        childObjects.pop_back();
-        childObjects.pop_back();
-        scene.lights.pop_back();
+//    if (carType == CarType::PoliceCar && age > 7) {
+//        childObjects.pop_back();
+//        childObjects.pop_back();
+//        childObjects.pop_back();
+//        scene.lights.pop_back();
 
-        if (int(age*2) % 2 == 0) {
-            auto light = new Light({1.f, .0f, .0f}, .5f, .2f, 0.1f, 15.f);
-            auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
-            scene.lights.push_back(light);
-            childObjects.push_back(move(lightWrapper));
-            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhite, scene));
-            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRedOn, scene));
-        } else {
-            auto light = new Light({1.f, 1.f, 1.f}, .5f, .2f, 0.1f, 15.f);
-            auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
-            scene.lights.push_back(light);
-            childObjects.push_back(move(lightWrapper));
-            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhiteOn, scene));
-            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRed, scene));
+//        if (int(age*2) % 2 == 0) {
+//            auto light = new Light({1.f, .0f, .0f}, .5f, .2f, 0.1f, 15.f);
+//            auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
+//            scene.lights.push_back(light);
+//            childObjects.push_back(move(lightWrapper));
+//            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhite, scene));
+//            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRedOn, scene));
+//        } else {
+//            auto light = new Light({1.f, 1.f, 1.f}, .5f, .2f, 0.1f, 15.f);
+//            auto lightWrapper = std::make_unique<LightWrapper>(this, glm::vec3 {0, 1, 0}, light);
+//            scene.lights.push_back(light);
+//            childObjects.push_back(move(lightWrapper));
+//            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsWhiteOn, scene));
+//            childObjects.push_back(std::make_unique<Car>(this, CarType::PoliceCarBeaconsRed, scene));
+//        }
+//    }
+    if (carType == PoliceCarBeaconsRedOn) {
+        if (int(age*2) % 2 == 1 && beaconsMode == 0) {
+            beaconsMode = 1;
+            lights[0]->color = {1.f, .0f, .0f};
+        } else if (int(age*2) % 2 == 0 && beaconsMode == 1) {
+            beaconsMode = 0;
+            lights[0]->color = {.0f, .0f, .0f};
+        }
+    }
+    else if (carType == PoliceCarBeaconsRed) {
+        if (int(age*2) % 2 == 0 && beaconsMode == 0) {
+            beaconsMode = 0;
+        } else if (int(age*2) % 2 == 1 && beaconsMode == 1) {
+            beaconsMode = 1;
+        }
+    }
+    else if (carType == PoliceCarBeaconsWhiteOn) {
+        if (int(age*2) % 2 == 0 && beaconsMode == 0) {
+            beaconsMode = 1;
+            lights[0]->color = {1.f, 1.f, 1.f};
+        } else if (int(age*2) % 2 == 1 && beaconsMode == 1) {
+            beaconsMode = 0;
+            lights[0]->color = {0.f, 0.f, 0.f};
+        }
+    }
+    else if (carType == PoliceCarBeaconsWhite) {
+        if (int(age*2) % 2 == 1 && beaconsMode == 0) {
+            beaconsMode = 0;
+        } else if (int(age*2) % 2 == 0 && beaconsMode == 1) {
+            beaconsMode = 1;
         }
     }
 
@@ -312,7 +372,7 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
             childObjects.push_front(move(char_sitting));
         }
 
-        if (age < 65 && age > 34){
+        if (age < 67 && age > 36){
             int maxcount_per_sec = 50;
             for (int i = 1; i <= ceil(maxcount_per_sec * dt); i++) {
                 auto particle = std::make_unique<Particle>(this, ParticleType::Fire, glm::vec3{0.f, .5f, 2.f});
@@ -321,14 +381,23 @@ bool Car::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 
         }
 
     }
-    else if (carType == Firetruck && age < 66 && age > 52) {
+    else if (carType == Firetruck && age < 68 && age > 54) {
         int maxcount_per_sec = 100;
         for (int i = 1; i <= ceil(maxcount_per_sec * dt); i++) {
             auto particle = std::make_unique<Particle>(this, ParticleType::Water, glm::vec3{0.f, 2.f, 0.f});
             childObjects.push_back(move(particle));
         }
     }
-    else if (carType == PoliceCar && age > 71 && police_alive) {
+    else if (carType == FiretruckBeacons) {
+        if (int(age*3) % 2 == 0 && beaconsMode == 0) {
+            beaconsMode = 1;
+            lights[0]->color = {.0f, .0f, 1.f};
+        } else if (int(age*3) % 2 == 1 && beaconsMode == 1) {
+            beaconsMode = 0;
+            lights[0]->color = {.0f, .0f, .0f};
+        }
+    }
+    else if (carType == PoliceCar && age > 73 && police_alive) {
         police_alive = false;
         childObjects.pop_front();
         childObjects.pop_front();
@@ -389,9 +458,10 @@ void Car::render(Scene &scene, GLuint depthMap) {
     if (carType == CarType::MuscleCarFrontLight || carType == CarType::MuscleCarBackLight
     || carType == CarType::PoliceCarFrontLight || carType == CarType::PoliceCarBackLight
     || carType == CarType::VanFrontLight || carType == CarType::VanBackLight
+    || carType == CarType::FiretruckLights || carType == CarType::FiretruckBeacons
     || carType == CarType::PoliceCarBeaconsWhiteOn || carType == CarType::PoliceCarBeaconsRedOn) {
         shader->setUniform("DiffuseStrength", .2f);
-        shader->setUniform("AmbientStrength", 2.0f);
+        shader->setUniform("AmbientStrength", 3.0f);
         shader->setUniform("SpecularStrength", .3f);
     } else {
         shader->setUniform("DiffuseStrength", 1.f);
@@ -464,16 +534,20 @@ void Car::render(Scene &scene, GLuint depthMap) {
             mesh_police_car_back_light->render();
             break;
         case CarType::PoliceCarBeaconsWhite:
-            mesh_police_car_beacons_white->render();
+            if (beaconsMode == 0)
+                mesh_police_car_beacons_white->render();
             break;
         case CarType::PoliceCarBeaconsRed:
-            mesh_police_car_beacons_red->render();
+            if (beaconsMode == 0)
+                mesh_police_car_beacons_red->render();
             break;
         case CarType::PoliceCarBeaconsWhiteOn:
-            mesh_police_car_beacons_white_on->render();
+            if (beaconsMode == 1)
+                mesh_police_car_beacons_white_on->render();
             break;
         case CarType::PoliceCarBeaconsRedOn:
-            mesh_police_car_beacons_red_on->render();
+            if (beaconsMode == 1)
+                mesh_police_car_beacons_red_on->render();
             break;
         case CarType::Van:
             mesh_van->render();
@@ -502,6 +576,13 @@ void Car::render(Scene &scene, GLuint depthMap) {
             break;
         case CarType::FiretruckWheel:
             mesh_firetruck_wheel->render();
+            break;
+        case CarType::FiretruckLights:
+            mesh_firetruck_lights->render();
+            break;
+        case CarType::FiretruckBeacons:
+            if (beaconsMode == 1)
+                mesh_firetruck_beacons->render();
             break;
     }
 }

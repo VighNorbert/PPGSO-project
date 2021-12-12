@@ -105,16 +105,35 @@ public:
        * glm::scale(glm::mat4(1.0f), scale);
   }
 
-  static glm::mat4 interpolate(glm::mat4& _mat1, glm::mat4& _mat2, float _time)
-  {
-      glm::quat rot0 = glm::quat_cast(_mat1);
-      glm::quat rot1= glm::quat_cast(_mat2);
+  static float mapTime(float t, bool easeIn, bool easeOut) {
+      if (easeIn && easeOut) {
+          if (t < 0.5f) {
+              return 2 * t * t;
+          } else {
+              t -= .5f;
+              return 2 * t * (1 - t) + .5f;
+          }
+      } else if (easeIn) {
+          return t*t;
+      } else if (easeOut) {
+          t -= 1;
+          return 1 - t*t;
+      }
+      return t;
+  }
 
-      glm::quat finalRot = glm::slerp(rot0, rot1, _time);
+
+  static glm::mat4 interpolate(glm::mat4& mat1, glm::mat4& mat2, float t, bool easeIn, bool easeOut) {
+      t = Object::mapTime(t, easeIn, easeOut);
+
+      glm::quat rot0 = glm::quat_cast(mat1);
+      glm::quat rot1 = glm::quat_cast(mat2);
+
+      glm::quat finalRot = glm::slerp(rot0, rot1, t);
 
       glm::mat4 finalMat = glm::mat4_cast(finalRot);
 
-      finalMat[3] = _mat1[3] * (1 - _time) + _mat2[3] * _time;
+      finalMat[3] = mat1[3] * (1 - t) + mat2[3] * t;
 
       return finalMat;
   }
@@ -125,6 +144,7 @@ public:
       glm::mat4 actual, next, last;
       glm::vec3 actualrot, nextrot, lastrot;
       glm::vec3 actualpos, nextpos, lastpos;
+      bool easeIn, easeOut;
       float duration;
       for (auto iter= keyframes.begin(); iter != keyframes.end(); iter++) {
           if (iter->duration == -1) return false;
@@ -133,6 +153,8 @@ public:
               actualrot = iter->rotation;
               actualpos = iter->position;
               duration = iter->duration;
+              easeIn = iter->easeIn;
+              easeOut = iter->easeOut;
               iter++;
               if (iter == keyframes.end()) {
                   modelMatrix = actual;
@@ -144,7 +166,7 @@ public:
               nextrot = iter->rotation;
               nextpos = iter->position;
               float a = (age - t) / duration;
-              modelMatrix = Object::interpolate(actual, next, a);
+              modelMatrix = Object::interpolate(actual, next, a, easeIn, easeOut);
               rotation = glm::lerp(actualrot, nextrot, a);
               position = glm::lerp(actualpos, nextpos, a);
               if (duration > 0.f) {

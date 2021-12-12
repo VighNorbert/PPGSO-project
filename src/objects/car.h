@@ -30,7 +30,9 @@ enum CarType
     VanFrontLight = 17,
     VanBackLight = 18,
     Firetruck = 19,
-    FiretruckWheel = 20
+    FiretruckWheel = 20,
+    FiretruckLights = 21,
+    FiretruckBeacons = 22
 };
 
 class Car : public Object {
@@ -58,6 +60,8 @@ private:
     static std::unique_ptr<ppgso::Mesh> mesh_van_back_light;
     static std::unique_ptr<ppgso::Mesh> mesh_firetruck;
     static std::unique_ptr<ppgso::Mesh> mesh_firetruck_wheel;
+    static std::unique_ptr<ppgso::Mesh> mesh_firetruck_lights;
+    static std::unique_ptr<ppgso::Mesh> mesh_firetruck_beacons;
 
     static std::unique_ptr<ppgso::Shader> shader;
     static std::unique_ptr<ppgso::Shader> shader_shadow;
@@ -70,6 +74,10 @@ private:
 
     bool not_sitting = true;
     bool police_alive = true;
+
+    int beaconsMode = 0;
+
+    std::vector<Light *> lights = {};
 
     glm::vec3 collisionSpeedDelta{0, 0, 0};
 

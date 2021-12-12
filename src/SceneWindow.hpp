@@ -20,6 +20,8 @@
 
 const GLuint SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 
+static float sceneTime;
+
 class SceneWindow : public ppgso::Window {
 private:
     Scene scene;
@@ -28,6 +30,7 @@ private:
     float ratio = 1.0f;
     float loadTime = -1.f;
     const float overlayLength = 5.f;
+    float playbackspeed = 1.f;
 
     GLuint hdrFBO = 0;
     GLuint colorBuffers[2];
@@ -65,31 +68,29 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-//        camera->position = {200.0f, 10.0f, -10.0f};
-//        camera->tilt = 20.f;
-//        camera->rotation = 180.f;
         camera->keyframes = {
                 {2.f, {-15.f, 3.5f, 19.0f}, {15.f, 180.f, 0.f}},
-                {2.f, {-15.f, 3.5f, 19.0f}, {15.f, 180.f, 0.f}},
-                {4.f, {-17.f, 4.0f, 12.0f}, {15.f, 170.f, 0.f}},
+                {2.f, {-15.f, 3.5f, 19.0f}, {15.f, 180.f, 0.f}, true, true},
+                {4.f, {-17.f, 4.0f, 12.0f}, {15.f, 170.f, 0.f}, true, true},
                 {1.f, {.0f, 10.0f, -9.0f}, {15.f, 225.f, 0.f}},
-                {9.f, {.0f, 10.0f, -9.0f}, {15.f, 225.f, 0.f}},
+                {4.f, {.0f, 10.0f, -9.0f}, {15.f, 225.f, 0.f}, true, false},
+                {7.f, {17.3f, 10.0f, -9.0f}, {15.f, 225.f, 0.f}},
                 {5.f, {80.f, 10.0f, -9.0f}, {15.f, 225.f, 0.f}},
                 {3.f, {110.0f, 2.5f, -2.5f}, {15.f, 210.f, 0.f}},
                 {3.f, {135.0f, 2.5f, -2.5f}, {15.f, 210.f, 0.f}},
-                {3.f, {165.0f, 2.5f, -2.5f}, {15.f, 225.f, 0.f}},
-                {6.f, {220.f, 10.0f, -12.f}, {15.f, 240.f, 0.f}},
-                {2.f, {220.f, 10.0f, -12.f}, {15.f, 240.f, 0.f}},
+                {6.f, {165.0f, 2.5f, -2.5f}, {15.f, 225.f, 0.f}, false, true},
+                {3.f, {220.f, 10.0f, -12.f}, {15.f, 240.f, 0.f}},
+                {2.f, {220.f, 10.0f, -12.f}, {15.f, 240.f, 0.f}, true, true},
                 {6.f, {210.f, 5.0f, -8.f}, {25.f, 240.f, 0.f}},
-                {2.f, {210.f, 5.0f, -8.f}, {25.f, 240.f, 0.f}},
+                {2.f, {210.f, 5.0f, -8.f}, {25.f, 240.f, 0.f}, true, true},
                 {2.f, {210.5f, 6.0f, -11.5f}, {15.f, 300.f, 0.f}},
-                {2.f, {210.5f, 6.0f, -11.5f}, {15.f, 300.f, 0.f}},
+                {2.f, {210.5f, 6.0f, -11.5f}, {15.f, 300.f, 0.f}, true, true},
                 {5.f, {209.f, 5.0f, -13.5f}, {15.f, 232.5f, 0.f}},
-                {2.f, {209.f, 5.0f, -13.5f}, {15.f, 232.5f, 0.f}},
+                {2.f, {209.f, 5.0f, -13.5f}, {15.f, 232.5f, 0.f}, true, true},
                 {10.f, {206.5f, 2.f, -8.5f}, {15.f, 225.f, 0.f}},
-                {2.f, {206.5f, 2.f, -8.5f}, {15.f, 225.f, 0.f}},
+                {2.f, {206.5f, 2.f, -8.5f}, {15.f, 225.f, 0.f}, true, true},
                 {3.f, {191.f, 2.5f, -2.f}, {15.f, 225.f, 0.f}},
-                {2.f, {191.f, 2.5f, -2.f}, {15.f, 225.f, 0.f}},
+                {2.f, {191.f, 2.5f, -2.f}, {15.f, 225.f, 0.f}, true, true},
                 {0.f, {206.5f, 2.f, -8.5f}, {15.f, 225.f, 0.f}},
         };
         scene.camera = move(camera);
@@ -182,25 +183,26 @@ private:
             auto character = std::make_unique<Character>(nullptr, CharacterType::MaleHoodieStanding);
             character->keyframes = {
                     {2.f, {-15.f, 1.7f, 20.f}, {0, 0, ppgso::PI}},
-                    {4.f, {-15.f, 1.7f, 20.f}, {0, 0, ppgso::PI}},
+                    {4.f, {-15.f, 1.7f, 20.f}, {0, 0, ppgso::PI}, true, false},
                     {1.f, {-16.5f, 1.7f, 12.f}, {0, 0, ppgso::PI}},
-                    {2.f, {-16.5f, 0.f, 10.f}, {0, 0, ppgso::PI}},
+                    {2.f, {-16.5f, 0.f, 10.f}, {0, 0, ppgso::PI}, false, true},
                     {-1.f, {-16.5f, 0.f, 5.f}, {0, 0, ppgso::PI}},
             };
             scene.rootObjects.push_back(move(character));
 
             auto car = std::make_unique<Car>(nullptr, CarType::MuscleCar, scene);
             car->keyframes = {
-                    {7.f, {-50, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {7.f, {-50, 0, 2.5f}, {0, 0, ppgso::PI / 2}, false, true},
                     {2.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {20.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {4.f, {-16, 0, 2.5f}, {0, 0, ppgso::PI / 2}, true, false},
+                    {18.f, {1.3, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
                     {-2.f, {156.8, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
             };
             scene.rootObjects.push_back(move(car));
 
             car = std::make_unique<Car>(nullptr, CarType::Van, scene);
             car->keyframes = {
-                    {27.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
+                    {29.f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
                     {3.75f, {202.5, 0, 50}, {0, 0, ppgso::PI}},
                     {-2.f, {202.5, 0, 25}, {0, 0, ppgso::PI}}
             };
@@ -208,16 +210,18 @@ private:
 
             car = std::make_unique<Car>(nullptr, CarType::Firetruck, scene);
             car->keyframes = {
-                    {43.f, {197.5, 0, -100}, {0, 0, 0}},
-                    {8.f, {197.5, 0, -100}, {0, 0, 0}},
+                    {45.f, {197.5, 0, -100}, {0, 0, 0}},
+                    {8.f, {197.5, 0, -100}, {0, 0, 0}, false, true},
                     {0.f, {197.5, 0, -15}, {0, 0, 0}}
             };
             scene.rootObjects.push_back(move(car));
 
             car = std::make_unique<Car>(nullptr, CarType::PoliceCar, scene);
             car->keyframes = {
-                    {8.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
-                    {27.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {6.f, {-78, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {4.f, {-78, 0, 2.5f}, {0, 0, ppgso::PI / 2}, true, false},
+                    {25.f, {-60, 0, 2.5f}, {0, 0, ppgso::PI / 2}},
+                    {4.f, {167, 0, 2.5f}, {0, 0, ppgso::PI / 2}, false, true},
                     {0.f, {185, 0, 2.5f}, {0, 0, ppgso::PI / 2}}
             };
             scene.rootObjects.push_back(move(car));
@@ -233,20 +237,17 @@ private:
 
         // Create a camera
         auto camera = std::make_unique<Camera>(fow, ratio, 0.1f, 200.0f);
-//        camera->position = {8.5f, 3.5f, 3.5f};
-//        camera->tilt = 20.f;
-//        camera->rotation = -60.f;
         camera->keyframes = {
                 {2.f, {0, 1.5, -2.5}, {0.f, 0.f, 0.f}},
-                {3.f, {0, 1.5, -2.5}, {0.f, 0.f, 0.f}},
+                {3.f, {0, 1.5, -2.5}, {0.f, 0.f, 0.f}, true, true},
                 {3.f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}},
-                {2.5f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}},
+                {2.5f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}, true, true},
                 {6.5f, {0, 1.7, -3.8}, {0.f, -180.f, 0.f}},
-                {3.f, {0, 1.7, -3.8}, {0.f, -180.f, 0.f}},
+                {3.f, {0, 1.7, -3.8}, {0.f, -180.f, 0.f}, true, true},
                 {4.f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}},
-                {2.f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}},
+                {2.f, {8.5f, 3.5f, 3.5f}, {20.f, -60.f, 0.f}, true, true},
                 {6.f, {2.5, 2.5, 2.5}, {40.f, -30.f, 0.f}},
-                {2.f, {2.5, 2.5, 2.5}, {40.f, -30.f, 0.f}},
+                {2.f, {2.5, 2.5, 2.5}, {40.f, -30.f, 0.f}, true, true},
                 {0.f, {0, 1.5, -2.5}, {0.f, 0.f, 0.f}}
         };
 
@@ -347,8 +348,8 @@ private:
             auto character = std::make_unique<Character>(nullptr, CharacterType::MaleBusinessSuitStanding);
             character->keyframes = {
                     {6.f, {3, 0.13, 4}, {ppgso::PI/2, 0, ppgso::PI}},
-                    {2.f, {3, 0.13, 4}, {ppgso::PI/2, 0, ppgso::PI}},
-                    {3.f, {3, 0, 4}, {0, 0, ppgso::PI}},
+                    {2.f, {3, 0.13, 4}, {ppgso::PI/2, 0, ppgso::PI}, true, true},
+                    {3.f, {3, 0, 4}, {0, 0, ppgso::PI}, true, true},
                     {0.f, {0, 0, 0.5}, {0, 0, ppgso::PI}},
                     {-1, {0, 0, 0.5}, {0, 0, ppgso::PI}}
             };
@@ -358,7 +359,7 @@ private:
             character->position = {0, 0, -4};
             character->keyframes = {
                     {37.f, {0, 0, -4}, {0, 0, 0}},
-                    {3.f, {0, 0, -4}, {0, 0, 0}},
+                    {3.f, {0, 0, -4}, {0, 0, 0}, true, true},
                     {0, {0, 0, -6}, {0, 0, 0}}
             };
             scene.rootObjects.push_back(move(character));
@@ -483,21 +484,22 @@ public:
         // Track time
         if (loadTime == -1.f) {
             loadTime = (float) glfwGetTime();
-            std::cout << "loadtime set " << loadTime << std::endl;
         }
 
-        static float time = (float) glfwGetTime() - loadTime;
+        if (sceneTime == -1.f)
+            sceneTime = (float) glfwGetTime() - loadTime;
 
         // Compute time delta
-        if (time > overlayLength) {
+        if (sceneTime > overlayLength) {
             animate = true;
         }
 
-        float dt = animate ? (float) glfwGetTime() - loadTime - time : 0;
+        float dt = animate ? (float) glfwGetTime() - loadTime - sceneTime : 0;
+        dt *= playbackspeed;
 
-        time = (float) glfwGetTime() - loadTime;
+        sceneTime = (float) glfwGetTime() - loadTime;
 
-        if (time > 46.f && scene.scene_id == 0) {
+        if (sceneTime > 46.f && scene.scene_id == 0) {
             scene.close();
             initSceneOutside();
             dt = 0;
@@ -541,7 +543,7 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         bloomShader->use();
         bloomShader->setUniform("exposure", exposure);
-        if (time < overlayLength) {
+        if (sceneTime < overlayLength) {
             bloomShader->setUniformInt("bloom", false);
             bloomShader->setUniform("scene", *overlay);
         } else {
@@ -634,6 +636,39 @@ public:
                 scene.camera->useKeyframes = true;
                 std::cout << "Debug: Camera keyframes enabled" << std::endl;
             }
+        }
+
+        // scene selection
+        if (keys[GLFW_KEY_1] || keys[GLFW_KEY_KP_1]) {
+            std::cout << "Debug: Switching to scene 1..." << std::endl;
+            scene.close();
+            initSceneBank();
+            loadTime = (float) glfwGetTime() - overlayLength;
+            sceneTime = (float) glfwGetTime() - loadTime;
+            std::cout << "Debug: Switched to scene 1" << std::endl;
+        }
+        if (keys[GLFW_KEY_2] || keys[GLFW_KEY_KP_2]) {
+            std::cout << "Debug: Switching to scene 2..." << std::endl;
+            scene.close();
+            initSceneOutside();
+            loadTime = (float) glfwGetTime() - overlayLength;
+            sceneTime = (float) glfwGetTime() - loadTime;
+            std::cout << "Debug: Switched to scene 2" << std::endl;
+        }
+
+        // playback speed
+        if (keys[GLFW_KEY_SPACE]) {
+            if (playbackspeed > 0.f) {
+                std::cout << "Debug: Playback paused" << std::endl;
+                playbackspeed = 0.f;
+            } else {
+                std::cout << "Debug: Normal playback" << std::endl;
+                playbackspeed = 1.f;
+            }
+        }
+        if (keys[GLFW_KEY_9] || keys[GLFW_KEY_KP_9]) {
+            std::cout << "Debug: Fast forward (x5) enabled" << std::endl;
+            playbackspeed = 5.f;
         }
     }
 };
