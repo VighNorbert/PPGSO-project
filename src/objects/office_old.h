@@ -7,6 +7,7 @@
 
 #include "src/scene.h"
 #include "src/object.h"
+#include "road.h"
 
 
 class OfficeOld : public Object {
@@ -47,6 +48,22 @@ public:
      * @param scene Scene to render in
      */
     void renderForShadow(Scene &scene) override;
+
+    static void generateOffice(Scene &scene, glm::vec3 position, float rotation) {
+        auto office = std::make_unique<OfficeOld>(nullptr);
+        office->position = position;
+        office->rotation.z = rotation;
+
+        for (int i = 0; i < 3; i ++) {
+            for (int j = -5; j <= 5; j += 5) {
+                auto road = std::make_unique<Road>(nullptr);
+                road->roadType = RoadType::Sidewalk;
+                road->position = {j - .5f, 0, -2.5f - i * 5.f};
+                office->childObjects.push_back(move(road));
+            }
+        }
+        scene.rootObjects.push_back(move(office));
+    }
 };
 
 

@@ -117,60 +117,16 @@ private:
             Road::generateRoad(scene, 1, 10, {200.f, 10.f});
             Road::generateRoad(scene, 3, 20, {200.f, -10.f});
 
-            for (int i = 5; i <= 185; i += 5) {
-                auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-                apt->position = {i - 2.5, 0, 10};
-                apt->rotation.z = ppgso::PI;
-                scene.rootObjects.push_back(move(apt));
-            }
+            Apartment::generateApartments(scene, {2.5f, 0, 10}, 0, 37);
+            Apartment::generateApartmentCorner(scene, {187.5, 0, 10}, 0);
+            Apartment::generateApartments(scene, {190.f, 0.f, 17.5f}, 1, 9);
+            Apartment::generateApartments(scene, {-50.f, 0.f, 17.5f}, 1, 4);
+            Apartment::generateApartments(scene, {-72.5f, 0.f, 10.f}, 0, 4);
+            Apartment::generateApartmentCorner(scene, {-52.5, 0, 10}, 0);
+            Apartment::generateApartments(scene, {190.f, 0.f, -107.5f}, 1, 17);
 
-            auto apt_corner = std::make_unique<Apartment>(nullptr, ApartmentType::corner);
-            apt_corner->position = {187.5, 0, 10};
-            apt_corner->rotation.z = ppgso::PI;
-            scene.rootObjects.push_back(move(apt_corner));
-
-            for (int i = 15; i <= 55; i += 5) {
-                auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-                apt->position = {190, 0, i + 2.5};
-                apt->rotation.z = ppgso::PI / 2;
-                scene.rootObjects.push_back(move(apt));
-            }
-
-
-            for (int i = 15; i <= 30; i += 5) {
-                auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-                apt->position = {-50, 0, i + 2.5};
-                apt->rotation.z = ppgso::PI / 2;
-                scene.rootObjects.push_back(move(apt));
-            }
-
-            for (int i = -60; i >= -75; i -= 5) {
-                auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-                apt->position = {i + 2.5, 0, 10};
-                apt->rotation.z = ppgso::PI;
-                scene.rootObjects.push_back(move(apt));
-            }
-
-            auto apt_corner_bank = std::make_unique<Apartment>(nullptr, ApartmentType::corner);
-            apt_corner_bank->position = {-52.5, 0, 10};
-            apt_corner_bank->rotation.z = ppgso::PI;
-            scene.rootObjects.push_back(move(apt_corner_bank));
-
-            auto office_old_1 = std::make_unique<OfficeOld>(nullptr);
-            office_old_1->position = {183, 0, -10};
-            scene.rootObjects.push_back(move(office_old_1));
-
-            for (int i = -30; i >= -110; i -= 5) {
-                auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
-                apt->position = {190, 0, i + 2.5};
-                apt->rotation.z = ppgso::PI / 2;
-                scene.rootObjects.push_back(move(apt));
-            }
-
-            auto office_old_2 = std::make_unique<OfficeOld>(nullptr);
-            office_old_2->position = {217, 0, 10};
-            office_old_2->rotation.z = ppgso::PI;
-            scene.rootObjects.push_back(move(office_old_2));
+            OfficeOld::generateOffice(scene, {183, 0, -10}, 0);
+            OfficeOld::generateOffice(scene, {217, 0, 10}, ppgso::PI);
 
             auto bank = std::make_unique<Bank>(nullptr, BankType::BankOutside, scene);
             bank->position = {-15, 0, 10};

@@ -74,7 +74,6 @@ public:
     void checkCollisions(Scene &scene, float dt) override {};
 
     /*!
-     * Update asteroid
      * @param scene Scene to interact with
      * @param dt Time delta for animation purposes
      * @return
@@ -82,16 +81,65 @@ public:
     bool update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::vec3 parentRotation) override;
 
     /*!
-     * Render asteroid
      * @param scene Scene to render in
      */
     void render(Scene &scene, GLuint depthMap) override;
 
     /*!
-     * Render asteroid
      * @param scene Scene to render in
      */
     void renderForShadow(Scene &scene) override;
+
+    static void generateApartments(Scene &scene, glm::vec3 firstPosition, int orientation, int count) {
+        glm::vec3 positionShift = {5, 0, 0};
+        float rotation = ppgso::PI;
+
+        if (orientation == 0) {
+            positionShift = {5, 0, 0};
+            rotation = ppgso::PI;
+        }
+        else if (orientation == 1) {
+            positionShift = {0, 0, 5};
+            rotation = ppgso::PI / 2;
+        }
+        else if (orientation == 2) {
+            positionShift = {-5, 0, 0};
+            rotation = 0;
+        }
+        else if (orientation == 3) {
+            positionShift = {0, 0, -5};
+            rotation = - ppgso::PI / 2;
+        }
+
+        for (int i = 0; i < count; i++) {
+            auto apt = std::make_unique<Apartment>(nullptr, ApartmentType::normal);
+            apt->position = firstPosition + float(i) * positionShift;
+            apt->rotation.z = rotation;
+            scene.rootObjects.push_back(move(apt));
+        }
+    }
+
+    static void generateApartmentCorner(Scene &scene, glm::vec3 position, int orientation) {
+        float rotation = ppgso::PI;
+
+        if (orientation == 0) {
+            rotation = ppgso::PI;
+        }
+        else if (orientation == 1) {
+            rotation = ppgso::PI / 2;
+        }
+        else if (orientation == 2) {
+            rotation = 0;
+        }
+        else if (orientation == 3) {
+            rotation = - ppgso::PI / 2;
+        }
+
+        auto apt_corner = std::make_unique<Apartment>(nullptr, ApartmentType::corner);
+        apt_corner->position = position;
+        apt_corner->rotation.z = rotation;
+        scene.rootObjects.push_back(move(apt_corner));
+    }
 };
 
 
