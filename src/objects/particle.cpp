@@ -19,8 +19,10 @@ float FIRE_HOR = .3f;
 float FIRE_VER = 1.f;
 float FIRE_VER_SPEED = .2f;
 
-float WATER_VER = .01f;
-float WATER_HOR = .01f;
+float WATER_VER = .1f;
+float WATER_HOR = .1f;
+
+float WIND_DISP = .5f;
 
 float BLOOD_HOR = .3f;
 
@@ -47,8 +49,9 @@ Particle::Particle(Object *parent, ParticleType particleType, glm::vec3 initialP
     }
     if (particleType == ParticleType::Water) {
         scale = {.1, .1, .1};
-        speed = {2.25f + glm::linearRand(-WATER_HOR, WATER_HOR) , 1.0f + glm::linearRand(-WATER_VER, WATER_VER), 3.25f + glm::linearRand(-WATER_HOR, WATER_HOR)};
+        speed = {1.45f + glm::linearRand(-WATER_HOR, WATER_HOR) , 2.0f + glm::linearRand(-WATER_VER, WATER_VER), 2.1f + glm::linearRand(-WATER_HOR, WATER_HOR)};
         maxAge = 5.f;
+        weight = .001f;
     }
     if (particleType == ParticleType::Blood) {
         speed = glm::rotate(glm::mat4(1.0f), glm::linearRand(0.f,ppgso::PI), glm::vec3(0, 1, 0)) * glm::vec4{glm::linearRand(-BLOOD_HOR, BLOOD_HOR), 0, 0, 0};
@@ -72,9 +75,9 @@ bool Particle::update(Scene &scene, float dt, glm::mat4 parentModelMatrix, glm::
         speed.y += FIRE_VER_SPEED * dt;
     }
     if (particleType == ParticleType::Water) {
-        speed.y += -1.f * dt - glm::linearRand(-WATER_HOR, WATER_HOR) * dt * 100;
-        speed.x += glm::linearRand(-WATER_HOR, WATER_HOR) * dt * 100;
-        speed.z += glm::linearRand(-WATER_HOR, WATER_HOR) * dt * 100;
+        glm::vec3 gravitationForce = glm::vec3{0.f, -1.f, 0.f} * weight;
+        glm::vec3 windForce = glm::vec3{glm::linearRand(-WIND_DISP, WIND_DISP), glm::linearRand(-WIND_DISP, WIND_DISP), glm::linearRand(-WIND_DISP, WIND_DISP)} * weight;
+        speed += (gravitationForce + windForce) * dt / weight;
     }
     if (particleType == ParticleType::Blood) {
         scale = glm::vec3{0.2, 0.2, 0.2} / (1.0f + age * 1.5f );
