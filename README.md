@@ -1,51 +1,32 @@
 # PPGSO Projekt
 Téma: Mesto
+Prepadnutie v banke
 
 Autori:
 - Norbert Vígh
 - Patrik Velčický
 
-## Návrh projektu
-Téma: Mesto
+## Ovládanie prostredia
+Pre zjednodušenie navigácie v prostredí bežiaceho programu sme naimplementovali jednoduché možnosti ovládania prostrednícvom klávesnice.
 
+Upozornenie: Tieto funkcie nemusia správne fungovať, pre normálne prehratie scén ich nie je potrebné vôbec používať.
 
-![Scena 1 - v banke](doc/navrh-scena-1.png)
+### Pohyb kamery
+- Tlačidlo **K** - prepínanie medzi pohybom kamery prostredníctvom kľúčových snímkov a voľným pohybom (pomocou tlačidiel nižšie)
+- Tlačidlá **W** a **S** - pohyb kamery po osi Z
+- Tlačidlá **A** a **D** - pohyb kamery po osi X
+- Tlačidlá **hore** a **dole** (šípky) - pohyb kamery po osi Y
+- Tlačidlá **Q** a **E** - rotácia kamery
+ 
+### Prepínanie medzi scénami
+- Tlačidlá **1** a **2** - prepínanie medzi scénami (po skončení scény 1 sa prepne na scénu 2 automaticky, toto je len navyše)
+ 
+### Debugovacie možnosti
+- Tlačidlo **F** - zapnúť / vypnúť výpis FPS do konzoly
+- Tlačidlo **C** - zapnúť / vypnúť výpis aktuálnych súradníc kamery
+- Tlačidlo **B** - zapnúť / vypnúť zobrazenie Bounding Circles
+- Tlačidlo **L** - zapnúť / vypnúť filter Bloom
 
-Scéna 1 sa začína v banke, v ktorej prebieha lúpež. Pri odchode zlodeja bankár spustí alarm a zlodej po ňom 3x vystrelí zo zbrane, pričom každá strela má 50% šancu na zásah bankára a ak prvé 2 strely netrafia, tak tretia strela určite trafí. Po týchto 3 výstreloch bankár leží na zemi a krváca. Zlodej odchádza dverami z banky.
-
-
-![Scena 2 - v meste](doc/navrh-scena-2.png)
-
-Scéna 2 sa odohráva v exteriéri, v meste. Pred bankou ho čaká jeho komplic v aute. Zlodej z banky nastupuje do auta a policajti sú im už v pätách. Začína sa policajná naháňačka po meste. Pri tejto naháňačke sa auto zlodejov na križovatke zrazí s iným autom. Po zrážke auto zlodejov začne horieť. Na miesto sú privolaní hasiči, ktorí hasia oheň. Po uhasení horiaceho auta zlodejov zatknú policajti.
-
-
-### Grafické efekty v banke
-- V banke svietia stropné svetlá
-- Cez okná do banky svieti slnko
-- Spustený alarm v banke
-  - bliká na červeno
-- Výstrely zo zbrane
-- Letiace gulky na bankára
-  - procedurálna animácia - guľka bude mať určenú pravdepodobnosť, s ktorou trafí bankára, pričom bude určený aj maximálny stupeň odchýlky v smere streľby
-  - guľky - vznikajúce a zanikajúce objekty
-- Bankár krváca po zásahu guľkou
-  - krv - časticový systém, vplyv gravitačnej sily
-
-### Grafické efekty pri naháňačke v meste
-- Budovy mesta
-  - rozmiestnenie jednotlivých budov bude procedurálne generované
-- Svietia svetlá na autách
-- Svieti slnko
-- Blikajú policajné majáky
-- Zlodej nasadá do auta so zbraňou a peniazmi
-  - hierarchická transformácia objektov
-    - 1.úroveň - zlodej v aute
-    - 2.úroveň - zlodej drží zbraň a vrece s peniazmi
-- Zrážka dvoch aút 
-  - Efektívna kolízia medzi objektami
-- Simulácia aspoň s dvoma silami s použitím vektorovej algebry
-- Oheň na kapote auta lupičov
-  - oheň - časticový systém, časticiam bude udelená počiatočná rýchlosť v ľubovoľnom smere vo vodorovnej rovine, bude na nich pôsobiť sila v smere zvislo nahor, ktorá bude spôsobovať že budú stúpať nahor, postupne sa budú častice zmenšovať až po uplynutí náhodne dlhej doby (max do 2s) úplne zmiznú
-  - častice vznikajú a zanikajú
-- Hasenie požiaru vodou 
-  - voda - časticový systém, vplyv dvoch síl - gravitačná sila a vietor
+### Rýchlosť prehrávania
+- **Medzerník** - zastaviť / spustiť prehrávanie
+- Tlačidlo **9** - zrýchlenie prehrávania (x5)

@@ -56,7 +56,7 @@ in vec4 fragmentPositionLightSpace;
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
 
-float ShadowCalculation(vec3 lightDir)
+float ShadowCalculation()
 {
   // perform perspective divide
   vec3 projCoords = fragmentPositionLightSpace.xyz / fragmentPositionLightSpace.w;
@@ -118,7 +118,7 @@ vec3 CalcLight(Light light, vec3 viewDir, vec3 objectColor, bool shadowsEnabled)
   vec3 reflectDir = reflect(-lightDir, vec3(normal));
   vec3 specular = SpecularStrength * pow(max(dot(viewDir, reflectDir), 0.0), 32) * color;
 
-  float shadow = shadowsEnabled ? ShadowCalculation(lightDir) : 0.f;
+  float shadow = shadowsEnabled ? ShadowCalculation() : 0.f;
 
   return (ambient + (1.0 - shadow) * (diffuse + specular)) * intensity;
 }
